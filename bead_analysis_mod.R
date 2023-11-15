@@ -2,6 +2,7 @@ library(imager)
 library(EBImage)
 library(data.table)
 
+tic("first")
 img <- load.image("2.bmp")
 
 # first section: detect all beads
@@ -34,15 +35,18 @@ with(grouped_lab_img, points(mxx, myy, col = "yellow"))
 # rectangle over hole x axis, with width of 2x
 # third: only if a coordinate is in both rectangles (the x^2 around the current 
 # center) it is viewed as too close and therefore discarded
+tic("first")
 dis_excl_res <- lapply(seq_along(grouped_lab_img$value), function(clus) {
   x <- grouped_lab_img[clus, ]$mxx
   y <- grouped_lab_img[clus, ]$myy
-  lapply(as.list(grouped_lab_img$mxx), function(x_cord) {
+  tmp <- as.list(grouped_lab_img$mxx)
+  lapply(tmp, function(x_cord) {
     if(x != x_cord) {
       if(x - 10 < x_cord & x + 10 > x_cord) {
         cluster <- which(grouped_lab_img$mxx == x_cord)
         y_coordinates <- grouped_lab_img[cluster, ]$myy
-        lapply(as.list(y_coordinates), function(y_cord) {
+        tmp2 <- as.list(y_coordinates)
+        lapply(tmp2, function(y_cord) {
           if(y - 10 < y_cord & y + 10 > y_cord) {
             distanced_clus <- which(grouped_lab_img$myy == y_cord & 
                          grouped_lab_img$mxx == x_cord)
@@ -53,7 +57,7 @@ dis_excl_res <- lapply(seq_along(grouped_lab_img$value), function(clus) {
     }
   })
 })
-
+toc()
 distanced_list <- sort(unique(unlist(dis_excl_res)))
 
 
@@ -197,3 +201,5 @@ result <- data.frame(number_of_beads = nrow(final_dt),
                      mean_intensity = mean(final_dt$int)
                      )
 result
+
+toc()

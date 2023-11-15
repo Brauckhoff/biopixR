@@ -4,10 +4,11 @@ library(data.table)
 
 # note do.call
 
+
 # image import
 img <- load.image("2.bmp")
 
-source("edgeR.R")
+#source("edgeR.R")
 
 # first section: detect all beads
 
@@ -40,9 +41,7 @@ with(grouped_lab_img, points(mxx, myy, col = "yellow"))
 # rectangle over hole x axis, with width of 2x
 # third: only if a coordinate is in both rectangles (the x^2 around the current 
 # center) it is viewed as too close and therefore discarded
-
-res <- list()
-
+distanced_excl_list <- list()
 for(i in seq_along(grouped_lab_img$value)) {
   x <- grouped_lab_img[i, ]$mxx
   y <- grouped_lab_img[i, ]$myy
@@ -51,14 +50,14 @@ for(i in seq_along(grouped_lab_img$value)) {
       next
     } else {
       if(x - 10 < d & x + 10 > d) {
-        g <- which(grouped_lab_img$mxx == d)
+        clus <- which(grouped_lab_img$mxx == d)
         #print(g)
-        h <- grouped_lab_img[g, ]$myy
+        y_clus <- grouped_lab_img[clus, ]$myy
         #print(h)
-        for(v in h) {
+        for(v in y_clus) {
           if(y - 10 < v & y + 10 > v) {
-            j <- which(grouped_lab_img$myy == v & grouped_lab_img$mxx == d)
-            res[j] <- c(j)
+            too_close <- which(grouped_lab_img$myy == v & grouped_lab_img$mxx == d)
+            distanced_excl_list[too_close] <- c(too_close)
           }
         }
       }
@@ -66,80 +65,71 @@ for(i in seq_along(grouped_lab_img$value)) {
   }
 }
 
-res1 <- unlist(res)
+clean_distanced_excl <- unlist(distanced_excl_list)
 
-data <- data.frame(mx = rep(NA, length(res1)), my = rep(NA, length(res1)))
-#data[1,2]
+distance_discard_df <- data.frame(mx = rep(NA, length(clean_distanced_excl)), 
+                   my = rep(NA, length(clean_distanced_excl)))
 
-for (a in res1) {
+for (a in clean_distanced_excl) {
   x <- grouped_lab_img[a, ]$mxx
   y <- grouped_lab_img[a, ]$myy
-  data[a, 1] <- x
-  data[a, 2] <- y
+  distance_discard_df[a, 1] <- x
+  distance_discard_df[a, 2] <- y
 }
-#data
 
 plot(img)
 with(grouped_lab_img, points(mxx, myy, col="green"))
-with(data, points(mx, my, col = "red"))
-#with(grouped_lab_img, points(113, 136, col = "yellow"))
-#grouped_lab_img[245, ]
+with(distance_discard_df, points(mx, my, col = "red"))
 
 
-g <- which(is.na(data$mx) == TRUE)
-k <- grouped_lab_img[g, ]
+# third section: size exclusion
 
-#plot(t2)
-#with(k, points(mxx, myy, col = "blue"))
+# first: discard data points that did not pass the second section from original 
+# data
+remaining_cluster <- which(is.na(distance_discard_df$mx) == TRUE)
+remaining_cluster_df <- grouped_lab_img[remaining_cluster, ]
 
-#which(df_lab_img$value == 1)
-#df_lab_img[88, ]
-
-res2 <- list()
-
-for (j in k$value) {
-  z <- which(df_lab_img$value == j)
-  res2[z] <- c(z)
+# get position of remaining clusters in original labeled image -> 
+# aim: extract all coordinates (pixels) of the clusters
+pos_clus_img <- list()
+for (b in remaining_cluster_df$value) {
+  clus_pos <- which(df_lab_img$value == b)
+  pos_clus_img[clus_pos] <- c(clus_pos)
 }
-res3 <- unlist(res2)
-dfHull_t3 <- df_lab_img[c(res3), ]
-#plot(t2)
-#with(dfHull_t3, points(x,y, col = "cyan" ))
 
-res4 <- list()
-res5 <- list()
+clean_pos_clus <- unlist(pos_clus_img)
+xy_cords_clus <- df_lab_img[clean_pos_clus, ]
 
-for (l in k$value) {
-  for (ö in dfHull_t3$value) {
-    if (l == ö) {
-      q <- which(dfHull_t3$value == l)
-      res4 <- q
-      gg <- length(unlist(res4))
-      if (is.null(gg) != TRUE & gg < 150 & gg > 50) {
-        res5[l] <- c(gg)
+
+# determination of cluster size
+# how many coordinates per cluster & cluster number that is in the list of 
+# the remaining clusters (remaining_cluster_df) -> number = size of cluster
+cluster_size <- list()
+for (c in remaining_cluster_df$value) {
+  for (e in xy_cords_clus$value) {
+    if (c == e) {
+      clus_pxl <- which(xy_cords_clus$value == c)
+      size <- length(clus_pxl)
+      if (is.null(size) != TRUE & size < 150 & size > 50) {
+        cluster_size[c] <- c(size)
       }
     }
   }
 }
-#length(unlist(res5))
 
 
 res6 <- list()
 
-for (ok in k$value) {
-    if (is.null(res5[[ok]]) != TRUE) {
+for (ok in remaining_cluster_df$value) {
+    if (is.null(cluster_size[[ok]]) != TRUE) {
       res6[ok] <- c(ok)
   }
 }
 
 
-data1 <- data.frame( 
-                    x = rep(NA, length()), 
-                    y = rep(NA, length()),
-                    intensity = rep(NA, length()),
-                    Cluster = rep(NA, length()))
-#sum(unlist(res5))
-# dfHull_t3 enthält noch Werte welche durch größe ausgeschlossen wurden daher entstehen NAs es wird empfohlen vor der Speicherung im Datensatz in 
+
+#sum(unlist(cluster_size))
+# xy_cords_clus enthält noch Werte welche durch größe ausgeschlossen wurden daher entstehen NAs es wird empfohlen vor der Speicherung im Datensatz in 
 # listen zu speichern und zu unlisten dann in dataframe :D
 
 res7 <- list()
@@ -151,10 +141,10 @@ res9 <- list()
 
 
 for (kk in unlist(res6)) {
-  pp <- which(dfHull_t3$value == kk)
+  pp <- which(xy_cords_clus$value == kk)
   res7[pp] <- c(kk)
-  res8[pp] <- dfHull_t3$x[pp]
-  res9[pp] <- dfHull_t3$y[pp]
+  res8[pp] <- xy_cords_clus$x[pp]
+  res9[pp] <- xy_cords_clus$y[pp]
 }
 
 data2 <- data.frame(x = unlist(res8),
@@ -172,7 +162,9 @@ for (jj in 1:nrow(data2)) {
 intense <- dplyr::group_by(data2[, c(3:4)], Cluster) %>% 
   dplyr::summarise(intensity = mean(intensity))
 
-amazing <- data.frame(Beadnumber = unlist(res6), Size = unlist(res5), Intesity = intense[,2])
+amazing <- data.frame(Beadnumber = unlist(res6), 
+                      Size = unlist(cluster_size), 
+                      Intesity = intense[,2])
 
 data3 <- dplyr::group_by(data2[, c(1, 2, 4)], Cluster) %>%
   dplyr::summarise(xc = mean(x), yc = mean(y))
@@ -181,4 +173,7 @@ plot(img)
 with(grouped_lab_img, points(mxx, myy, col="red"))
 with(data3, points(xc, yc, col = "green"))
 
-Result <- data.frame(Number_of_Beads = length(unlist(res6)), Mean_Size = mean(unlist(res5)), Mean_intensity = mean(data2$intensity))
+Result <- data.frame(Number_of_Beads = length(unlist(res6)), 
+                     Mean_Size = mean(unlist(cluster_size)), 
+                     Mean_intensity = mean(data2$intensity))
+
