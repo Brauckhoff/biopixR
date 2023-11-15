@@ -4,7 +4,7 @@ library(data.table)
 
 # note do.call
 
-
+tic("test")
 # image import
 img <- load.image("2.bmp")
 
@@ -89,7 +89,7 @@ with(distance_discard_df, points(mx, my, col = "red"))
 remaining_cluster <- which(is.na(distance_discard_df$mx) == TRUE)
 remaining_cluster_df <- grouped_lab_img[remaining_cluster, ]
 
-# get position of remaining clusters in original labeled image -> 
+# get position of remaining clusters in original labeled image 
 # aim: extract all coordinates (pixels) of the clusters
 pos_clus_img <- list()
 for (b in remaining_cluster_df$value) {
@@ -103,7 +103,8 @@ xy_cords_clus <- df_lab_img[clean_pos_clus, ]
 
 # determination of cluster size
 # how many coordinates per cluster & cluster number that is in the list of 
-# the remaining clusters (remaining_cluster_df) -> number = size of cluster
+# the remaining clusters (remaining_cluster_df) -> count = size of cluster
+# size has an upper and lower limit to discard duplets(&multis) and noise
 cluster_size <- list()
 for (c in remaining_cluster_df$value) {
   for (e in xy_cords_clus$value) {
@@ -118,62 +119,64 @@ for (c in remaining_cluster_df$value) {
 }
 
 
-res6 <- list()
+# fourth section: post-processing and visualization
 
-for (ok in remaining_cluster_df$value) {
-    if (is.null(cluster_size[[ok]]) != TRUE) {
-      res6[ok] <- c(ok)
+# getting cluster numbers after exclusion due to cluster size
+clus_num <- list()
+for (f in remaining_cluster_df$value) {
+    if (is.null(cluster_size[[f]]) != TRUE) {
+      clus_num[f] <- c(f)
   }
 }
 
-
-
-#sum(unlist(cluster_size))
-# xy_cords_clus enthält noch Werte welche durch größe ausgeschlossen wurden daher entstehen NAs es wird empfohlen vor der Speicherung im Datensatz in 
-# listen zu speichern und zu unlisten dann in dataframe :D
-
-res7 <- list()
-
-res8 <- list()
-
-res9 <- list()
-
-
-
-for (kk in unlist(res6)) {
-  pp <- which(xy_cords_clus$value == kk)
-  res7[pp] <- c(kk)
-  res8[pp] <- xy_cords_clus$x[pp]
-  res9[pp] <- xy_cords_clus$y[pp]
+# creating new data frame that contains cluster that pass both exclusions
+cluster <- list()
+x_coord <- list()
+y_coord <- list()
+for (g in unlist(clus_num)) {
+  remaining_pos <- which(xy_cords_clus$value == g)
+  cluster[remaining_pos] <- c(g)
+  x_coord[remaining_pos] <- xy_cords_clus$x[remaining_pos]
+  y_coord[remaining_pos] <- xy_cords_clus$y[remaining_pos]
 }
 
-data2 <- data.frame(x = unlist(res8),
-                    y = unlist(res9),
-                    intensity = rep(NA, length(unlist(res8))),
-                    Cluster = unlist(res7))
+res_xy_clus <- data.frame(x = unlist(x_coord),
+                    y = unlist(y_coord),
+                    intensity = rep(NA, length(unlist(x_coord))),
+                    Cluster = unlist(cluster))
 
-for (jj in 1:nrow(data2)) {
-  xx <- data2$x[jj]
-  yy <- data2$y[jj]
+# including intensity values of pixels from remaining clusters in df
+for (h in 1:nrow(res_xy_clus)) {
+  xx <- res_xy_clus$x[h]
+  yy <- res_xy_clus$y[h]
   int <- img[xx, yy]
-  data2[jj, 3] <- c(int)
+  res_xy_clus[h, 3] <- c(int)
 }
 
-intense <- dplyr::group_by(data2[, c(3:4)], Cluster) %>% 
-  dplyr::summarise(intensity = mean(intensity))
+# group data frame by cluster
+DT_intense <- data.table(res_xy_clus) 
+intense <- DT_intense[ , .(x = mean(x), 
+                           y = mean(y),
+                           intensity = mean(intensity)), 
+                       by = Cluster]
 
-amazing <- data.frame(Beadnumber = unlist(res6), 
+# summary for every passing bead
+res_df_long <- data.frame(Beadnumber = unlist(clus_num), 
                       Size = unlist(cluster_size), 
-                      Intesity = intense[,2])
-
-data3 <- dplyr::group_by(data2[, c(1, 2, 4)], Cluster) %>%
-  dplyr::summarise(xc = mean(x), yc = mean(y))
+                      Intesity = intense[, 3],
+                      x = intense[, 1],
+                      y = intense[, 2])
 
 plot(img)
-with(grouped_lab_img, points(mxx, myy, col="red"))
-with(data3, points(xc, yc, col = "green"))
+with(grouped_lab_img, points(mxx, myy, col="orange"))
+with(distance_discard_df, points(mx, my, col = "red"))
+with(res_df_long, points(x, y, col = "green"))
 
-Result <- data.frame(Number_of_Beads = length(unlist(res6)), 
+# end result
+Result <- data.frame(Number_of_Beads = length(unlist(clus_num)), 
                      Mean_Size = mean(unlist(cluster_size)), 
-                     Mean_intensity = mean(data2$intensity))
+                     Mean_intensity = mean(res_xy_clus$intensity),
+                     Bead_density = (length(unlist(clus_num))*
+                                       mean(unlist(cluster_size)))/length(img))
 
+toc()

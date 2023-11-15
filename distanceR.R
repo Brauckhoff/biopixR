@@ -9,25 +9,41 @@
 # rectangle over hole x axis, with width of 2x
 # third: only if a coordinate is in both rectangles (the x^2 around the current 
 # center) it is viewed as too close and therefore discarded
-resX <- lapply(seq_along(grouped_lab_img$value), function(i) {
-  x <- grouped_lab_img[i, ]$mxx
-  y <- grouped_lab_img[i, ]$myy
-  lapply(as.list(grouped_lab_img$mxx), function(d) {
-    if(x != d) {
-      if(x - 10 < d & x + 10 > d) {
-        g <- which(grouped_lab_img$mxx == d)
-        h <- grouped_lab_img[g, ]$myy
-        lapply(as.list(h), function(v) {
-          if(y - 10 < v & y + 10 > v) {
-            j <- which(grouped_lab_img$myy == v & grouped_lab_img$mxx == d)
-            j
+distanceR <- function(groubped_lab_img, radius = 10) {
+  distanced_excl_list <- list()
+  for(i in seq_along(grouped_lab_img$value)) {
+    x <- grouped_lab_img[i, ]$mxx
+    y <- grouped_lab_img[i, ]$myy
+    for(d in grouped_lab_img$mxx) {
+      if(x == d) {
+        next
+      } else {
+        if(x - radius < d & x + radius > d) {
+          clus <- which(grouped_lab_img$mxx == d)
+          #print(g)
+          y_clus <- grouped_lab_img[clus, ]$myy
+          #print(h)
+          for(v in y_clus) {
+            if(y - radius < v & y + radius > v) {
+              too_close <- which(grouped_lab_img$myy == v & grouped_lab_img$mxx == d)
+              distanced_excl_list[too_close] <- c(too_close)
+            }
           }
-        })
+        }
       }
     }
-  })
-})
-
-distanced_list <- sort(unique(unlist(resX)))
-
-distanceR <- function(, radius = 10)
+  }
+  
+  clean_distanced_excl <- unlist(distanced_excl_list)
+  
+  distance_discard_df <- data.frame(mx = rep(NA, length(clean_distanced_excl)), 
+                                    my = rep(NA, length(clean_distanced_excl)))
+  
+  for (a in clean_distanced_excl) {
+    x <- grouped_lab_img[a, ]$mxx
+    y <- grouped_lab_img[a, ]$myy
+    distance_discard_df[a, 1] <- x
+    distance_discard_df[a, 2] <- y
+  }
+  distance_discard_df
+}
