@@ -1,0 +1,64 @@
+#' Size exclusion
+#'
+#' Calculates the size of a bead (in pixels) and discards too big (e.g. duplets)
+#' or too small once
+#' @param res_distanceR list obtained by the distanceR function
+#' @param lowerlimit smallest accepted bead size
+#' @param upperlimit highest accepted bead size
+#' @returns list of 4 objects:
+#' 1. remaining beads after discarding according to distance
+#' 2. all coordinates that are in labeled regions
+#' 3. size of a labeled region (bead)
+#' 4. original image
+#' @examples
+#' img <- load.image(fehlt)
+#' res_detecteR <- detecteR(img)
+#' res_ distanceR <- distanceR(res_detecteR, radius = 10)
+#' res_sizeR <- sizeR(res_distanceR, lowerlimit = 50, upperlimit = 150)
+#' @export
+sizeR <- function(res_distanceR,
+                  lowerlimit = 50,
+                  upperlimit = 150) {
+  # third section: size exclusion
+  grouped_lab_img <- res_distanceR$centers
+  df_lab_img <- res_distanceR$coordinates
+  distance_discard_df <- res_distanceR$discard
+
+  # first: discard data points that did not pass the second section from
+  # original data
+  # then get position of remaining clusters in original labeled image
+  remaining_cluster <- which(is.na(distance_discard_df$mx) == TRUE)
+  remaining_cluster_df <- grouped_lab_img[remaining_cluster, ]
+
+  # extracting all coordinates from the original labeled image with cluster
+  # that pass the criteria
+  pos_clus_img <- list()
+  for (b in remaining_cluster_df$value) {
+    clus_pos <- which(df_lab_img$value == b)
+    pos_clus_img[clus_pos] <- c(clus_pos)
+  }
+
+  clean_pos_clus <- unlist(pos_clus_img)
+  xy_cords_clus <- df_lab_img[clean_pos_clus, ]
+
+  # aim: extract all coordinates (pixels) of the clusters
+  # how many coordinates per cluster & cluster number that is in the list of
+  # the remaining clusters (remaining_cluster_df) -> count = size of cluster
+  # size has an upper and lower limit to discard duplets(&multis) and noise
+  cluster_size <- list()
+  for (c in remaining_cluster_df$value) {
+    for (e in xy_cords_clus$value) {
+      if (c == e) {
+        clus_pxl <- which(xy_cords_clus$value == c)
+        size <- length(clus_pxl)
+        if (is.null(size) != TRUE & size < upperlimit & size > lowerlimit) {
+          cluster_size[c] <- c(size)
+        }
+      }
+    }
+  }
+  out <- list(cluster = remaining_cluster_df,
+              coordinates = xy_cords_clus,
+              size = cluster_size,
+              image = res_distanceR$image)
+}
