@@ -1,3 +1,3 @@
 # beadR
 
-install_github("Brauckhoff/beadR")
+devtools::install_github("Brauckhoff/beadR")
