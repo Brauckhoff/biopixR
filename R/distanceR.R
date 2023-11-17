@@ -55,8 +55,8 @@ distanceR <- function(res_detecteR, radius = 10) {
   clean_distanced_excl <- unlist(distanced_excl_list)
 
   # create data frame with the center coordinates of the discarded clusters
-  distance_discard_df <- data.frame(mx = rep(NA, length(clean_distanced_excl)),
-                                    my = rep(NA, length(clean_distanced_excl)))
+  distance_discard_df <- data.frame(mx = rep(NA, nrow(grouped_lab_img)),
+                                    my = rep(NA, nrow(grouped_lab_img)))
 
   for (a in clean_distanced_excl) {
     x <- grouped_lab_img[a, ]$mxx
