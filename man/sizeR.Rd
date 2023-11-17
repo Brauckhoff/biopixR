@@ -27,8 +27,7 @@ Calculates the size of a bead (in pixels) and discards too big (e.g. duplets)
 or too small once
 }
 \examples{
-img <- load.image(fehlt)
-res_detecteR <- detecteR(img)
-res_ distanceR <- distanceR(res_detecteR, radius = 10)
-res_sizeR <- sizeR(res_distanceR, lowerlimit = 50, upperlimit = 150)
+res_detecteR <- detecteR(beads, alpha = 0.75, sigma = 0.1)
+res_distanceR <- distanceR(res_detecteR, radius = 10)
+sizeR(res_distanceR, lowerlimit = 50, upperlimit = 150)
 }

@@ -11,7 +11,7 @@ detecteR(image, alpha = 0.75, sigma = 0.1)
 
 \item{alpha}{threshold adjustment factor}
 
-\item{simge}{smoothing}
+\item{sigma}{smoothing}
 }
 \value{
 list of 3 objects:
@@ -25,6 +25,5 @@ list of 3 objects:
 Detects centers of beads
 }
 \examples{
-img <- load.image(fehlt)
-detecteR(img, alpha = 0.75, sigma = 0.1)
+detecteR(beads, alpha = 0.75, sigma = 0.1)
 }

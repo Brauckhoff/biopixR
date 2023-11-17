@@ -25,7 +25,6 @@ list of 4 objects:
 Detects beads that are too close to each other
 }
 \examples{
-img <- load.image(fehlt)
-res_detecteR <- detecteR(img)
+res_detecteR <- detecteR(beads, alpha = 0.75, sigma = 0.1)
 distanceR(res_detecteR, radius = 10)
 }

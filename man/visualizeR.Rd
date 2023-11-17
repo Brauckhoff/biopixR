@@ -20,9 +20,8 @@ list of 2 objects:
 Extracts all important information of the remaining beads
 }
 \examples{
-#' img <- load.image(fehlt)
-res_detecteR <- detecteR(img)
-res_ distanceR <- distanceR(res_detecteR, radius = 10)
+res_detecteR <- detecteR(beads, alpha = 0.75, sigma = 0.1)
+res_distanceR <- distanceR(res_detecteR, radius = 10)
 res_sizeR <- sizeR(res_distanceR, lowerlimit = 50, upperlimit = 150)
 visualizeR(res_sizeR)
 }

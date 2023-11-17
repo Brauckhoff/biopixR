@@ -11,10 +11,9 @@
 #' 3. size of a labeled region (bead)
 #' 4. original image
 #' @examples
-#' img <- load.image(fehlt)
-#' res_detecteR <- detecteR(img)
-#' res_ distanceR <- distanceR(res_detecteR, radius = 10)
-#' res_sizeR <- sizeR(res_distanceR, lowerlimit = 50, upperlimit = 150)
+#' res_detecteR <- detecteR(beads, alpha = 0.75, sigma = 0.1)
+#' res_distanceR <- distanceR(res_detecteR, radius = 10)
+#' sizeR(res_distanceR, lowerlimit = 50, upperlimit = 150)
 #' @export
 sizeR <- function(res_distanceR,
                   lowerlimit = 50,

@@ -3,7 +3,7 @@
 #' Detects centers of beads
 #' @param image image
 #' @param alpha threshold adjustment factor
-#' @param simge smoothing
+#' @param sigma smoothing
 #' @returns list of 3 objects:
 #' 1. data frame of labeled region with the central coordinates
 #' 2. all coordinates that are in labeled regions
@@ -12,8 +12,7 @@
 #' @import EBImage
 #' @import data.table
 #' @examples
-#' img <- load.image(fehlt)
-#' detecteR(img, alpha = 0.75, sigma = 0.1)
+#' detecteR(beads, alpha = 0.75, sigma = 0.1)
 #' @export
 detecteR <- function(image, alpha = 0.75, sigma = 0.1) {
   # first section: detect all beads

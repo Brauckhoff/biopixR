@@ -7,27 +7,20 @@
 #' 2. detailed information about every single bead
 #' @import data.table
 #' @examples
-#' #' img <- load.image(fehlt)
-#' res_detecteR <- detecteR(img)
-#' res_ distanceR <- distanceR(res_detecteR, radius = 10)
+#' res_detecteR <- detecteR(beads, alpha = 0.75, sigma = 0.1)
+#' res_distanceR <- distanceR(res_detecteR, radius = 10)
 #' res_sizeR <- sizeR(res_distanceR, lowerlimit = 50, upperlimit = 150)
 #' visualizeR(res_sizeR)
 #' @export
-
-# fourth section: post-processing and visualization
-
-# getting cluster numbers of remaining clusters after exclusion due to cluster
-# size
-# creating new data frame that contains cluster that pass both exclusions
-# including intensity values of pixels from remaining clusters in df
-# group data frame by cluster
-# summary for every passing bead
 visualizeR <- function(res_sizeR) {
+  # fourth section: post-processing and visualization
   remaining_cluster_df <- res_sizeR$cluster
   xy_cords_clus <- res_sizeR$coordinates
   cluster_size <- res_sizeR$size
   pic <- res_sizeR$image
 
+  # getting cluster numbers of remaining clusters after exclusion due to
+  # cluster size
   clus_num <- list()
   for (f in remaining_cluster_df$value) {
     if (is.null(cluster_size[[f]]) != TRUE) {
@@ -35,6 +28,7 @@ visualizeR <- function(res_sizeR) {
     }
   }
 
+  # creating new data frame that contains cluster that pass both exclusions
   cluster <- list()
   x_coord <- list()
   y_coord <- list()
@@ -50,6 +44,7 @@ visualizeR <- function(res_sizeR) {
                             intensity = rep(NA, length(unlist(x_coord))),
                             Cluster = unlist(cluster))
 
+  # including intensity values of pixels from remaining clusters in df
   for(h in 1:nrow(res_xy_clus)) {
     xx <- res_xy_clus$x[h]
     yy <- res_xy_clus$y[h]
@@ -57,12 +52,14 @@ visualizeR <- function(res_sizeR) {
     res_xy_clus[h, 3] <- c(int)
   }
 
+  # group data frame by cluster
   DT_intense <- data.table(res_xy_clus)
   intense <- DT_intense[ , .(x = mean(x),
                              y = mean(y),
                              intensity = mean(intensity)),
                          by = Cluster]
 
+  # summary for every passing bead
   res_df_long <- data.frame(Beadnumber = unlist(clus_num),
                             Size = unlist(cluster_size),
                             Intensity = intense$intensity,
@@ -74,7 +71,7 @@ visualizeR <- function(res_sizeR) {
                        Mean_intensity = mean(res_xy_clus$intensity),
                        Bead_density = (length(unlist(clus_num))*
                                          mean(unlist(cluster_size)))/
-                         length(img))
+                         length(pic))
 
   out <- list(Summary = Result,
               detailed = res_df_long)

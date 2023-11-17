@@ -10,8 +10,7 @@
 #' 3. center coordinates and cluster number of discarded regions
 #' 4. original image
 #' @examples
-#' img <- load.image(fehlt)
-#' res_detecteR <- detecteR(img)
+#' res_detecteR <- detecteR(beads, alpha = 0.75, sigma = 0.1)
 #' distanceR(res_detecteR, radius = 10)
 #' @export
 distanceR <- function(res_detecteR, radius = 10) {
