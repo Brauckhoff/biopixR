@@ -9,7 +9,6 @@
 #' 2. all coordinates that are in labeled regions
 #' 3. original image
 #' @import imager
-#' @import EBImage
 #' @import data.table
 #' @examples
 #' detecteR(beads, alpha = 0.75, sigma = 0.1)
@@ -21,7 +20,10 @@ detecteR <- function(image, alpha = 0.75, sigma = 0.1) {
   # edge detection with default: alpha = 0.75, sigma = 0.1
   edge_img <- cannyEdges(img, alpha = alpha, sigma = sigma)
   # fill detected edges and label areas
-  filled_img <- fillHull(edge_img)
+  first_lab <- label(edge_img)
+  fill_hulls <- which(first_lab != 0)
+  filled_img <- edge_img
+  filled_img[fill_hulls] <- TRUE
   labeled_img <- label(filled_img)
 
   # create data frame without background

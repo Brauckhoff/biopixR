@@ -3,7 +3,7 @@
 export(detecteR)
 export(distanceR)
 export(sizeR)
+export(vis_detectoR)
 export(visualizeR)
-import(EBImage)
 import(data.table)
 import(imager)
