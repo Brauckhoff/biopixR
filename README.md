@@ -19,5 +19,8 @@ This project aims to meet the immediate need for effective bead microparticle an
 *in progress*
 
 
-## Download
+## Installation
+```{r}
+install.package("devtools")
 devtools::install_github("Brauckhoff/beadR")
+```
