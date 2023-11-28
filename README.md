@@ -27,10 +27,10 @@ devtools::install_github("Brauckhoff/beadR")
 
 # Related Research
 
-Reimann, R., Zeng, B., Jakopec, M., Burdukiewicz, M., Petrick, I., Schierack, P., Rödiger, S., 2020. Classification of dead and living microalgae Chlorella vulgaris by bioimage informatics and machine learning. Algal Research 48, 101908. https://doi.org/10.1016/j.algal.2020.101908
-Schneider, J., Weiss, R., Ruhe, M., Jung, T., Roggenbuck, D., Stohwasser, R., Schierack, P., Rödiger, S., 2019. Open source bioimage informatics tools for the analysis of DNA damage and associated biomarkers. Journal of Laboratory and Precision Medicine 4, 1–27. https://doi.org/10.21037/jlpm.2019.04.05
-Weiss, R., Karimijafarbigloo, S., Roggenbuck, D., Rödiger, S., 2022. Applications of Neural Networks in Biomedical Data Analysis. Biomedicines 10, 1469. https://doi.org/10.3390/biomedicines10071469
-Rödiger, S., Böhm, A., Schimke, I., 2013. Surface Melting Curve Analysis with R. The R Journal 5, 37–53. https://doi.org/10.32614/RJ-2013-024
-Rödiger, S., Liebsch, C., Schmidt, C., Lehmann, W., Resch-Genger, U., Schedler, U., Schierack, P., 2014. Nucleic acid detection based on the use of microbeads: a review. Microchim Acta 181, 1151–1168. https://doi.org/10.1007/s00604-014-1243-4
-Rödiger, S., Schierack, P., Böhm, A., Nitschke, J., Berger, I., Frömmel, U., Schmidt, C., Ruhland, M., Schimke, I., Roggenbuck, D., Lehmann, W., Schröder, C., 2013. A highly versatile microscope imaging technology platform for the multiplex real-time detection of biomolecules and autoimmune antibodies. Adv Biochem Eng Biotechnol 133, 35–74. https://doi.org/10.1007/10_2011_132
+- Reimann, R., Zeng, B., Jakopec, M., Burdukiewicz, M., Petrick, I., Schierack, P., Rödiger, S., 2020. Classification of dead and living microalgae Chlorella vulgaris by bioimage informatics and machine learning. Algal Research 48, 101908. https://doi.org/10.1016/j.algal.2020.101908
+- Schneider, J., Weiss, R., Ruhe, M., Jung, T., Roggenbuck, D., Stohwasser, R., Schierack, P., Rödiger, S., 2019. Open source bioimage informatics tools for the analysis of DNA damage and associated biomarkers. Journal of Laboratory and Precision Medicine 4, 1–27. https://doi.org/10.21037/jlpm.2019.04.05
+- Weiss, R., Karimijafarbigloo, S., Roggenbuck, D., Rödiger, S., 2022. Applications of Neural Networks in Biomedical Data Analysis. Biomedicines 10, 1469. https://doi.org/10.3390/biomedicines10071469
+- Rödiger, S., Böhm, A., Schimke, I., 2013. Surface Melting Curve Analysis with R. The R Journal 5, 37–53. https://doi.org/10.32614/RJ-2013-024
+- Rödiger, S., Liebsch, C., Schmidt, C., Lehmann, W., Resch-Genger, U., Schedler, U., Schierack, P., 2014. Nucleic acid detection based on the use of microbeads: a review. Microchim Acta 181, 1151–1168. https://doi.org/10.1007/s00604-014-1243-4
+- Rödiger, S., Schierack, P., Böhm, A., Nitschke, J., Berger, I., Frömmel, U., Schmidt, C., Ruhland, M., Schimke, I., Roggenbuck, D., Lehmann, W., Schröder, C., 2013. A highly versatile microscope imaging technology platform for the multiplex real-time detection of biomolecules and autoimmune antibodies. Adv Biochem Eng Biotechnol 133, 35–74. https://doi.org/10.1007/10_2011_132
 
