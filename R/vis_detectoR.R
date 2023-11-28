@@ -11,8 +11,9 @@
 #' @examples
 #' vis_detectoR(beads, alpha = 0.75, sigma = 0.1)
 #' @export
-vis_detectoR <- function(image, alpha = 0.75, sigma = 0.1) {
-
+vis_detectoR <- function(image,
+                         alpha = 0.75,
+                         sigma = 0.1) {
   # assigning import
   img <- image
 
@@ -29,15 +30,19 @@ vis_detectoR <- function(image, alpha = 0.75, sigma = 0.1) {
   df_lab_img <- as.data.frame(labeled_img) |>
     subset(value > 0)
   DT <- data.table(df_lab_img)
-  grouped_lab_img <- DT[ , .(mxx = mean(x), myy = mean(y)), by = value]
+  grouped_lab_img <-
+    DT[, .(mxx = mean(x), myy = mean(y)), by = value]
 
   # visualization by drawing colored circles around the center of detected beads
   img_rgb <- add.color(img, simple = TRUE)
-  circ_img <- draw_circle(img_rgb, grouped_lab_img$mxx,
-                          grouped_lab_img$myy,
-                          radius = 2,
-                          filled = TRUE,
-                          color = "purple")
+  circ_img <- draw_circle(
+    img_rgb,
+    grouped_lab_img$mxx,
+    grouped_lab_img$myy,
+    radius = 2,
+    filled = TRUE,
+    color = "purple"
+  )
   out <- list(marked_beads = circ_img)
   out
 }

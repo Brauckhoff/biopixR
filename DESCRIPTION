@@ -7,7 +7,7 @@ Authors@R:
 Description: What the package does (one paragraph).
 License: LGPL (>= 3)
 Depends:
-    R (>= 3.5.0),
+    R (>= 4.2.0),
     data.table,
     imager
 Encoding: UTF-8

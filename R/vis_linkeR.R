@@ -16,7 +16,6 @@
 #' @export
 vis_linkeR <- function(image, coords, color = "green") {
 
-  # adapted function: changePixelColor from countcolors
   # transform image to array so that transformation of pixels becomes available
   img_array <- as.array(image)
 
@@ -27,8 +26,10 @@ vis_linkeR <- function(image, coords, color = "green") {
 
   # check that vector is of appropriate length and has a 0-1 (not 0-255) range
   if (length(color) != 3) {
-    stop("'color' must be a numeric vector of length 3 with
-             values between 0 and 1 or one of the colors listed by colors()")
+    stop(
+      "'color' must be a numeric vector of length 3 with
+             values between 0 and 1 or one of the colors listed by colors()"
+    )
   } else if (range(color)[2] > 1) {
     color <- color / 255
   }
