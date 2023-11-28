@@ -1,12 +1,19 @@
 Package: beadR
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
-Authors@R: c(person("Tim", "Brauckhoff", "Tim.Brauckhoff@b-tu.de", role = c("aut", "cre"),
-             comment = c(ORCID = "YOUR-ORCID-ID")),
-             person("Stefan", "Roediger", 
-             email = "stefan.roediger@b-tu.de", 
-             comment = c(ORCID = "0000-0002-1441-6512"),
-             role = c("ctb")))
+Authors@R: 
+    c(person("Tim", "Brauckhoff", 
+    email = "Tim.Brauckhoff@b-tu.de", 
+    role = c("aut", "cre"),
+    comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Stefan", "Roediger",
+    email = "stefan.roediger@b-tu.de",
+    comment = c(ORCID = "0000-0002-1441-6512"),
+    role = c("ctb")),
+    person("Coline", "Kieffer",
+    email = "coline.kieffer@espci.fr",
+    comment = c(ORCID = "YOUR-ORCID-ID"),
+    role = c("aut", "cre")))
 Description: Extracts features from bioimage data (Schneider J. et al. (2019) <doi:10.21037/jlpm.2019.04.05>).
 License: LGPL (>= 3)
 Depends:
