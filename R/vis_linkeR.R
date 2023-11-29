@@ -11,11 +11,10 @@
 #' @returns
 #' plot displaying the image with highlighted pixels at desired coordinates
 #' @examples
-#' to do
+#' # to do
 #' @references https://CRAN.R-project.org/package=countcolors
 #' @export
 vis_linkeR <- function(image, coords, color = "green") {
-
   # transform image to array so that transformation of pixels becomes available
   img_array <- as.array(image)
 

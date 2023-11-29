@@ -39,41 +39,52 @@ visualizeR <- function(res_sizeR) {
     y_coord[remaining_pos] <- xy_cords_clus$y[remaining_pos]
   }
 
-  res_xy_clus <- data.frame(x = unlist(x_coord),
-                            y = unlist(y_coord),
-                            intensity = rep(NA, length(unlist(x_coord))),
-                            Cluster = unlist(cluster))
+  res_xy_clus <- data.frame(
+    x = unlist(x_coord),
+    y = unlist(y_coord),
+    intensity = rep(NA, length(unlist(x_coord))),
+    Cluster = unlist(cluster)
+  )
 
   # including intensity values of pixels from remaining clusters in df
-  for(h in 1:nrow(res_xy_clus)) {
+  for (h in 1:nrow(res_xy_clus)) {
     xx <- res_xy_clus$x[h]
     yy <- res_xy_clus$y[h]
-    int <- as.array(pic)[xx, yy, ,]
+    int <- as.array(pic)[xx, yy, , ]
     res_xy_clus[h, 3] <- c(int)
   }
 
   # group data frame by cluster
   DT_intense <- data.table(res_xy_clus)
-  intense <- DT_intense[ , .(x = mean(x),
-                             y = mean(y),
-                             intensity = mean(intensity)),
-                         by = Cluster]
+  intense <- DT_intense[, .(
+    x = mean(x),
+    y = mean(y),
+    intensity = mean(intensity)
+  ),
+  by = Cluster
+  ]
 
   # summary for every passing bead
-  res_df_long <- data.frame(Beadnumber = unlist(clus_num),
-                            Size = unlist(cluster_size),
-                            Intensity = intense$intensity,
-                            x = intense$x,
-                            y = intense$y)
+  res_df_long <- data.frame(
+    Beadnumber = unlist(clus_num),
+    Size = unlist(cluster_size),
+    Intensity = intense$intensity,
+    x = intense$x,
+    y = intense$y
+  )
 
-  Result <- data.frame(Number_of_Beads = length(unlist(clus_num)),
-                       Mean_Size = mean(unlist(cluster_size)),
-                       Mean_intensity = mean(res_xy_clus$intensity),
-                       Bead_density = (length(unlist(clus_num))*
-                                         mean(unlist(cluster_size)))/
-                         length(pic))
+  Result <- data.frame(
+    Number_of_Beads = length(unlist(clus_num)),
+    Mean_Size = mean(unlist(cluster_size)),
+    Mean_intensity = mean(res_xy_clus$intensity),
+    Bead_density = (length(unlist(clus_num)) *
+      mean(unlist(cluster_size))) /
+      length(pic)
+  )
 
-  out <- list(Summary = Result,
-              detailed = res_df_long)
+  out <- list(
+    Summary = Result,
+    detailed = res_df_long
+  )
   out
 }

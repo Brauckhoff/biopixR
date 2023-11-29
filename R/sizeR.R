@@ -27,7 +27,7 @@ sizeR <- function(res_distanceR,
   # original data
   # then get position of remaining clusters in original labeled image
   remaining_cluster <- which(is.na(distance_discard_df$mx) == TRUE)
-  remaining_cluster_df <- grouped_lab_img[remaining_cluster,]
+  remaining_cluster_df <- grouped_lab_img[remaining_cluster, ]
 
   # extracting all coordinates from the original labeled image with cluster
   # that pass the criteria
@@ -38,7 +38,7 @@ sizeR <- function(res_distanceR,
   }
 
   clean_pos_clus <- unlist(pos_clus_img)
-  xy_cords_clus <- df_lab_img[clean_pos_clus,]
+  xy_cords_clus <- df_lab_img[clean_pos_clus, ]
 
   # aim: extract all coordinates (pixels) of the clusters
   # how many coordinates per cluster & cluster number that is in the list of
@@ -51,7 +51,7 @@ sizeR <- function(res_distanceR,
         clus_pxl <- which(xy_cords_clus$value == c)
         size <- length(clus_pxl)
         if (is.null(size) != TRUE &
-            size < upperlimit & size > lowerlimit) {
+          size < upperlimit & size > lowerlimit) {
           cluster_size[c] <- c(size)
         }
       }

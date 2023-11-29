@@ -37,9 +37,11 @@ detecteR <- function(image,
   # summarize cluster and calculate center
   grouped_lab_img <-
     DT[, .(mxx = mean(x), myy = mean(y)), by = value]
-  out <- list(centers = grouped_lab_img,
-              coordinates = df_lab_img,
-              image = img)
+  out <- list(
+    centers = grouped_lab_img,
+    coordinates = df_lab_img,
+    image = img
+  )
 
   out
 }

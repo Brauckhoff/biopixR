@@ -16,7 +16,6 @@
 #' @examples
 #' # example code
 #'
-#'
 #' @export
 linkeR <-
   function(bead.img,
@@ -43,8 +42,10 @@ linkeR <-
     # transform binary image to array in order to modify individual values
     thresh_array <- as.array(neg_thresh_m)
     for (i in 1:nrow(bead_coords$coordinates)) {
-      thresh_array[bead_coords$coordinates[i, 1],
-                   bead_coords$coordinates[i, 2], 1, 1] <- 0
+      thresh_array[
+        bead_coords$coordinates[i, 1],
+        bead_coords$coordinates[i, 2], 1, 1
+      ] <- 0
     }
 
     # successfully removed beads from droplets and retransformation to cimg
@@ -52,10 +53,14 @@ linkeR <-
 
     # getting coordinates of all line ends and only diagonal line ends
     thresh_clean_magick <- cimg2magick(thresh_clean_cimg)
-    mo1_lineends <- image_morphology(thresh_clean_magick,
-                                     "HitAndMiss", "LineEnds")
-    mo2_diagonalends <- image_morphology(thresh_clean_magick,
-                                         "HitAndMiss", "LineEnds:2>")
+    mo1_lineends <- image_morphology(
+      thresh_clean_magick,
+      "HitAndMiss", "LineEnds"
+    )
+    mo2_diagonalends <- image_morphology(
+      thresh_clean_magick,
+      "HitAndMiss", "LineEnds:2>"
+    )
 
     # transform extracted coordinates into data frames
     lineends_cimg <- magick2cimg(mo1_lineends)
@@ -97,10 +102,12 @@ linkeR <-
     # creates a binary matrix that can be displayed as image
     # (0 = background/black & 1 = white/foreground)
     first_overlay <-
-      scanneR(end_points_df,
-              diagonal_edges_df,
-              clean_lab_df,
-              lineends_cimg)
+      scanneR(
+        end_points_df,
+        diagonal_edges_df,
+        clean_lab_df,
+        lineends_cimg
+      )
 
     # combine matrix with starting image
     first_connect <-
@@ -157,10 +164,12 @@ linkeR <-
 
     # second time filling up gaps in lines
     sec_overlay <-
-      scanneR(sec_lineends_df,
-              sec_diagonal_edges_df,
-              df_sec_lab_clean,
-              thin_cimg)
+      scanneR(
+        sec_lineends_df,
+        sec_diagonal_edges_df,
+        df_sec_lab_clean,
+        thin_cimg
+      )
 
     # combine overlay matrix with former image
     result <- parmax(list(thin_cimg, sec_overlay$overlay))
@@ -171,7 +180,7 @@ linkeR <-
       image_morphology(result_magick, "Thinning", "Skeleton")
     result_cimg <- magick2cimg(result_thin)
 
-    if (visualize = TRUE) {
+    if (visualize == TRUE) {
       # creating an cimg in which there are 0, 1 and 2
       # 0 - background
       # 1 - filled by algorithm

@@ -28,22 +28,22 @@ distanceR <- function(res_detecteR, radius = 10) {
   # third: only if a coordinate is in both rectangles (the radius^2 around the
   # current center) it is viewed as too close and therefore discarded
   distanced_excl_list <- list()
-  for(i in seq_along(grouped_lab_img$value)) {
+  for (i in seq_along(grouped_lab_img$value)) {
     x <- grouped_lab_img[i, ]$mxx
     y <- grouped_lab_img[i, ]$myy
-    for(d in grouped_lab_img$mxx) {
-      if(x == d) {
+    for (d in grouped_lab_img$mxx) {
+      if (x == d) {
         next
       } else {
-        if(x - radius < d & x + radius > d) {
+        if (x - radius < d & x + radius > d) {
           clus <- which(grouped_lab_img$mxx == d)
-          #print(g)
+          # print(g)
           y_clus <- grouped_lab_img[clus, ]$myy
-          #print(h)
-          for(v in y_clus) {
-            if(y - radius < v & y + radius > v) {
+          # print(h)
+          for (v in y_clus) {
+            if (y - radius < v & y + radius > v) {
               too_close <- which(grouped_lab_img$myy == v &
-                                   grouped_lab_img$mxx == d)
+                grouped_lab_img$mxx == d)
               distanced_excl_list[too_close] <- c(too_close)
             }
           }
@@ -55,8 +55,10 @@ distanceR <- function(res_detecteR, radius = 10) {
   clean_distanced_excl <- unlist(distanced_excl_list)
 
   # create data frame with the center coordinates of the discarded clusters
-  distance_discard_df <- data.frame(mx = rep(NA, nrow(grouped_lab_img)),
-                                    my = rep(NA, nrow(grouped_lab_img)))
+  distance_discard_df <- data.frame(
+    mx = rep(NA, nrow(grouped_lab_img)),
+    my = rep(NA, nrow(grouped_lab_img))
+  )
 
   for (a in clean_distanced_excl) {
     x <- grouped_lab_img[a, ]$mxx
@@ -64,9 +66,11 @@ distanceR <- function(res_detecteR, radius = 10) {
     distance_discard_df[a, 1] <- x
     distance_discard_df[a, 2] <- y
   }
-  out <- list(centers = grouped_lab_img,
-              coordinates = df_lab_img,
-              discard = distance_discard_df,
-              image = res_detecteR$image)
+  out <- list(
+    centers = grouped_lab_img,
+    coordinates = df_lab_img,
+    discard = distance_discard_df,
+    image = res_detecteR$image
+  )
   out
 }

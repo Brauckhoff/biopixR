@@ -54,12 +54,10 @@ interactive_detectoR <-
       tklabel(win1.frame2, text = sprintf("%s%s", text_label_sigma, sprintf(label_template, sigma)))
     slider_value_alpha <- tclVar(alpha)
     slider_value_sigma <- tclVar(sigma)
-    command_slider_alpha <- function(...)
-    {
+    command_slider_alpha <- function(...) {
       assign("slider_value_radius", slider_value_alpha, inherits = TRUE)
     }
-    command_slider_sigma <- function(...)
-    {
+    command_slider_sigma <- function(...) {
       assign("slider_value_sigma", slider_value_sigma, inherits = TRUE)
     }
 
@@ -88,16 +86,14 @@ interactive_detectoR <-
         showvalue = 0
       )
     temp_val <- c(alpha, sigma)
-    update_image <- function()
-    {
+    update_image <- function() {
       temp_image <- vis_detectoR(beads, temp_val[1], temp_val[2])
       temp_image <- cimg2magick(temp_image$marked_beads)
       image_write(temp_image, temp)
       image_tcl <- tkimage.create("photo", "image_tcl", file = temp)
       tkconfigure(win1.im, image = image_tcl)
     }
-    command_button <- function(...)
-    {
+    command_button <- function(...) {
       assign("quit_waiting", TRUE, inherits = TRUE)
     }
 
@@ -111,48 +107,56 @@ interactive_detectoR <-
     tkpack(win1.frame2.slider, side = "left", anchor = "c")
     tkpack(win1.frame2, side = "top", anchor = "c")
     tkpack(win1.button,
-           side = "top",
-           anchor = "c",
-           pady = 20)
+      side = "top",
+      anchor = "c",
+      pady = 20
+    )
     pre_slider_values <-
       c(as.numeric(tclvalue(slider_value_alpha)), as.numeric(tclvalue(slider_value_sigma)))
-    if (quit_waiting)
-    {
+    if (quit_waiting) {
       wait_test <- TRUE
-      while (wait_test)
-      {
+      while (wait_test) {
         wait_test <- FALSE
-        tryCatch({
-          tkwm.state(win1)
-        },
-        error = function(e)
-          assign("wait_test", TRUE, inherits = TRUE))
+        tryCatch(
+          {
+            tkwm.state(win1)
+          },
+          error = function(e) {
+            assign("wait_test", TRUE, inherits = TRUE)
+          }
+        )
       }
       wait_time_long()
       tkdestroy(win1.button)
     }
     tkwm.state(win1, "normal")
-    while (TRUE)
-    {
-      tryCatch({
-        tkwm.state(win1)
-      },
-      error = function(e)
-        assign("quit_waiting", TRUE, inherits = TRUE))
-      if (quit_waiting)
+    while (TRUE) {
+      tryCatch(
+        {
+          tkwm.state(win1)
+        },
+        error = function(e) {
+          assign("quit_waiting", TRUE, inherits = TRUE)
+        }
+      )
+      if (quit_waiting) {
         break
+      }
       temp_val <-
         c(as.numeric(tclvalue(slider_value_alpha)), as.numeric(tclvalue(slider_value_sigma)))
-      if (any(temp_val != pre_slider_values))
-      {
+      if (any(temp_val != pre_slider_values)) {
         temp_label_alpha <-
-          sprintf("%s%s",
-                  text_label_alpha,
-                  sprintf(label_template, temp_val[1]))
+          sprintf(
+            "%s%s",
+            text_label_alpha,
+            sprintf(label_template, temp_val[1])
+          )
         temp_label_sigma <-
-          sprintf("%s%s",
-                  text_label_sigma,
-                  sprintf(label_template, temp_val[2]))
+          sprintf(
+            "%s%s",
+            text_label_sigma,
+            sprintf(label_template, temp_val[2])
+          )
         tkconfigure(win1.frame1.label, text = temp_label_alpha)
         tkconfigure(win1.frame2.label, text = temp_label_sigma)
         update_image()
@@ -161,8 +165,7 @@ interactive_detectoR <-
     }
     val_res <- pre_slider_values
     names(val_res) <- c("alpha", "sigma")
-    if (return_param)
-    {
+    if (return_param) {
       return(val_res)
     }
     out <- list(val_res)

@@ -22,8 +22,9 @@ scanneR <- function(end_points_df,
   # creating an matrix with only 0 = background in the dimensions of the
   # image to be modified
   connected_components <- matrix(0,
-                                 nrow = nrow(lineends_cimg),
-                                 ncol = ncol(lineends_cimg))
+    nrow = nrow(lineends_cimg),
+    ncol = ncol(lineends_cimg)
+  )
 
   # scan trough end points / line ends
   for (a in 1:nrow(end_points_df)) {
@@ -52,19 +53,19 @@ scanneR <- function(end_points_df,
       # ignoring the own cluster, the first neighboring cluster will also be
       # ignored and not taken into account as reconnection partner
       if (isTRUE(nrow(merge(end_points_df[a, ], diagonal_edges_df)) >
-                 0) == TRUE) {
+        0) == TRUE) {
         if (b == 2) {
           clus_ign <- which(one_for_all != d)
         }
         connector_pos <- which(
-          df_lab_clean[one_for_all,]$value !=
-            df_lab_clean[d,]$value &
-            df_lab_clean[one_for_all,]$value !=
-            df_lab_clean[one_for_all[clus_ign],]$value
+          df_lab_clean[one_for_all, ]$value !=
+            df_lab_clean[d, ]$value &
+            df_lab_clean[one_for_all, ]$value !=
+              df_lab_clean[one_for_all[clus_ign], ]$value
         )
       } else {
-        connector_pos <- which(df_lab_clean[one_for_all,]$value !=
-                                 df_lab_clean[d,]$value)
+        connector_pos <- which(df_lab_clean[one_for_all, ]$value !=
+          df_lab_clean[d, ]$value)
       }
       # get the line end surrounding cluster(s) that are not equal to the
       # cluster of the line end
@@ -75,9 +76,11 @@ scanneR <- function(end_points_df,
       # of th coordinates in the matrix
       if (length(connector) != 0) {
         for (c in connector) {
-          fill <- connectoR(x, y,
-                            df_lab_clean[c,]$x,
-                            df_lab_clean[c,]$y)
+          fill <- connectoR(
+            x, y,
+            df_lab_clean[c, ]$x,
+            df_lab_clean[c, ]$y
+          )
           connected_components[fill] <- 1
         }
         break
