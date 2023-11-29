@@ -10,6 +10,9 @@
 #' edges. Just for giving the dimensions of the output matrix.
 #' @return Binary matrix that can be applied as overlay for example with
 #' \code{\link[imager]{imager.combine}} to fill the gaps between line ends.
+#' @details
+#' Additional details...
+#'
 #'
 #' @examples
 #' # example code
@@ -35,15 +38,15 @@ adaptiveInterpolation <- function(end_points_df,
     for (b in 2:5) {
       # creating a square around the line end
       one_for_all <- which(
-        df_lab_clean$x > (x - b) &
-          df_lab_clean$x < (x + b) &
-          df_lab_clean$y > (y - b) &
-          df_lab_clean$y < (y + b)
+        clean_lab_df$x > (x - b) &
+          clean_lab_df$x < (x + b) &
+          clean_lab_df$y > (y - b) &
+          clean_lab_df$y < (y + b)
       )
       # if conditions are met find position of the current line end in the
       # data frame containing all the labeled lines (to get the cluster of the
       # current line end later on)
-      d <- which(df_lab_clean$x == x & df_lab_clean$y == y)
+      d <- which(clean_lab_df$x == x & clean_lab_df$y == y)
 
       # special condition for diagonal line ends:
       # as the label function does not recognize single pixel diagonal lines as
@@ -58,14 +61,14 @@ adaptiveInterpolation <- function(end_points_df,
           clus_ign <- which(one_for_all != d)
         }
         connector_pos <- which(
-          df_lab_clean[one_for_all, ]$value !=
-            df_lab_clean[d, ]$value &
-            df_lab_clean[one_for_all, ]$value !=
-              df_lab_clean[one_for_all[clus_ign], ]$value
+          clean_lab_df[one_for_all, ]$value !=
+            clean_lab_df[d, ]$value &
+            clean_lab_df[one_for_all, ]$value !=
+              clean_lab_df[one_for_all[clus_ign], ]$value
         )
       } else {
-        connector_pos <- which(df_lab_clean[one_for_all, ]$value !=
-          df_lab_clean[d, ]$value)
+        connector_pos <- which(clean_lab_df[one_for_all, ]$value !=
+          clean_lab_df[d, ]$value)
       }
       # get the line end surrounding cluster(s) that are not equal to the
       # cluster of the line end
@@ -78,8 +81,8 @@ adaptiveInterpolation <- function(end_points_df,
         for (c in connector) {
           interpolated_pixels <- interpolatePixels(
             x, y,
-            df_lab_clean[c, ]$x,
-            df_lab_clean[c, ]$y
+            clean_lab_df[c, ]$x,
+            clean_lab_df[c, ]$y
           )
           connected_components[interpolated_pixels] <- 1
         }

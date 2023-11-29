@@ -1,8 +1,7 @@
-#' Visualization for the fillLineGaps function
+#' Change the color of pixels
 #'
-#' Can be generally used to change color of specified pixels in an image. In
-#' this Package it is meant to visualize and highlight the pixels that where
-#' added by the fillLineGaps function.
+#' Can be used to change color of specified pixels in an image. The coordinates
+#' of the pixels must be known.
 #' @param image image
 #' @param coord Coordinates specifying which pixels to be colored (should
 #' be a X|Y Data frame)
@@ -11,14 +10,21 @@
 #' @returns
 #' plot displaying the image with highlighted pixels at desired coordinates
 #' @examples
-#' # to do
+#' coordinates <- objectDetection(test_img)
+#' changePixelColor(test_img, coordinate$coordinates)
 #' @references https://CRAN.R-project.org/package=countcolors
 #' @export
 changePixelColor <- function(image, coords, color = "green") {
+  # check if color channels are present and if not add them
+  img_dim <- dim(image)
+  if(img_dim[4] != 3) {
+    image <- add.colour(image)
+  }
+
   # transform image to array so that transformation of pixels becomes available
   img_array <- as.array(image)
 
-  # Make sure target color is or can be coerced to an RGB triplet
+  # make sure target color is or can be coerced to an RGB triplet
   if (is.character(color)) {
     color <- as.vector(col2rgb(color) / 255)
   }

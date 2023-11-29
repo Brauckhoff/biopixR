@@ -1,15 +1,21 @@
-#' Reconnecting discontinous lines
+#' Reconnecting discontinuous lines
 #'
-#'
-#' @param bead.img
-#' @param droplet.img description
-#' @param threshold (from \code{\link[imager]{threshold}})
-#' @param alpha (from \code{\link[imager]{cannyEdges}})
-#' @param sigma (from \code{\link[imager]{cannyEdges}})
+#' The function tries to fill in edge discontinuity so that normal labeling and
+#' edge detection becomes possible.
+#' @param droplet.img Image that contains discontinuous lines like edges or
+#' contours.
+#' @param bead.img Image that contains objects that should be removed before
+#' before applying the fill algorithm.
+#' @param threshold "in %" (from \code{\link[imager]{threshold}})
+#' @param alpha Threshold adjustment factor for edge detection
+#' (from \code{\link[imager]{cannyEdges}}).
+#' @param sigma smoothing (from \code{\link[imager]{cannyEdges}}).
+#' @param visualize If TRUE (default) a plot is displayed highlighting the
+#' added pixels in the original image.
 #' @returns image with continuous edges (closed gaps)
 #' @import imager
 #' @import magick
-#' @import datatable
+#' @import data.table
 #' @details
 #' Additional details...
 #'
@@ -18,20 +24,16 @@
 #'
 #' @export
 fillLineGaps <-
-  function(bead.img,
-           droplet.img,
+  function(droplet.img,
+           bead.img = NULL,
            threshold = "13%",
            alpha = 0.75,
            sigma = 0.1,
            visualize = TRUE) {
-    # assign imports
-    beads_to_del <- bead.img
+    # assign import
     droplets <- droplet.img
 
-    # first remove beads from droplet image (important for the linking of
-    # discontinuous edges, as otherwise they may connect with the beads)
     # preprocessing: threshold, negate and mirroring
-    bead_coords <- objectDetection(beads_to_del, alpha, sigma)
     thresh <- threshold(droplets, threshold)
     thresh_cimg <- as.cimg(thresh)
     thresh_magick <- cimg2magick(thresh_cimg)
@@ -39,17 +41,27 @@ fillLineGaps <-
     neg_thresh_cimg <- magick2cimg(neg_thresh)
     neg_thresh_m <- mirror(neg_thresh_cimg, axis = "x")
 
-    # transform binary image to array in order to modify individual values
-    thresh_array <- as.array(neg_thresh_m)
-    for (i in 1:nrow(bead_coords$coordinates)) {
-      thresh_array[
-        bead_coords$coordinates[i, 1],
-        bead_coords$coordinates[i, 2], 1, 1
-      ] <- 0
-    }
+    # first remove beads from droplet image (important for the linking of
+    # discontinuous edges, as otherwise they may connect with the beads)
+    # removes objects to prevent reconnecting with labeled regions that
+    # are not lines/edges
+    if(!is.null(bead.img)) {
+      beads_to_del <- bead.img
+      bead_coords <- objectDetection(beads_to_del, alpha, sigma)
 
-    # successfully removed beads from droplets and retransformation to cimg
-    thresh_clean_cimg <- as.cimg(thresh_array)
+      # transform binary image to array in order to modify individual values
+      thresh_array <- as.array(neg_thresh_m)
+      for (i in 1:nrow(bead_coords$coordinates)) {
+        thresh_array[
+          bead_coords$coordinates[i, 1],
+          bead_coords$coordinates[i, 2], 1, 1
+        ] <- 0
+      }
+      # removed beads from droplets and retransformation to cimg
+      thresh_clean_cimg <- as.cimg(thresh_array)
+    } else {
+      thresh_clean_cimg <- neg_thresh_m
+    }
 
     # getting coordinates of all line ends and only diagonal line ends
     thresh_clean_magick <- cimg2magick(thresh_clean_cimg)
@@ -86,10 +98,11 @@ fillLineGaps <-
     alt_y <- list()
     alt_value <- list()
     for (g in 1:nrow(df_lab)) {
-      if (droplets[df_lab$x[g], df_lab$y[g]] > 0.5) {
-        alt_x <- df_lab$x[g]
-        alt_y <- df_lab$y[g]
-        alt_value <- df_lab$value[g]
+      #droplets_array <- as.array(droplets)
+      if (neg_thresh_m[df_lab$x[g], df_lab$y[g], 1, 1] == 1) {
+        alt_x[g] <- df_lab$x[g]
+        alt_y[g] <- df_lab$y[g]
+        alt_value[g] <- df_lab$value[g]
       }
     }
     clean_lab_df <- data.frame(
@@ -101,6 +114,7 @@ fillLineGaps <-
     # scan the surroundings of line ends and connect with nearest cluster
     # creates a binary matrix that can be displayed as image
     # (0 = background/black & 1 = white/foreground)
+# note continue debug
     first_overlay <-
       adaptiveInterpolation(
         end_points_df,
