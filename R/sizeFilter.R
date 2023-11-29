@@ -2,7 +2,7 @@
 #'
 #' Calculates the size of a bead (in pixels) and discards too big (e.g. duplets)
 #' or too small once
-#' @param res_distanceR list obtained by the distanceR function
+#' @param res_proximityFilter list obtained by the proximityFilter function
 #' @param lowerlimit smallest accepted bead size
 #' @param upperlimit highest accepted bead size
 #' @returns list of 4 objects:
@@ -11,17 +11,17 @@
 #' 3. size of a labeled region (bead)
 #' 4. original image
 #' @examples
-#' res_detecteR <- detecteR(beads, alpha = 0.75, sigma = 0.1)
-#' res_distanceR <- distanceR(res_detecteR, radius = 10)
-#' sizeR(res_distanceR, lowerlimit = 50, upperlimit = 150)
+#' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
+#' res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
+#' sizeFilter(res_proximityFilter, lowerlimit = 50, upperlimit = 150)
 #' @export
-sizeR <- function(res_distanceR,
+sizeFilter <- function(res_proximityFilter,
                   lowerlimit = 50,
                   upperlimit = 150) {
   # third section: size exclusion
-  grouped_lab_img <- res_distanceR$centers
-  df_lab_img <- res_distanceR$coordinates
-  distance_discard_df <- res_distanceR$discard
+  grouped_lab_img <- res_proximityFilter$centers
+  df_lab_img <- res_proximityFilter$coordinates
+  distance_discard_df <- res_proximityFilter$discard
 
   # first: discard data points that did not pass the second section from
   # original data
@@ -61,6 +61,6 @@ sizeR <- function(res_distanceR,
     cluster = remaining_cluster_df,
     coordinates = xy_cords_clus,
     size = cluster_size,
-    image = res_distanceR$image
+    image = res_proximityFilter$image
   )
 }

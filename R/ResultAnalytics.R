@@ -1,23 +1,23 @@
 #' Bead Image Summary
 #'
 #' Extracts all important information of the remaining beads
-#' @param res_sizeR list obtained by the sizeR function
+#' @param res_sizeFilter list obtained by the sizeFilter function
 #' @returns list of 2 objects:
 #' 1. summary of whole all beads in the image
 #' 2. detailed information about every single bead
 #' @import data.table
 #' @examples
-#' res_detecteR <- detecteR(beads, alpha = 0.75, sigma = 0.1)
-#' res_distanceR <- distanceR(res_detecteR, radius = 10)
-#' res_sizeR <- sizeR(res_distanceR, lowerlimit = 50, upperlimit = 150)
-#' visualizeR(res_sizeR)
+#' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
+#' res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
+#' res_sizeFilter <- sizeFilter(res_proximityFilter, lowerlimit = 50, upperlimit = 150)
+#' ResultAnalytics(res_sizeFilter)
 #' @export
-visualizeR <- function(res_sizeR) {
+ResultAnalytics <- function(res_sizeFilter) {
   # fourth section: post-processing and visualization
-  remaining_cluster_df <- res_sizeR$cluster
-  xy_cords_clus <- res_sizeR$coordinates
-  cluster_size <- res_sizeR$size
-  pic <- res_sizeR$image
+  remaining_cluster_df <- res_sizeFilter$cluster
+  xy_cords_clus <- res_sizeFilter$coordinates
+  cluster_size <- res_sizeFilter$size
+  pic <- res_sizeFilter$image
 
   # getting cluster numbers of remaining clusters after exclusion due to
   # cluster size

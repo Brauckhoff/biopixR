@@ -1,16 +1,19 @@
 #' Interactive detecting of beads
 #'
-#' This function uses the vis_detectoR function to visualize the detected beads
+#' This function uses the objectDetection function to visualize the detected beads
 #' at varying threshold an smoothing parameters.
 #' @param image image (preferred import: \code{\link[imager]{load.image}})
 #' @param resolution description
 #' @param return_param Should the final variables for alpha and sigma should be
 #' printed in the console (TRUE or FALSE).
+#' @import magick
+#' @import imager
+#' @import data.table
 #' @references https://CRAN.R-project.org/package=magickGUI
 #' @examples
-#' interactive_detectoR(beads)
+#' interactive_objectDetection(beads)
 #' @export
-interactive_detectoR <-
+interactive_objectDetection <-
   function(image,
            resolution = 0.1,
            return_param = FALSE) {
@@ -21,7 +24,7 @@ interactive_detectoR <-
     # make initial input
     alpha <- 0.75
     sigma <- 0.1
-    initial_cimg <- vis_detectoR(beads, alpha, sigma)
+    initial_cimg <- objectDetection(beads, alpha, sigma)
     initial <- cimg2magick(initial_cimg$marked_beads)
 
     # set variable range
@@ -87,7 +90,7 @@ interactive_detectoR <-
       )
     temp_val <- c(alpha, sigma)
     update_image <- function() {
-      temp_image <- vis_detectoR(beads, temp_val[1], temp_val[2])
+      temp_image <- objectDetection(beads, temp_val[1], temp_val[2])
       temp_image <- cimg2magick(temp_image$marked_beads)
       image_write(temp_image, temp)
       image_tcl <- tkimage.create("photo", "image_tcl", file = temp)

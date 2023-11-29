@@ -11,10 +11,10 @@
 #' test <- matrix(0, 4, 4)
 #' test[1, 1] <- 1
 #' test[3, 4] <- 1
-#' link <- connectoR(1, 1, 3, 4)
+#' link <- interpolatePixels(1, 1, 3, 4)
 #' test[link] <- 1
 #' @export
-connectoR <- function(row1, col1, row2, col2) {
+interpolatePixels <- function(row1, col1, row2, col2) {
   # calculate the number of points needed for interpolation
   num_points <- max(abs(row2 - row1), abs(col2 - col1)) + 1
 

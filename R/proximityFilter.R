@@ -1,7 +1,7 @@
 #' Distance based exclusion
 #'
 #' Detects beads that are too close to each other
-#' @param res_detecteR list obtained by the detecteR function
+#' @param res_objectDetection list obtained by the objectDetection function
 #' @param radius distance in pixels from one center in which no other centers
 #' are allowed
 #' @returns list of 4 objects:
@@ -10,13 +10,13 @@
 #' 3. center coordinates and cluster number of discarded regions
 #' 4. original image
 #' @examples
-#' res_detecteR <- detecteR(beads, alpha = 0.75, sigma = 0.1)
-#' distanceR(res_detecteR, radius = 10)
+#' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
+#' proximityFilter(res_objectDetection, radius = 10)
 #' @export
-distanceR <- function(res_detecteR, radius = 10) {
+proximityFilter <- function(res_objectDetection, radius = 10) {
   # section two: distance based exclusion
-  grouped_lab_img <- res_detecteR$centers
-  df_lab_img <- res_detecteR$coordinates
+  grouped_lab_img <- res_objectDetection$centers
+  df_lab_img <- res_objectDetection$coordinates
 
   # looking at every center of an labeled object
   # first: check the surrounding pixels from the current center, if there is
@@ -70,7 +70,7 @@ distanceR <- function(res_detecteR, radius = 10) {
     centers = grouped_lab_img,
     coordinates = df_lab_img,
     discard = distance_discard_df,
-    image = res_detecteR$image
+    image = res_objectDetection$image
   )
   out
 }

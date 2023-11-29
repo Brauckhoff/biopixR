@@ -1,8 +1,8 @@
 #' Connects LineEnd with the nearest labeled region
 #'
-#' Designed to be part of the linkeR function. Function scans an increasing
+#' Designed to be part of the fillLineGaps function. Function scans an increasing
 #' radius around a line end and connects it with the nearest labeled region,
-#' which in the linkeR function is the closest edge.
+#' which in the fillLineGaps function is the closest edge.
 #' @param end_points_df Data of type 'data.frame'.
 #' @param diagonal_edges_df Data of type 'data.frame'.
 #' @param clean_lab_df Data of type 'data.frame'.
@@ -15,7 +15,7 @@
 #' # example code
 #'
 #' @export
-scanneR <- function(end_points_df,
+adaptiveInterpolation <- function(end_points_df,
                     diagonal_edges_df,
                     clean_lab_df,
                     lineends_cimg) {
@@ -71,17 +71,17 @@ scanneR <- function(end_points_df,
       # cluster of the line end
       connector <- one_for_all[connector_pos]
 
-      # use the connectoR function to connect two coordinates with each other
-      # the coordinates obtained by connectoR are used for changing the value
+      # use the interpolatePixels function to connect two coordinates with each other
+      # the coordinates obtained by interpolatePixels are used for changing the value
       # of th coordinates in the matrix
       if (length(connector) != 0) {
         for (c in connector) {
-          fill <- connectoR(
+          interpolated_pixels <- interpolatePixels(
             x, y,
             df_lab_clean[c, ]$x,
             df_lab_clean[c, ]$y
           )
-          connected_components[fill] <- 1
+          connected_components[interpolated_pixels] <- 1
         }
         break
       }

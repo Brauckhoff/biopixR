@@ -1,8 +1,8 @@
-#' Visualization for the linkeR function
+#' Visualization for the fillLineGaps function
 #'
 #' Can be generally used to change color of specified pixels in an image. In
 #' this Package it is meant to visualize and highlight the pixels that where
-#' added by the linkeR function.
+#' added by the fillLineGaps function.
 #' @param image image
 #' @param coord Coordinates specifying which pixels to be colored (should
 #' be a X|Y Data frame)
@@ -14,7 +14,7 @@
 #' # to do
 #' @references https://CRAN.R-project.org/package=countcolors
 #' @export
-vis_linkeR <- function(image, coords, color = "green") {
+changePixelColor <- function(image, coords, color = "green") {
   # transform image to array so that transformation of pixels becomes available
   img_array <- as.array(image)
 

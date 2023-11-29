@@ -17,7 +17,7 @@
 #' # example code
 #'
 #' @export
-linkeR <-
+fillLineGaps <-
   function(bead.img,
            droplet.img,
            threshold = "13%",
@@ -31,7 +31,7 @@ linkeR <-
     # first remove beads from droplet image (important for the linking of
     # discontinuous edges, as otherwise they may connect with the beads)
     # preprocessing: threshold, negate and mirroring
-    bead_coords <- detecteR(beads_to_del, alpha, sigma)
+    bead_coords <- objectDetection(beads_to_del, alpha, sigma)
     thresh <- threshold(droplets, threshold)
     thresh_cimg <- as.cimg(thresh)
     thresh_magick <- cimg2magick(thresh_cimg)
@@ -102,7 +102,7 @@ linkeR <-
     # creates a binary matrix that can be displayed as image
     # (0 = background/black & 1 = white/foreground)
     first_overlay <-
-      scanneR(
+      adaptiveInterpolation(
         end_points_df,
         diagonal_edges_df,
         clean_lab_df,
@@ -164,7 +164,7 @@ linkeR <-
 
     # second time filling up gaps in lines
     sec_overlay <-
-      scanneR(
+      adaptiveInterpolation(
         sec_lineends_df,
         sec_diagonal_edges_df,
         df_sec_lab_clean,
@@ -191,8 +191,8 @@ linkeR <-
       # get coordinates from new / filled pixels
       to_color <- which(vis_col == 1, arr.ind = TRUE)
 
-      # colorize and plot specific coordinates with vis_linkeR function
-      vis_linkeR(neg_thresh_m, to_color)
+      # colorize and plot specific coordinates with changePixelColor function
+      changePixelColor(neg_thresh_m, to_color)
     }
 
     out <- list(result_cimg)
