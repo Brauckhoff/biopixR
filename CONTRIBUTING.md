@@ -4,7 +4,7 @@ You would like to contribute? We are happy to see you here.
 
 ## Testing
 
-`beadR` is tested with the [testthat](https://cran.r-project.org/package=testthat) package. Please write new tests (where applicable) for any code you create.
+`biopixR` is tested with the [testthat](https://cran.r-project.org/package=testthat) package. Please write new tests (where applicable) for any code you create.
 
 Our package contains a lot of datasets that were used to test the package. However, bioimage data are highly diverse. This testing with your data is central to improve the quality of the software.
 
@@ -46,6 +46,6 @@ If you are proposing a feature:
 - Explain in detail how it would work.
 - Keep the scope as narrow as possible, to make it easier to implement.
 
-Please interact via https://github.com/Brauckhoff/beadR/issues with us.
+Please interact via https://github.com/Brauckhoff/biopixR/issues with us.
 
 
