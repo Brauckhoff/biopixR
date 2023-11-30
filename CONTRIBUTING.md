@@ -1,4 +1,4 @@
-# How to contribute
+# How to contribute 👨🏻‍💻
 
 You would like to contribute? We are happy to see you here.
 
@@ -8,7 +8,7 @@ You would like to contribute? We are happy to see you here.
 
 Our package contains a lot of datasets that were used to test the package. However, bioimage data are highly diverse. This testing with your data is central to improve the quality of the software.
 
-## Submitting Changes
+##  Submitting Changes 🤝
 
 This is a volunteer-driven project, and that contributions are welcome.
 
@@ -17,14 +17,18 @@ clear commit messages describing the feature being committed. This helps keep tr
 
 The package uses a GPL license.
 
-## Coding Conventions
+## Coding Conventions 🖥️
 
 - We use mainly underscore_separated code style
 - The package is written in S3
 - If you think the code isn't simple enough to understand alone, write comments!
 - Please use the [styler](https://cran.r-project.org/package=styler) to improve the readbility of the code
 
-## Report issues or problems with the software
+## 🌟 : Choose an issue/ Create an issue
+
+- Look for the existing issue or create your own issue.
+- Comment on the respective issue you would like to work before creating a Pull Request.
+- Wait for the issue to be assigned to you after which you can start working on it.
 
 Report bugs and issues at https://github.com/PCRuniversum/PCRedux/issues
 
@@ -35,7 +39,6 @@ If you are reporting a bug, please include:
 - Your operating system name and version.
 - Any details about your local setup that might be helpful in troubleshooting.
 - Detailed steps to reproduce the bug.
-
 
 ## Seek support & feature request
 
@@ -48,4 +51,6 @@ If you are proposing a feature:
 
 Please interact via https://github.com/Brauckhoff/biopixR/issues with us.
 
+## 🌟 : Fork the repository
 
+- Fork this repository by clicking on the `Fork` button. This will create a local copy of this respository on your GitHub profile.
