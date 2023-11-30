@@ -30,7 +30,7 @@ The package uses a GPL license.
 - Comment on the respective issue you would like to work before creating a Pull Request.
 - Wait for the issue to be assigned to you after which you can start working on it.
 
-Report bugs and issues at https://github.com/PCRuniversum/PCRedux/issues
+Report bugs and issues at https://github.com/Brauckhoff/biopixR/issues
 
 Before you submit a bug please look through the GitHub issues for bugs. Anything tagged with "bug" and "help wanted" is open to whoever wants to implement it.
 
