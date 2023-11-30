@@ -2,12 +2,12 @@
 % Please edit documentation in R/objectDetection.R
 \name{objectDetection}
 \alias{objectDetection}
-\title{Bead Detection}
+\title{Object detection}
 \usage{
 objectDetection(image, alpha = 0.75, sigma = 0.1)
 }
 \arguments{
-\item{image}{image}
+\item{image}{image (import by \code{\link[imager]{load.image}})}
 
 \item{alpha}{threshold adjustment factor
 (from \code{\link[imager]{cannyEdges}})}
@@ -15,7 +15,7 @@ objectDetection(image, alpha = 0.75, sigma = 0.1)
 \item{sigma}{smoothing (from \code{\link[imager]{cannyEdges}})}
 }
 \value{
-list of 3 objects:
+list of 4 objects:
 \enumerate{
 \item data frame of labeled region with the central coordinates
 \item all coordinates that are in labeled regions
@@ -24,7 +24,10 @@ list of 3 objects:
 }
 }
 \description{
-Detects centers of beads
+This function is able to detect objects in an image. Using edge detection
+and labeling, this function collects the coordinates and centers of the
+objects. It also visualizes the result and highlights the
+detected objects with colored circles.
 }
 \examples{
 objectDetection(beads, alpha = 0.75, sigma = 0.1)

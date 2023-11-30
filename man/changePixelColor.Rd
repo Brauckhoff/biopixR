@@ -7,24 +7,25 @@
 changePixelColor(image, coords, color = "green")
 }
 \arguments{
-\item{image}{image}
+\item{image}{image (import by \code{\link[imager]{load.image}})}
 
 \item{color}{Color with which to replace specified pixels. Can be either a
 an RGB triplet or one of the colors listed by \code{\link[grDevices]{colors}}.}
 
 \item{coord}{Coordinates specifying which pixels to be colored (should
-be a X|Y Data frame)}
+be a X|Y Data frame (first column: X; second column: Y))}
 }
 \value{
-plot displaying the image with highlighted pixels at desired coordinates
+Cimg with changed colors at desired positions and
+plot of the cimg
 }
 \description{
 Can be used to change color of specified pixels in an image. The coordinates
-of the pixels must be known.
+of the pixels are needed to colorize them.
 }
 \examples{
-coordinates <- objectDetection(test_img)
-changePixelColor(test_img, coordinate$coordinates)
+coordinates <- objectDetection(beads)
+changePixelColor(beads, coordinates$coordinates)
 }
 \references{
 https://CRAN.R-project.org/package=countcolors

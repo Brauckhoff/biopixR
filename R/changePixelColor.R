@@ -1,20 +1,28 @@
 #' Change the color of pixels
 #'
 #' Can be used to change color of specified pixels in an image. The coordinates
-#' of the pixels must be known.
-#' @param image image
+#' of the pixels are needed to colorize them.
+#' @param image image (import by \code{\link[imager]{load.image}})
 #' @param coord Coordinates specifying which pixels to be colored (should
-#' be a X|Y Data frame)
+#' be a X|Y Data frame (first column: X; second column: Y))
 #' @param color Color with which to replace specified pixels. Can be either a
 #' an RGB triplet or one of the colors listed by \code{\link[grDevices]{colors}}.
 #' @returns
-#' plot displaying the image with highlighted pixels at desired coordinates
+#' Cimg with changed colors at desired positions and
+#' plot of the cimg
 #' @examples
-#' coordinates <- objectDetection(test_img)
-#' changePixelColor(test_img, coordinate$coordinates)
+#' coordinates <- objectDetection(beads)
+#' changePixelColor(beads, coordinates$coordinates)
 #' @references https://CRAN.R-project.org/package=countcolors
 #' @export
 changePixelColor <- function(image, coords, color = "green") {
+  # check class of import
+  if(class(image)[1] != "cimg") {
+    stop(
+      "image must be of class 'cimg'"
+    )
+  }
+
   # check if color channels are present and if not add them
   img_dim <- dim(image)
   if(img_dim[4] != 3) {
@@ -46,4 +54,5 @@ changePixelColor <- function(image, coords, color = "green") {
 
   # display result
   as.cimg(img_array) |> plot()
+  out <- as.cimg(img_array)
 }

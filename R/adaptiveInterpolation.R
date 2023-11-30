@@ -59,12 +59,13 @@ adaptiveInterpolation <- function(end_points_df,
         0) == TRUE) {
         if (b == 2) {
           clus_ign <- which(one_for_all != d)
+          dia_ignore <- one_for_all[clus_ign]
         }
         connector_pos <- which(
           clean_lab_df[one_for_all, ]$value !=
             clean_lab_df[d, ]$value &
             clean_lab_df[one_for_all, ]$value !=
-              clean_lab_df[one_for_all[clus_ign], ]$value
+              clean_lab_df[dia_ignore, ]$value
         )
       } else {
         connector_pos <- which(clean_lab_df[one_for_all, ]$value !=
@@ -89,8 +90,8 @@ adaptiveInterpolation <- function(end_points_df,
         break
       }
     }
-    # output: list containing the matrix with connected points
-    out <- list(overlay = connected_components)
-    out
   }
+  # output: list containing the matrix with connected points
+  out <- list(overlay = connected_components)
+  out
 }

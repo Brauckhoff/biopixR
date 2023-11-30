@@ -20,8 +20,12 @@
 #' Additional details...
 #'
 #' @examples
-#' # example code
-#'
+#' closed_gaps <- fillLineGaps(droplets)
+#' closed_gaps |> plot()
+#' ##not run
+#' ## fillLineGaps()
+#' ##
+#' ##
 #' @export
 fillLineGaps <-
   function(droplet.img,
@@ -60,7 +64,7 @@ fillLineGaps <-
       # removed beads from droplets and retransformation to cimg
       thresh_clean_cimg <- as.cimg(thresh_array)
     } else {
-      thresh_clean_cimg <- neg_thresh_m
+      thresh_clean_cimg <- neg_thresh_cimg
     }
 
     # getting coordinates of all line ends and only diagonal line ends
@@ -88,7 +92,7 @@ fillLineGaps <-
     colnames(diagonal_edges_df) <- c("x", "y", "dim3", "dim4")
 
     # labeling lines and transforming into data frame
-    lab <- label(thresh_clean_cimg)
+    lab <- label(neg_thresh_m)
     df_lab <- as.data.frame(lab) |>
       subset(value > 0)
 
@@ -125,7 +129,7 @@ fillLineGaps <-
 
     # combine matrix with starting image
     first_connect <-
-      parmax(list(thresh_clean_cimg, as.cimg(first_overlay$overlay)))
+      parmax(list(neg_thresh_m, as.cimg(first_overlay$overlay)))
 
     # repeat above process:
     # line end and diagonal end calculation
@@ -163,7 +167,7 @@ fillLineGaps <-
     lab2_clean_value <- list()
 
     for (e in 1:nrow(df_sec_lab)) {
-      if (thin_cimg[df_sec_lab[e, 1], df_sec_lab[e, 2]] == 1) {
+      if (thin_cimg[df_sec_lab[e, 1], df_sec_lab[e, 2], 1, 1] == 1) {
         lab2_clean_x[e] <- df_sec_lab[e, ]$x
         ĺab2_clean_y[e] <- df_sec_lab[e, ]$y
         lab2_clean_value[e] <- df_sec_lab[e, ]$value
@@ -186,7 +190,7 @@ fillLineGaps <-
       )
 
     # combine overlay matrix with former image
-    result <- parmax(list(thin_cimg, sec_overlay$overlay))
+    result <- parmax(list(thin_cimg, as.cimg(sec_overlay$overlay)))
 
     # final thin edges
     result_magick <- cimg2magick(result)
@@ -209,6 +213,6 @@ fillLineGaps <-
       changePixelColor(neg_thresh_m, to_color)
     }
 
-    out <- list(result_cimg)
+    out <- result_cimg
     out
   }

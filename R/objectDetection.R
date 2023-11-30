@@ -1,11 +1,14 @@
-#' Bead Detection
+#' Object detection
 #'
-#' Detects centers of beads
-#' @param image image
+#' This function is able to detect objects in an image. Using edge detection
+#' and labeling, this function collects the coordinates and centers of the
+#' objects. It also visualizes the result and highlights the
+#' detected objects with colored circles.
+#' @param image image (import by \code{\link[imager]{load.image}})
 #' @param alpha threshold adjustment factor
 #' (from \code{\link[imager]{cannyEdges}})
 #' @param sigma smoothing (from \code{\link[imager]{cannyEdges}})
-#' @returns list of 3 objects:
+#' @returns list of 4 objects:
 #' 1. data frame of labeled region with the central coordinates
 #' 2. all coordinates that are in labeled regions
 #' 3. original image
@@ -18,11 +21,24 @@
 objectDetection <- function(image,
                      alpha = 0.75,
                      sigma = 0.1) {
-  # first section: detect all beads
+  # assign import
   img <- image
+
+  # check class of import
+  if(class(img)[1] != "cimg") {
+    stop(
+      "image must be of class 'cimg'"
+    )
+  }
+
+  # in case the image is from a luminescence channel transform to gray scale
+  if(dim(img)[4] != 1) {
+    img <- grayscale(image)
+  }
 
   # edge detection with default: alpha = 0.75, sigma = 0.1
   edge_img <- cannyEdges(img, alpha = alpha, sigma = sigma)
+
   # fill detected edges and label areas
   first_lab <- label(edge_img)
   fill_hulls <- which(first_lab != 0)
@@ -35,7 +51,7 @@ objectDetection <- function(image,
     subset(value > 0)
   DT <- data.table(df_lab_img)
 
-  # summarize cluster and calculate center
+  # summarize by cluster and calculate center
   grouped_lab_img <-
     DT[, .(mxx = mean(x), myy = mean(y)), by = value]
 
@@ -56,6 +72,4 @@ objectDetection <- function(image,
     image = img,
     marked_beads = circ_img
   )
-
-  out
 }

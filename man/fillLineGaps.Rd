@@ -41,6 +41,10 @@ edge detection becomes possible.
 Additional details...
 }
 \examples{
-# example code
-
+closed_gaps <- fillLineGaps(droplets)
+closed_gaps |> plot()
+##not run
+## fillLineGaps()
+##
+##
 }

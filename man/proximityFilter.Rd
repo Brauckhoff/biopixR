@@ -2,27 +2,33 @@
 % Please edit documentation in R/proximityFilter.R
 \name{proximityFilter}
 \alias{proximityFilter}
-\title{Distance based exclusion}
+\title{Proximity based exclusion}
 \usage{
 proximityFilter(res_objectDetection, radius = 10)
 }
 \arguments{
-\item{res_objectDetection}{list obtained by the objectDetection function}
+\item{res_objectDetection}{list with center coordinates of objects (needs to
+be a data.frame named centers which contains three columns:
+1 - mxx: x coordinates
+2 - myy: y coordinates
+3 - value: cluster number)
+or list obtained by the objectDetection function}
 
-\item{radius}{distance in pixels from one center in which no other centers
-are allowed}
+\item{radius}{distance from one center in which no other centers
+are allowed (in pixels)}
 }
 \value{
 list of 4 objects:
 \enumerate{
 \item data frame of labeled region with the central coordinates
-\item all coordinates that are in labeled regions
-\item center coordinates and cluster number of discarded regions
+\item all coordinates that are in labeled objects
+\item center coordinates of discarded objects
 \item original image
 }
 }
 \description{
-Detects beads that are too close to each other
+Detects objects that are within a certain range of each other.
+The range is calculated in regards to the center of the objects.
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
