@@ -1,14 +1,14 @@
-#' Size exclusion
+#' Size based exclusion
 #'
-#' Calculates the size of a bead (in pixels) and discards too big (e.g. duplets)
-#' or too small once
+#' Calculates the size of the objects in an image and discards objects based
+#' on a lower and a upper size limit.
 #' @param res_proximityFilter list obtained by the proximityFilter function
-#' @param lowerlimit smallest accepted bead size
-#' @param upperlimit highest accepted bead size
+#' @param lowerlimit smallest accepted object size
+#' @param upperlimit highest accepted object size
 #' @returns list of 4 objects:
 #' 1. remaining beads after discarding according to distance
 #' 2. all coordinates that are in labeled regions
-#' 3. size of a labeled region (bead)
+#' 3. size of a labeled region
 #' 4. original image
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
@@ -18,12 +18,12 @@
 sizeFilter <- function(res_proximityFilter,
                   lowerlimit = 50,
                   upperlimit = 150) {
-  # third section: size exclusion
+  # assign imports
   grouped_lab_img <- res_proximityFilter$centers
   df_lab_img <- res_proximityFilter$coordinates
   distance_discard_df <- res_proximityFilter$discard
 
-  # first: discard data points that did not pass the second section from
+  # first: discard data points that did not pass the proximityFilter from
   # original data
   # then get position of remaining clusters in original labeled image
   remaining_cluster <- which(is.na(distance_discard_df$mx) == TRUE)
@@ -43,7 +43,7 @@ sizeFilter <- function(res_proximityFilter,
   # aim: extract all coordinates (pixels) of the clusters
   # how many coordinates per cluster & cluster number that is in the list of
   # the remaining clusters (remaining_cluster_df) -> count = size of cluster
-  # size has an upper and lower limit to discard duplets(&multis) and noise
+  # size has an upper and lower limit
   cluster_size <- list()
   for (c in remaining_cluster_df$value) {
     for (e in xy_cords_clus$value) {

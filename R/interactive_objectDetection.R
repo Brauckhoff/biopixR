@@ -1,14 +1,16 @@
 #' Interactive detecting of beads
 #'
-#' This function uses the objectDetection function to visualize the detected beads
-#' at varying threshold an smoothing parameters.
+#' This function uses the objectDetection function to visualize the detected
+#' objects at varying threshold an smoothing parameters.
 #' @param image image (preferred import: \code{\link[imager]{load.image}})
-#' @param resolution description
+#' @param resolution 	resolution of slider
 #' @param return_param Should the final variables for alpha and sigma should be
 #' printed in the console (TRUE or FALSE).
+#' @returns values of alpha and sigma
 #' @import magick
 #' @import imager
 #' @import data.table
+#' @import tcltk
 #' @references https://CRAN.R-project.org/package=magickGUI
 #' @examples
 #' interactive_objectDetection(beads)
@@ -22,7 +24,7 @@ interactive_objectDetection <-
     beads <- image
 
     # make initial input
-    alpha <- 0.75
+    alpha <- 0.7
     sigma <- 0.1
     initial_cimg <- objectDetection(beads, alpha, sigma)
     initial <- cimg2magick(initial_cimg$marked_beads)
@@ -171,6 +173,6 @@ interactive_objectDetection <-
     if (return_param) {
       return(val_res)
     }
-    out <- list(val_res)
+    out <- val_res
     out
   }

@@ -1,6 +1,9 @@
 #' Bead Image Summary
 #'
-#' Extracts all important information of the remaining beads
+#' Extracts all important information of the remaining beads. This function
+#' summarizes the data obtained by previous functions: objectDetection,
+#' proximityFilter and sizeFilter. Gives information like amount, intensity,
+#' size and density.
 #' @param res_sizeFilter list obtained by the sizeFilter function
 #' @returns list of 2 objects:
 #' 1. summary of whole all beads in the image
@@ -13,7 +16,7 @@
 #' ResultAnalytics(res_sizeFilter)
 #' @export
 ResultAnalytics <- function(res_sizeFilter) {
-  # fourth section: post-processing and visualization
+  # assign imports
   remaining_cluster_df <- res_sizeFilter$cluster
   xy_cords_clus <- res_sizeFilter$coordinates
   cluster_size <- res_sizeFilter$size
@@ -46,7 +49,7 @@ ResultAnalytics <- function(res_sizeFilter) {
     Cluster = unlist(cluster)
   )
 
-  # including intensity values of pixels from remaining clusters in df
+  # including intensity values of pixels from remaining clusters in a data frame
   for (h in 1:nrow(res_xy_clus)) {
     xx <- res_xy_clus$x[h]
     yy <- res_xy_clus$y[h]
@@ -73,6 +76,7 @@ ResultAnalytics <- function(res_sizeFilter) {
     y = intense$y
   )
 
+  # summary of res_df_long / whole image
   Result <- data.frame(
     Number_of_Beads = length(unlist(clus_num)),
     Mean_Size = mean(unlist(cluster_size)),
