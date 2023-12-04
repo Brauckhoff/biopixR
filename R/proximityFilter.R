@@ -10,11 +10,12 @@
 #' or list obtained by the objectDetection function
 #' @param radius distance from one center in which no other centers
 #' are allowed (in pixels)
-#' @returns list of 4 objects:
-#' 1. data frame of labeled region with the central coordinates
-#' 2. all coordinates that are in labeled objects
-#' 3. center coordinates of discarded objects
-#' 4. original image
+#' @returns list of 5 objects:
+#' 1. center coordinates of discarded objects
+#' 2. center coordinates of remaining objects
+#' 3. all coordinates of remaining objects
+#' 4. all coordinates that are in labeled objects (initial state)
+#' 5. original image
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
 #' proximityFilter(res_objectDetection, radius = 10)
@@ -38,6 +39,7 @@
 proximityFilter <- function(res_objectDetection, radius = 10) {
   # assign imports
   grouped_lab_img <- res_objectDetection$centers
+  df_lab_img <- res_objectDetection$coordinates
 
   # looking at every center of an labeled object
   distanced_excl_list <- list()
@@ -92,10 +94,27 @@ proximityFilter <- function(res_objectDetection, radius = 10) {
     distance_discard_df[a, 2] <- y
   }
 
+  # discard data points that did not pass the proximityFilter from
+  # original data
+  # then get position of remaining clusters in original labeled image
+  remaining_cluster <- which(is.na(distance_discard_df$mx) == TRUE)
+  remaining_cluster_df <- grouped_lab_img[remaining_cluster, ]
+
+  # extracting all coordinates from the original labeled image with cluster
+  # that pass the criteria
+  pos_clus_img <- list()
+  for (b in remaining_cluster_df$value) {
+    clus_pos <- which(df_lab_img$value == b)
+    pos_clus_img[clus_pos] <- c(clus_pos)
+  }
+  clean_pos_clus <- unlist(pos_clus_img)
+  xy_cords_clus <- df_lab_img[clean_pos_clus, ]
+
   out <- list(
-    centers = grouped_lab_img,
-    coordinates = res_objectDetection$coordinates,
     discard = distance_discard_df,
+    remaining.centers = remaining_cluster_df,
+    remaining.coordinates = xy_cords_clus,
+    all.coordinates = res_objectDetection$coordinates,
     image = res_objectDetection$image
   )
   out

@@ -18,11 +18,12 @@ or list obtained by the objectDetection function}
 are allowed (in pixels)}
 }
 \value{
-list of 4 objects:
+list of 5 objects:
 \enumerate{
-\item data frame of labeled region with the central coordinates
-\item all coordinates that are in labeled objects
 \item center coordinates of discarded objects
+\item center coordinates of remaining objects
+\item all coordinates of remaining objects
+\item all coordinates that are in labeled objects (initial state)
 \item original image
 }
 }

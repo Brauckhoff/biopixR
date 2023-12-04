@@ -17,12 +17,16 @@
 #' @import magick
 #' @import data.table
 #' @details
-#' Additional details...
-#'
+#'  The function pre-processes the image to enable the application of
+#'  adaptiveInterpolation. Pre-processing involves thresholding, optional
+#'  object removal, LineEnd and diagonal LineEnd detection, and labeling. The
+#'  threshold should be set to allow for some remaining "bridge" pixels between
+#'  gaps to facilitate reconnection. For more details about reconnection,
+#'  please consult \code{\link[biopixeR]{adaptiveInterpolation}}.
+#'  Post-processing involves thinning the lines.
 #' @examples
 #' closed_gaps <- fillLineGaps(droplets)
 #' closed_gaps |> plot()
-#' ##not run
 #' @export
 fillLineGaps <-
   function(droplet.img,
@@ -30,6 +34,7 @@ fillLineGaps <-
            threshold = "13%",
            alpha = 0.75,
            sigma = 0.1,
+           radius = 5,
            visualize = TRUE) {
     # assign import
     droplets <- droplet.img
@@ -121,7 +126,8 @@ fillLineGaps <-
         end_points_df,
         diagonal_edges_df,
         clean_lab_df,
-        lineends_cimg
+        lineends_cimg,
+        radius = radius
       )
 
     # combine matrix with starting image
@@ -183,7 +189,8 @@ fillLineGaps <-
         sec_lineends_df,
         sec_diagonal_edges_df,
         df_sec_lab_clean,
-        thin_cimg
+        thin_cimg,
+        radius = radius
       )
 
     # combine overlay matrix with former image

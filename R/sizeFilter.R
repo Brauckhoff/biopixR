@@ -19,26 +19,8 @@ sizeFilter <- function(res_proximityFilter,
                   lowerlimit = 50,
                   upperlimit = 150) {
   # assign imports
-  grouped_lab_img <- res_proximityFilter$centers
-  df_lab_img <- res_proximityFilter$coordinates
-  distance_discard_df <- res_proximityFilter$discard
-
-  # first: discard data points that did not pass the proximityFilter from
-  # original data
-  # then get position of remaining clusters in original labeled image
-  remaining_cluster <- which(is.na(distance_discard_df$mx) == TRUE)
-  remaining_cluster_df <- grouped_lab_img[remaining_cluster, ]
-
-  # extracting all coordinates from the original labeled image with cluster
-  # that pass the criteria
-  pos_clus_img <- list()
-  for (b in remaining_cluster_df$value) {
-    clus_pos <- which(df_lab_img$value == b)
-    pos_clus_img[clus_pos] <- c(clus_pos)
-  }
-
-  clean_pos_clus <- unlist(pos_clus_img)
-  xy_cords_clus <- df_lab_img[clean_pos_clus, ]
+  remaining_cluster_df <- res_proximityFilter$remaining.centers
+  xy_cords_clus <- res_proximityFilter$remaining.coordinates
 
   # aim: extract all coordinates (pixels) of the clusters
   # how many coordinates per cluster & cluster number that is in the list of
@@ -57,10 +39,38 @@ sizeFilter <- function(res_proximityFilter,
       }
     }
   }
+
+  # getting cluster numbers of remaining clusters after exclusion due to
+  # cluster size
+  clus_num <- list()
+  for (f in remaining_cluster_df$value) {
+    if (is.null(cluster_size[[f]]) != TRUE) {
+      clus_num[f] <- c(f)
+    }
+  }
+
+  # creating new data frame that contains cluster that pass both exclusions
+  cluster <- list()
+  x_coord <- list()
+  y_coord <- list()
+  for (g in unlist(clus_num)) {
+    remaining_pos <- which(xy_cords_clus$value == g)
+    cluster[remaining_pos] <- c(g)
+    x_coord[remaining_pos] <- xy_cords_clus$x[remaining_pos]
+    y_coord[remaining_pos] <- xy_cords_clus$y[remaining_pos]
+  }
+
+  res_xy_clus <- data.frame(
+    x = unlist(x_coord),
+    y = unlist(y_coord),
+    Cluster = unlist(cluster),
+    intensity = rep(NA, length(unlist(x_coord)))
+  )
+
   out <- list(
-    cluster = remaining_cluster_df,
-    coordinates = xy_cords_clus,
+    remaining.coordinates.s = res_xy_clus,
     size = cluster_size,
+    all.coordinates = res_proximityFilter$all.coordinates,
     image = res_proximityFilter$image
   )
 }

@@ -17,44 +17,16 @@
 #' @export
 ResultAnalytics <- function(res_sizeFilter) {
   # assign imports
-  remaining_cluster_df <- res_sizeFilter$cluster
-  xy_cords_clus <- res_sizeFilter$coordinates
+  res_xy_clus <- res_sizeFilter$remaining.coordinates.s
   cluster_size <- res_sizeFilter$size
   pic <- res_sizeFilter$image
-
-  # getting cluster numbers of remaining clusters after exclusion due to
-  # cluster size
-  clus_num <- list()
-  for (f in remaining_cluster_df$value) {
-    if (is.null(cluster_size[[f]]) != TRUE) {
-      clus_num[f] <- c(f)
-    }
-  }
-
-  # creating new data frame that contains cluster that pass both exclusions
-  cluster <- list()
-  x_coord <- list()
-  y_coord <- list()
-  for (g in unlist(clus_num)) {
-    remaining_pos <- which(xy_cords_clus$value == g)
-    cluster[remaining_pos] <- c(g)
-    x_coord[remaining_pos] <- xy_cords_clus$x[remaining_pos]
-    y_coord[remaining_pos] <- xy_cords_clus$y[remaining_pos]
-  }
-
-  res_xy_clus <- data.frame(
-    x = unlist(x_coord),
-    y = unlist(y_coord),
-    intensity = rep(NA, length(unlist(x_coord))),
-    Cluster = unlist(cluster)
-  )
 
   # including intensity values of pixels from remaining clusters in a data frame
   for (h in 1:nrow(res_xy_clus)) {
     xx <- res_xy_clus$x[h]
     yy <- res_xy_clus$y[h]
     int <- as.array(pic)[xx, yy, , ]
-    res_xy_clus[h, 3] <- c(int)
+    res_xy_clus[h, 4] <- c(int)
   }
 
   # group data frame by cluster
@@ -69,21 +41,27 @@ ResultAnalytics <- function(res_sizeFilter) {
 
   # summary for every passing bead
   res_df_long <- data.frame(
-    Beadnumber = unlist(clus_num),
+    Beadnumber = intense$Cluster,
     Size = unlist(cluster_size),
     Intensity = intense$intensity,
     x = intense$x,
     y = intense$y
   )
 
+  # approximation of the amount of discarded pixels
+  # calculate amount of true coordinates
+  amount_true <- length(which(threshold(pic)) == TRUE)
+  dis_count <- round((amount_true / mean(unlist(cluster_size))) - nrow(intense))
+
   # summary of res_df_long / whole image
   Result <- data.frame(
-    Number_of_Beads = length(unlist(clus_num)),
+    Number_of_Beads = nrow(intense),
     Mean_Size = mean(unlist(cluster_size)),
     Mean_intensity = mean(res_xy_clus$intensity),
-    Bead_density = (length(unlist(clus_num)) *
+    Bead_density = (nrow(intense) *
       mean(unlist(cluster_size))) /
-      length(pic)
+      length(pic),
+    Estimated_rejected = dis_count
   )
 
   out <- list(

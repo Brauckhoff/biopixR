@@ -10,6 +10,7 @@ fillLineGaps(
   threshold = "13\%",
   alpha = 0.75,
   sigma = 0.1,
+  radius = 5,
   visualize = TRUE
 )
 }
@@ -38,10 +39,15 @@ The function tries to fill in edge discontinuity so that normal labeling and
 edge detection becomes possible.
 }
 \details{
-Additional details...
+The function pre-processes the image to enable the application of
+adaptiveInterpolation. Pre-processing involves thresholding, optional
+object removal, LineEnd and diagonal LineEnd detection, and labeling. The
+threshold should be set to allow for some remaining "bridge" pixels between
+gaps to facilitate reconnection. For more details about reconnection,
+please consult \code{\link[biopixeR]{adaptiveInterpolation}}.
+Post-processing involves thinning the lines.
 }
 \examples{
 closed_gaps <- fillLineGaps(droplets)
 closed_gaps |> plot()
-##not run
 }
