@@ -11,15 +11,15 @@ interpolatePixels(row1, col1, row2, col2)
 
 \item{col1}{first column: together with row1 coordinate for the first point}
 
-\item{row2}{second column: together with col2 coordinate for the second point}
+\item{row2}{second row: together with col2 coordinate for the second point}
 
 \item{col2}{second column: together with row2 coordinate for the second point}
 }
 \value{
-data frame containing the coordinates to connect the two input points
+matrix containing the coordinates to connect the two input points
 }
 \description{
-Connects to points in a matrix, array or an image
+Connects two points in a matrix, array or an image.
 }
 \examples{
 test <- matrix(0, 4, 4)

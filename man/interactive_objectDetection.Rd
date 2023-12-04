@@ -9,14 +9,17 @@ interactive_objectDetection(image, resolution = 0.1, return_param = FALSE)
 \arguments{
 \item{image}{image (preferred import: \code{\link[imager]{load.image}})}
 
-\item{resolution}{description}
+\item{resolution}{resolution of slider}
 
 \item{return_param}{Should the final variables for alpha and sigma should be
 printed in the console (TRUE or FALSE).}
 }
+\value{
+values of alpha and sigma
+}
 \description{
-This function uses the objectDetection function to visualize the detected beads
-at varying threshold an smoothing parameters.
+This function uses the objectDetection function to visualize the detected
+objects at varying threshold an smoothing parameters.
 }
 \examples{
 interactive_objectDetection(beads)

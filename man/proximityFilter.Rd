@@ -9,8 +9,8 @@ proximityFilter(res_objectDetection, radius = 10)
 \arguments{
 \item{res_objectDetection}{list with center coordinates of objects (needs to
 be a data.frame named centers which contains three columns:
-1 - mxx: x coordinates
-2 - myy: y coordinates
+1 - mxx: x coordinates;
+2 - myy: y coordinates;
 3 - value: cluster number)
 or list obtained by the objectDetection function}
 
@@ -33,4 +33,20 @@ The range is calculated in regards to the center of the objects.
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
 proximityFilter(res_objectDetection, radius = 10)
+
+# without usage of objectDetection
+mat <- matrix(0, 8, 8)
+mat[3, 5] <- 1
+mat[5, 2] <- 1
+mat[6, 7] <- 1
+mat[7, 3] <- 1
+sim_img <- as.cimg(mat)
+centers <- data.frame(
+mxx = c(3, 5, 6, 7),
+myy = c(5, 2, 7, 3),
+value = c(1:4)
+)
+objects <- list(centers = centers)
+res <- proximityFilter(objects, radius = 3)
+na.omit(res$discard)
 }

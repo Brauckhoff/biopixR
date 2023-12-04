@@ -8,32 +8,97 @@ adaptiveInterpolation(
   end_points_df,
   diagonal_edges_df,
   clean_lab_df,
-  lineends_cimg
+  lineends_cimg,
+  radius = 5
 )
 }
 \arguments{
-\item{end_points_df}{Data of type 'data.frame'.}
+\item{end_points_df}{data frame with the coordinates of all line ends. Can
+be obtained with \code{\link[magick]{image_morphology}}.}
 
-\item{diagonal_edges_df}{Data of type 'data.frame'.}
+\item{diagonal_edges_df}{data frame with coordinates of diagonal line ends.
+Can also be obtained by \code{\link[magick]{image_morphology}}.}
 
-\item{clean_lab_df}{Data of type 'data.frame'.}
+\item{clean_lab_df}{Data of type 'data.frame', containing the x, y and value
+information of every labeled region in an image. (Only the edges should be
+labeled)}
 
 \item{lineends_cimg}{Image with dimensions of the image with discontinuous
 edges. Just for giving the dimensions of the output matrix.}
+
+\item{radius}{maximal radius that should be scanned for another cluster}
 }
 \value{
 Binary matrix that can be applied as overlay for example with
 \code{\link[imager]{imager.combine}} to fill the gaps between line ends.
 }
 \description{
-Designed to be part of the fillLineGaps function. Function scans an increasing
-radius around a line end and connects it with the nearest labeled region,
-which in the fillLineGaps function is the closest edge.
+Function scans an increasing radius around a line end and connects it with
+the nearest labeled region.
 }
 \details{
-Additional details...
+This function is intended to be part of the fillLineGaps function, which
+does the thresholding and line end detection preprocessing. The
+adaptiveInterpolation creates a matrix in the dimensions of the original
+image. At the beginning there are only background values (0) = black image.
+The function then searches for LineEnds and searches a given radius around
+this line end for the nearest labeled region. The own cluster of the line
+end is of course not considered as nearest neighbor.If another cluster is
+found, the interpolatePixels function is used to connect the line end to the
+found cluster. This means that specified pixels of the matrix are
+transformed to a foreground value of (1). The diagonal line ends get a
+special treatment, because for the labeling function the diagonal pixels
+are always treated as a separate cluster, which makes them difficult to
+reconnect. To deal with this problem, diagonal line ends ignore not only
+their own cluster, but also the cluster of the direct neighbor. After that,
+the same procedure as before is repeated, where pixel values are changed
+according to the interpolatePixel function.
 }
 \examples{
-# example code
+creating an artificial binary image
+mat <- matrix(0, 8, 8)
+mat[3, 1:2] <- 1
+mat[4, 3] <- 1
+mat[7:8, 3] <- 1
+mat[5, 6:8] <- 1
+mat_cimg <- as.cimg(mat)
 
+# preprocessing / LineEnd detection / labeling  (done in fillLineGaps)
+mat_cimg_m <- mirror(mat_cimg, axis = "x")
+mat_magick <- cimg2magick(mat_cimg)
+lineends <- image_morphology(mat_magick, "HitAndMiss", "LineEnds")
+diagonalends <- image_morphology(mat_magick, "HitAndMiss", "LineEnds:2>")
+lineends_cimg <- magick2cimg(lineends)
+diagonalends_cimg <- magick2cimg(diagonalends)
+end_points <- which(lineends_cimg == TRUE, arr.ind = TRUE)
+end_points_df <- as.data.frame(end_points)
+colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
+diagonal_edges <- which(diagonalends_cimg == TRUE, arr.ind = TRUE)
+diagonal_edges_df <- as.data.frame(diagonal_edges)
+colnames(diagonal_edges_df) <- c("x", "y", "dim3", "dim4")
+lab <- label(mat_cimg_m)
+df_lab <- as.data.frame(lab) |> subset(value > 0)
+alt_x <- list()
+alt_y <- list()
+alt_value <- list()
+for (g in 1:nrow(df_lab)) {
+  if (mat_cimg_m[df_lab$x[g], df_lab$y[g], 1, 1] == 1) {
+    alt_x[g] <- df_lab$x[g]
+    alt_y[g] <- df_lab$y[g]
+    alt_value[g] <- df_lab$value[g]
+  }
+}
+clean_lab_df <- data.frame(
+  x = unlist(alt_x),
+  y = unlist(alt_y),
+  value = unlist(alt_value)
+)
+
+# actual function
+overlay <- adaptiveInterpolation(
+  end_points_df,
+  diagonal_edges_df,
+  clean_lab_df,
+  mat_cimg)
+parmax(list(mat_cimg_m, as.cimg(overlay$overlay))) |> plot()
 }

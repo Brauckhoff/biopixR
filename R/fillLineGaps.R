@@ -23,9 +23,6 @@
 #' closed_gaps <- fillLineGaps(droplets)
 #' closed_gaps |> plot()
 #' ##not run
-#' ## fillLineGaps()
-#' ##
-#' ##
 #' @export
 fillLineGaps <-
   function(droplet.img,

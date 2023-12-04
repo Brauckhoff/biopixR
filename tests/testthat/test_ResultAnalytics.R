@@ -12,16 +12,17 @@ test_that("ResultAnalytics",
 
             expect_lte(sum(res_ResultAnalytics$detailed$Size),
                        nrow(res_sizeFilter$coordinates))
-
+            expect_lte(length(res_ResultAnalytics$detailed$Beadnumber),
+                       length(unique(res_sizeFilter$coordinates$value)))
 
             expect_type(res_ResultAnalytics, "list")
             expect_length(res_ResultAnalytics, 2)
             expect_s3_class(res_ResultAnalytics$Summary, "data.frame")
             expect_s3_class(res_ResultAnalytics$detailed, "data.frame")
             expect_equal(res_ResultAnalytics$Summary$Number_of_Beads,
-                         length(unlist(
-                           sizeFilter(proximityFilter(objectDetection(img)))$size)))
+                         length(unlist(res_sizeFilter$size)))
             expect_equal(res_ResultAnalytics$Summary$Number_of_Beads,
                          nrow(res_ResultAnalytics$detailed))
-
+            expect_equal(mean(res_ResultAnalytics$detailed$Size),
+                         res_ResultAnalytics$Summary$Mean_Size)
 })

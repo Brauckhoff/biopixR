@@ -2,29 +2,29 @@
 % Please edit documentation in R/sizeFilter.R
 \name{sizeFilter}
 \alias{sizeFilter}
-\title{Size exclusion}
+\title{Size based exclusion}
 \usage{
 sizeFilter(res_proximityFilter, lowerlimit = 50, upperlimit = 150)
 }
 \arguments{
 \item{res_proximityFilter}{list obtained by the proximityFilter function}
 
-\item{lowerlimit}{smallest accepted bead size}
+\item{lowerlimit}{smallest accepted object size}
 
-\item{upperlimit}{highest accepted bead size}
+\item{upperlimit}{highest accepted object size}
 }
 \value{
 list of 4 objects:
 \enumerate{
 \item remaining beads after discarding according to distance
 \item all coordinates that are in labeled regions
-\item size of a labeled region (bead)
+\item size of a labeled region
 \item original image
 }
 }
 \description{
-Calculates the size of a bead (in pixels) and discards too big (e.g. duplets)
-or too small once
+Calculates the size of the objects in an image and discards objects based
+on a lower and a upper size limit.
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)

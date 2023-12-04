@@ -17,7 +17,10 @@ list of 2 objects:
 }
 }
 \description{
-Extracts all important information of the remaining beads
+Extracts all important information of the remaining beads. This function
+summarizes the data obtained by previous functions: objectDetection,
+proximityFilter and sizeFilter. Gives information like amount, intensity,
+size and density.
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
