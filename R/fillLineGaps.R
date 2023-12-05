@@ -1,7 +1,7 @@
 #' Reconnecting discontinuous lines
 #'
-#' The function tries to fill in edge discontinuity so that normal labeling and
-#' edge detection becomes possible.
+#' The function attempts to fill in edge discontinuities in order to enable
+#' normal labeling and edge detection.
 #' @param droplet.img Image that contains discontinuous lines like edges or
 #' contours.
 #' @param bead.img Image that contains objects that should be removed before
@@ -10,6 +10,7 @@
 #' @param alpha Threshold adjustment factor for edge detection
 #' (from \code{\link[imager]{cannyEdges}}).
 #' @param sigma smoothing (from \code{\link[imager]{cannyEdges}}).
+#' @param radius maximal radius that should be scanned for another cluster
 #' @param visualize If TRUE (default) a plot is displayed highlighting the
 #' added pixels in the original image.
 #' @returns image with continuous edges (closed gaps)
@@ -17,16 +18,18 @@
 #' @import magick
 #' @import data.table
 #' @details
-#'  The function pre-processes the image to enable the application of
-#'  adaptiveInterpolation. Pre-processing involves thresholding, optional
-#'  object removal, LineEnd and diagonal LineEnd detection, and labeling. The
-#'  threshold should be set to allow for some remaining "bridge" pixels between
-#'  gaps to facilitate reconnection. For more details about reconnection,
-#'  please consult \code{\link[biopixeR]{adaptiveInterpolation}}.
-#'  Post-processing involves thinning the lines.
+#' The function pre-processes the image to enable the application of
+#' adaptiveInterpolation. Pre-processing involves thresholding, optional
+#' object removal, LineEnd and diagonal LineEnd detection, and labeling. The
+#' threshold should be set to allow for some remaining "bridge" pixels between
+#' gaps to facilitate reconnection. For more details about reconnection,
+#' please consult \code{\link[biopixeR]{adaptiveInterpolation}}.
+#' Post-processing involves thinning the lines. When removing objects from an
+#' image, their coordinates are collected using the objectDetection function.
+#' Next, the pixels of the detected objects are nullified in the original
+#' image, allowing the algorithm to proceed without the objects.
 #' @examples
-#' closed_gaps <- fillLineGaps(droplets)
-#' closed_gaps |> plot()
+#' fillLineGaps(droplets)
 #' @export
 fillLineGaps <-
   function(droplet.img,
@@ -120,7 +123,6 @@ fillLineGaps <-
     # scan the surroundings of line ends and connect with nearest cluster
     # creates a binary matrix that can be displayed as image
     # (0 = background/black & 1 = white/foreground)
-# note continue debug
     first_overlay <-
       adaptiveInterpolation(
         end_points_df,
@@ -166,20 +168,20 @@ fillLineGaps <-
     # more important to exclude closed circles then in the first run, as now
     # more partitions have continuous edges
     lab2_clean_x <- list()
-    ĺab2_clean_y <- list()
+    lab2_clean_y <- list()
     lab2_clean_value <- list()
 
     for (e in 1:nrow(df_sec_lab)) {
       if (thin_cimg[df_sec_lab[e, 1], df_sec_lab[e, 2], 1, 1] == 1) {
         lab2_clean_x[e] <- df_sec_lab[e, ]$x
-        ĺab2_clean_y[e] <- df_sec_lab[e, ]$y
+        lab2_clean_y[e] <- df_sec_lab[e, ]$y
         lab2_clean_value[e] <- df_sec_lab[e, ]$value
       }
     }
 
     df_sec_lab_clean <- data.frame(
       x = unlist(lab2_clean_x),
-      y = unlist(ĺab2_clean_y),
+      y = unlist(lab2_clean_y),
       value = unlist(lab2_clean_value)
     )
 

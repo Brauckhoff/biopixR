@@ -24,10 +24,10 @@ list of 4 objects:
 }
 }
 \description{
-This function is able to detect objects in an image. Using edge detection
-and labeling, this function collects the coordinates and centers of the
-objects. It also visualizes the result and highlights the
-detected objects with colored circles.
+This function identifies objects in an image using edge detection and
+labeling, gathering the coordinates and centers of the identified objects.
+Detected objects are then highlighted with colored circles for easy
+recognition.
 }
 \examples{
 objectDetection(beads, alpha = 0.75, sigma = 0.1)

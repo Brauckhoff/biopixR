@@ -36,12 +36,12 @@ ResultAnalytics <- function(res_sizeFilter) {
     y = mean(y),
     intensity = mean(intensity)
   ),
-  by = Cluster
+  by = cluster
   ]
 
   # summary for every passing bead
   res_df_long <- data.frame(
-    Beadnumber = intense$Cluster,
+    Beadnumber = intense$cluster,
     Size = unlist(cluster_size),
     Intensity = intense$intensity,
     x = intense$x,
@@ -54,7 +54,7 @@ ResultAnalytics <- function(res_sizeFilter) {
   dis_count <- round((amount_true / mean(unlist(cluster_size))) - nrow(intense))
 
   # summary of res_df_long / whole image
-  Result <- data.frame(
+  result <- data.frame(
     Number_of_Beads = nrow(intense),
     Mean_Size = mean(unlist(cluster_size)),
     Mean_intensity = mean(res_xy_clus$intensity),
@@ -65,8 +65,7 @@ ResultAnalytics <- function(res_sizeFilter) {
   )
 
   out <- list(
-    Summary = Result,
+    Summary = result,
     detailed = res_df_long
   )
-  out
 }

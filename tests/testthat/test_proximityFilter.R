@@ -10,11 +10,13 @@ test_that("proximityFilter",
             expect_type(res_objectDetection, "list")
             expect_equal(seq_along(res_objectDetection$centers$value),
                          1:nrow(res_objectDetection$centers))
-            expect_lt(
-              length(which(is.na(res_proximityFilter$discard$mx == FALSE))),
-              length(res_proximityFilter$centers$value))
+            expect_equal(length(which(is.na(res_proximityFilter$discard$mx) == TRUE)),
+                         nrow(res_proximityFilter$remaining.centers))
+            expect_lte(
+              length(res_proximityFilter$centers$value),
+              length(which(is.na(res_proximityFilter$discard$mx == FALSE))))
             expect_error(proximityFilter(img))
-            expect_equal(nrow(res_proximityFilter$centers),
+            expect_equal(nrow(res_objectDetection$centers),
                          nrow(res_proximityFilter$discard))
             expect_type(res_proximityFilter, "list")
             expect_length(res_proximityFilter, 4)

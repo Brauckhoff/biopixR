@@ -7,24 +7,32 @@
 sizeFilter(res_proximityFilter, lowerlimit = 50, upperlimit = 150)
 }
 \arguments{
-\item{res_proximityFilter}{list obtained by the proximityFilter function}
+\item{res_proximityFilter}{list of 2 objects:
+\enumerate{
+\item named 'remaining.centers' - containing data frame with center coordinates;
+three columns 'value' - cluster number, 'mxx' - x coordinates &
+'myy' - y coordinates
+\item named 'remaining.coordinates' - containing date frame with all
+coordinates of the clusters; three columns 'x' - x coordinates,
+'y' - y coordinates & 'value' - cluster number
+}}
 
 \item{lowerlimit}{smallest accepted object size}
 
 \item{upperlimit}{highest accepted object size}
 }
 \value{
-list of 4 objects:
+list of 3 objects:
 \enumerate{
-\item remaining beads after discarding according to distance
-\item all coordinates that are in labeled regions
+\item remaining beads after discarding according to size
 \item size of a labeled region
 \item original image
 }
 }
 \description{
 Calculates the size of the objects in an image and discards objects based
-on a lower and a upper size limit.
+on a lower and a upper size limit. (Input can be obtained by proximityFilter
+function)
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)

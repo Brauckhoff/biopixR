@@ -32,7 +32,7 @@
 #' the same procedure as before is repeated, where pixel values are changed
 #' according to the interpolatePixel function.
 #' @examples
-#' creating an artificial binary image
+#' # creating an artificial binary image
 #' mat <- matrix(0, 8, 8)
 #' mat[3, 1:2] <- 1
 #' mat[4, 3] <- 1

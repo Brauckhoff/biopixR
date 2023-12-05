@@ -1,9 +1,9 @@
 #' Object detection
 #'
-#' This function is able to detect objects in an image. Using edge detection
-#' and labeling, this function collects the coordinates and centers of the
-#' objects. It also visualizes the result and highlights the
-#' detected objects with colored circles.
+#' This function identifies objects in an image using edge detection and
+#' labeling, gathering the coordinates and centers of the identified objects.
+#' Detected objects are then highlighted with colored circles for easy
+#' recognition.
 #' @param image image (import by \code{\link[imager]{load.image}})
 #' @param alpha threshold adjustment factor
 #' (from \code{\link[imager]{cannyEdges}})
@@ -13,8 +13,8 @@
 #' 2. all coordinates that are in labeled regions
 #' 3. original image
 #' 4. image were beads are marked by a purple circle
-#' @import imager
 #' @import data.table
+#' @import imager
 #' @examples
 #' objectDetection(beads, alpha = 0.75, sigma = 0.1)
 #' @export

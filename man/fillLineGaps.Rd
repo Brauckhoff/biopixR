@@ -28,6 +28,8 @@ before applying the fill algorithm.}
 
 \item{sigma}{smoothing (from \code{\link[imager]{cannyEdges}}).}
 
+\item{radius}{maximal radius that should be scanned for another cluster}
+
 \item{visualize}{If TRUE (default) a plot is displayed highlighting the
 added pixels in the original image.}
 }
@@ -35,8 +37,8 @@ added pixels in the original image.}
 image with continuous edges (closed gaps)
 }
 \description{
-The function tries to fill in edge discontinuity so that normal labeling and
-edge detection becomes possible.
+The function attempts to fill in edge discontinuities in order to enable
+normal labeling and edge detection.
 }
 \details{
 The function pre-processes the image to enable the application of
@@ -45,9 +47,11 @@ object removal, LineEnd and diagonal LineEnd detection, and labeling. The
 threshold should be set to allow for some remaining "bridge" pixels between
 gaps to facilitate reconnection. For more details about reconnection,
 please consult \code{\link[biopixeR]{adaptiveInterpolation}}.
-Post-processing involves thinning the lines.
+Post-processing involves thinning the lines. When removing objects from an
+image, their coordinates are collected using the objectDetection function.
+Next, the pixels of the detected objects are nullified in the original
+image, allowing the algorithm to proceed without the objects.
 }
 \examples{
-closed_gaps <- fillLineGaps(droplets)
-closed_gaps |> plot()
+fillLineGaps(droplets)
 }

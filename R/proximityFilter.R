@@ -1,26 +1,27 @@
 #' Proximity based exclusion
 #'
-#' Detects objects that are within a certain range of each other.
-#' The range is calculated in regards to the center of the objects.
-#' @param res_objectDetection list with center coordinates of objects (needs to
-#' be a data.frame named centers which contains three columns:
-#' 1 - mxx: x coordinates;
-#' 2 - myy: y coordinates;
-#' 3 - value: cluster number)
-#' or list obtained by the objectDetection function
+#' To detect objects within a defined range of one another, it is necessary to
+#' calculate their centers to determine proximity. Pairs that are too close
+#' will be discarded. (Input can be obtained by objectDetection function)
+#' @param res_objectDetection list of objects:
+#' 1. named 'centers' - containing data frame with center coordinates of
+#' objects; three columns 'mxx' - x coordinates, 'myy' - y coordinates &
+#' 'value' - cluster number
+#' 2. named 'coordinates' - containing date frame with all labeled coordinates;
+#' three columns 'x' - x coordinates, 'y' - y coordinates & 'value' - cluster
+#' number (optional)
 #' @param radius distance from one center in which no other centers
 #' are allowed (in pixels)
-#' @returns list of 5 objects:
+#' @returns list of 4 objects:
 #' 1. center coordinates of discarded objects
 #' 2. center coordinates of remaining objects
 #' 3. all coordinates of remaining objects
-#' 4. all coordinates that are in labeled objects (initial state)
-#' 5. original image
+#' 4. original image
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
 #' proximityFilter(res_objectDetection, radius = 10)
 #'
-#' # without usage of objectDetection
+#' # without usage of objectDetection (only centers)
 #' mat <- matrix(0, 8, 8)
 #' mat[3, 5] <- 1
 #' mat[5, 2] <- 1
@@ -33,8 +34,17 @@
 #' value = c(1:4)
 #' )
 #' objects <- list(centers = centers)
-#' res <- proximityFilter(objects, radius = 3)
-#' na.omit(res$discard)
+#' proximityFilter(objects, radius = 3)
+#'
+#' # Visualization
+#' \dontrun{
+#' res_l <- proximityFilter(res_objectDetection, radius = 10)
+#' changePixelColor(beads, res_l$remaining.coordinates)
+#'
+#' # without objectDetection
+#' res_m <- proximityFilter(objects, radius = 3)
+#' changePixelColor(sim_img, res_m$remaining.centers)
+#' }
 #' @export
 proximityFilter <- function(res_objectDetection, radius = 10) {
   # assign imports
@@ -114,8 +124,6 @@ proximityFilter <- function(res_objectDetection, radius = 10) {
     discard = distance_discard_df,
     remaining.centers = remaining_cluster_df,
     remaining.coordinates = xy_cords_clus,
-    all.coordinates = res_objectDetection$coordinates,
     image = res_objectDetection$image
   )
-  out
 }

@@ -1,15 +1,21 @@
 #' Size based exclusion
 #'
 #' Calculates the size of the objects in an image and discards objects based
-#' on a lower and a upper size limit.
-#' @param res_proximityFilter list obtained by the proximityFilter function
+#' on a lower and a upper size limit. (Input can be obtained by proximityFilter
+#' function)
+#' @param res_proximityFilter list of 2 objects:
+#' 1. named 'remaining.centers' - containing data frame with center coordinates;
+#' three columns 'value' - cluster number, 'mxx' - x coordinates &
+#' 'myy' - y coordinates
+#' 2. named 'remaining.coordinates' - containing date frame with all
+#' coordinates of the clusters; three columns 'x' - x coordinates,
+#' 'y' - y coordinates & 'value' - cluster number
 #' @param lowerlimit smallest accepted object size
 #' @param upperlimit highest accepted object size
-#' @returns list of 4 objects:
-#' 1. remaining beads after discarding according to distance
-#' 2. all coordinates that are in labeled regions
-#' 3. size of a labeled region
-#' 4. original image
+#' @returns list of 3 objects:
+#' 1. remaining beads after discarding according to size
+#' 2. size of a labeled region
+#' 3. original image
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
 #' res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
@@ -63,14 +69,13 @@ sizeFilter <- function(res_proximityFilter,
   res_xy_clus <- data.frame(
     x = unlist(x_coord),
     y = unlist(y_coord),
-    Cluster = unlist(cluster),
+    cluster = unlist(cluster),
     intensity = rep(NA, length(unlist(x_coord)))
   )
 
   out <- list(
     remaining.coordinates.s = res_xy_clus,
     size = cluster_size,
-    all.coordinates = res_proximityFilter$all.coordinates,
     image = res_proximityFilter$image
   )
 }

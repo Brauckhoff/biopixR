@@ -10,10 +10,10 @@ test_that("ResultAnalytics",
               sizeFilter()
             res_ResultAnalytics <- ResultAnalytics(res_sizeFilter)
 
-            expect_lte(sum(res_ResultAnalytics$detailed$Size),
-                       nrow(res_sizeFilter$coordinates))
-            expect_lte(length(res_ResultAnalytics$detailed$Beadnumber),
-                       length(unique(res_sizeFilter$coordinates$value)))
+            expect_equal(sum(res_ResultAnalytics$detailed$Size),
+                       nrow(res_sizeFilter$remaining.coordinates.s))
+            expect_equal(length(res_ResultAnalytics$detailed$Beadnumber),
+                       length(unique(res_sizeFilter$remaining.coordinates.s$cluster)))
 
             expect_type(res_ResultAnalytics, "list")
             expect_length(res_ResultAnalytics, 2)
