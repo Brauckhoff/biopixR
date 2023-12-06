@@ -1,0 +1,151 @@
+---
+title: "biopixR - Introduction"
+author: "Tim Brauckhoff"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    number_sections: true
+vignette: >
+  %\VignetteIndexEntry{biopixR - Introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, 
+                      cache = FALSE, comment = NA, verbose = TRUE, 
+                      fig.width = 5, fig.height = 5, dev = 'jpeg', 
+                      dev.args = list(quality = 25))
+```
+
+# Getting started
+
+The biopixR package includes an image of micro particles (beads) as an example to demonstrate its analytical and processing abilities for biological imagery. This sample image displays the package's features, enabling users to experiment with image analysis and manipulation within the contexts of biotechnology and life sciences. Researchers and practitioners can utilize this illustration to comprehend the application of biopixR to their individual imaging requirements, whether pertaining to cell biology, microscopy, or any other biological imaging applications.
+
+## detecting objects in an image
+
+```{r beads}
+library(biopixR)
+plot(beads)
+```
+
+As the biopixR package primarily uses the image processing packages imager and magick, the examples are stored in the specific imager class: cimg.
+
+```{r class}
+class(beads)
+```
+
+The objective of this task is to extract important information from an image consisting of beads. As a preliminary step, it is essential to distinguish between individual beads and acquire their corresponding coordinates or positions. The `objectDetection` function uses edge detection and labeling techniques to gather elaborate information about the beads, allowing for identification and differentiation of individual particles according to their unique edges. This procedure assists in deriving precise coordinates for every bead in the image, which sets the groundwork for subsequent analysis and characterization of the micro particles within the biopixR package.
+
+```{r objectDetection}
+res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
+```
+
+This function generates a list of objects. Let's examine the specific outcomes and explore methods for visualizing them, starting with the center coordinates of the beads:
+
+```{r visualization_1}
+plot(beads)
+with(res_objectDetection$centers, 
+     points(res_objectDetection$centers$mxx,
+            res_objectDetection$centers$myy,
+            col = factor(res_objectDetection$centers$value),
+            pch = 19))
+```
+
+Upon observation, it is apparent that each individual bead is correctly identified with a singular point at its center and differentiated by varying colors to indicate their distinctiveness, which meets our intended objective. Nevertheless, markings of clotted beads, which are later referred to as doublets or multiplets, do not adhere to the expected pattern. Doublets being identified as a single entity is a logical consequence of their edges vanishing along the contact surface, resulting in the observed behavior. The multiplets make this matter more complex. The challenge in accurately identifying the edges between beads is similar to that of doublets. On the other hand, the `objectDetection` function utilizes labeling post edge detection, employing a filling process similar to the EBImage `fillHull` function. In this step, the function does not recognize the space within the multiplet as a single area to be filled, resulting in an unfilled space. Then, during the subsequent labeling, multiple 'centers' are assigned to the still-present edges, generating several detected points along the edges of the multiplet. The next visualization displays the latter phenomenon.
+
+Let's examine the next output from `objectDetection`. This function captures the coordinates of labeled regions, providing precise details about the position of each bead. By leveraging another function within the package, `changePixelColor`, we can selectively color specific coordinates in a cimg. Thus, we can apply this function to tint all the extracted coordinates in the bead image and assess whether the outcome aligns with our expectations.
+
+```{r visualization_2}
+changePixelColor(beads, res_objectDetection$coordinates, color = "purple")
+```
+
+As expected, all individual beads (singlets) and the doublet are fully colored, indicating the successful collection of all related coordinates. As previously mentioned, the collection procedure solely evaluates the contours of the multiplet. Although unintentional, this result offers an advantage as it is crucial to exclude multiplets and doublets from subsequent analysis due to their close proximity. As they are in close proximity, there is a possibility of inducing fluorescence in one another, thereby producing misleading signals and contributing to false positives during analysis.
+
+The function incorporates an internal visualization feature that utilizes the `drawcircles` function from the imager package to outline circles around the identified centers, replicating the initial plot. 
+
+```{r visualization_3}
+res_objectDetection$marked_beads |> plot()
+```
+
+Nonetheless, a crucial differentiation occurs in obtaining the highlighted beads as a cimg, which opens up possibilities for the creation of an interactive tool using tcltk. This step facilitates the development of an interactive interface, empowering users to dynamically explore the adjustment of various variables and observe the corresponding shifts in detected centers. The interactive interface is presented through the `interactive_objectDetection` function within the biopixR package.
+
+## filter beads according to size and proximity
+
+As stated previously, it is crucial to remove doublets and multiplets prior to analysis. This objective will be addressed in the next section, where we will use the `proximityFilter` to achieve this goal. The function works by examining each collected center and scanning a specific radius for additional centers. If another center is detected within this range, both are discarded due to their close proximity. This method is especially efficient in dealing with multiplets as the identified centers along the contours are frequently found in close proximity. Furthermore, even beads that were at first identified as singles are tested to ensure that there are no neighboring centers within the defined range. Users can customize the radius for this examination as required.
+
+```{r}
+res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
+```
+
+**visualization proximityFilter**:
+
+```{r}
+plot(beads)
+with(res_proximityFilter$remaining.centers, 
+     points(res_proximityFilter$remaining.centers$mxx,
+            res_proximityFilter$remaining.centers$myy,
+            col = "darkgreen",
+            pch = 19))
+with(res_proximityFilter$discard,
+     points(res_proximityFilter$discard$mx,
+            res_proximityFilter$discard$my,
+            col = "darkred",
+            pch = 19))
+```
+
+As expected, the centers that were found along the contours of the multiplet are now eliminated due to their proximity. To conduct a small experiment, I will increase the radius for the subsequent plot, intending to discard not only the multiplet but also the two beads in the upper-middle section.
+
+```{r}
+small_experiment <- proximityFilter(res_objectDetection, radius = 13)
+
+plot(beads)
+with(small_experiment$remaining.centers, 
+     points(small_experiment$remaining.centers$mxx,
+            small_experiment$remaining.centers$myy,
+            col = "darkgreen",
+            pch = 19))
+with(small_experiment$discard,
+     points(small_experiment$discard$mx,
+            small_experiment$discard$my,
+            col = "darkred",
+            pch = 19))
+```
+
+After the successful completion of the small experiment, our attention now returns to the main objective of removing the doublets. To achieve this, the `sizeFilter` will be employed on the remaining beads, utilizing both the centers and all coordinates. The `sizeFilter` algorithm calculates the number of pixels in each labeled object, allowing the user to set individual limits to discard doublets. In scenarios where the contour of the multiplet might be perceived as a single region, the removal based on distance alone may not be effective. Therefore, the `sizeFilter` provides an additional option by allowing the establishment of a lower limit.
+
+```{r}
+res_sizeFilter <- sizeFilter(res_proximityFilter,
+                             lowerlimit = 0,
+                             upperlimit = 150)
+```
+
+**visualization sizeFilter**:
+
+```{r}
+changePixelColor(beads, res_sizeFilter$remaining.coordinates.s, color = "darkgreen")
+```
+
+## displaying results
+
+```{r}
+result <- ResultAnalytics(res_sizeFilter)
+result$detailed
+```
+
+```{r}
+result$Summary
+```
+
+### relative distance
+
+Another important aspect to consider in bioimaging is the relative distance between individual objects. By examining the spatial relationships between the identified objects, researchers can gain valuable insights into their organization and distribution within the image. This information is critical for understanding biological phenomena such as spatial patterns, cell clustering, or the arrangement of microstructures. In the following sections, we present a method that explores the Euclidean distance between objects in order to enable users to investigate and quantify spatial relationships within their bioimages.
+
+*in progress*
+
+# Case study: beads in droplets - *in progress*
+
+## dealing with discontinous edges
+
+## characterizing partitions 
