@@ -16,8 +16,70 @@ This project aims to meet the immediate need for effective bead microparticle an
 
 ## Examples
 
-*in progress*
+The objective of this task is to extract important data from an image of beads. The first step involves identifying individual beads and acquiring their coordinates using the `objectDetection` function, utilizing edge detection and labeling for thorough analysis and identification of distinct edges. This will enable precise coordinate extraction and provide a basis for further analysis using the biopixR package.
 
+```{r}
+library(biopixR)
+
+res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
+
+plot(beads)
+with(res_objectDetection$centers, 
+     points(res_objectDetection$centers$mxx,
+            res_objectDetection$centers$myy,
+            col = factor(res_objectDetection$centers$value),
+            pch = 19))
+```
+![2](https://github.com/Brauckhoff/biopixR/assets/121032772/4143a2c9-9ea7-4ca1-a489-61cacc801eec)
+
+During examination, precise identification and marking of each individual bead were achieved, aligning with our intended objective. The `objectDetection` functionality successfully detects each bead using a singular center point and varying colors for differentiation. (Any issues with clotted beads, referred to as doublets or multiplets, are currently disregarded.) Using an alternative visualization method that utilizes the internal `changePixelColor` function can provide a more comprehensive view of the results (based on https://CRAN.R-project.org/package=countcolors).
+
+```{r}
+changePixelColor(beads, res_objectDetection$coordinates, color = "purple")
+```
+![3](https://github.com/Brauckhoff/biopixR/assets/121032772/fb00f442-20ab-474f-a85d-b6187c8e46bf)
+
+For precise analysis, the next step entails eliminating doublets and multiplets using the `proximityFilter`. This process reviews each center, scanning within a specified radius for additional centers. In the event of another center within this range, both are discarded owing to proximity. Notably, this technique proves particularly effective in managing multiplets, with users granted the ability to modify the radius for examination.
+
+```{r}
+res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
+
+plot(beads)
+with(res_proximityFilter$remaining.centers, 
+     points(res_proximityFilter$remaining.centers$mxx,
+            res_proximityFilter$remaining.centers$myy,
+            col = "darkgreen",
+            pch = 19))
+with(res_proximityFilter$discard,
+     points(res_proximityFilter$discard$mx,
+            res_proximityFilter$discard$my,
+            col = "darkred",
+            pch = 19))
+```
+![4](https://github.com/Brauckhoff/biopixR/assets/121032772/cd810ce0-005e-4ab1-b194-d8e26a836f9c)
+
+When the size filter is applied to the remainder of the beads, both centers and coordinates are taken into account. This algorithm calculates the number of pixels in each labeled object, allowing users to establish limits for rejecting duplicates. It also provides an option for establishing a lower limit.
+
+```{r}
+res_sizeFilter <- sizeFilter(res_proximityFilter,
+                             lowerlimit = 0,
+                             upperlimit = 150)
+
+changePixelColor(beads, res_sizeFilter$remaining.coordinates.s, color = "darkgreen")
+```
+![5](https://github.com/Brauckhoff/biopixR/assets/121032772/a83c46ce-8e68-4aea-9676-569a2720d2c3)
+
+In conclusion, obtaining meaningful information from the filtered dataset is essential. The main findings encompass the number of objects that remained and were discarded, object sizes analyzed via the `sizeFilter`, signal intensity, and area density. The `ResultAnalytics` function of biopixR extracts and calculates the described parameters. It requires input of the data frame with remaining coordinates, cluster size, and the original image obtained through the `sizeFilter` function.
+
+```{r}
+result <- ResultAnalytics(res_sizeFilter)
+result$Summary
+```
+Number_of_Beads | Mean_Size | Mean_intensity | Bead_density | Estimated_rejected | mean_distance 
+--- | --- | --- | --- | --- | ---
+8 | 94.8 | 0.59 | 0.0469 | 6 | 67.1
+
+For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://github.com/Brauckhoff/biopixR/blob/main/vignettes/biopixR.Rmd).
 
 ## Installation
 ```{r}
