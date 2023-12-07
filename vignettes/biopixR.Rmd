@@ -12,11 +12,17 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+<style>
+body {
+text-align: justify}
+</style>
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, 
                       cache = FALSE, comment = NA, verbose = TRUE, 
                       fig.width = 5, fig.height = 5, dev = 'jpeg', 
                       dev.args = list(quality = 25))
+options(digits = 3)
 ```
 
 # Getting started
@@ -127,22 +133,81 @@ res_sizeFilter <- sizeFilter(res_proximityFilter,
 changePixelColor(beads, res_sizeFilter$remaining.coordinates.s, color = "darkgreen")
 ```
 
+The objective of this chapter has been accomplished, as demonstrated by the most recent graph. After eliminating the multiplet with the `proximityFilter`, the doublet has now been removed from the dataset using the `sizeFilter`. To present this outcome, the `changePixelColor` function was once again employed, coloring every remaining pixel. Subsequently, the remaining beads are highlighted in dark green, indicating their successful passage through the filtering process.
+
 ## displaying results
+
+To conclude this chapter, we need to extract meaningful information from the filtered data set. One of the most fundamental results to be displayed after applying a filter is undoubtedly the number of remaining and discarded objects. As the size of the objects has already been analyzed through the `sizeFilter`, this information should also be included in the display. Moreover, the intensity of the signal is a crucial parameter for both beads and any fluorescent image. Finally, it may be of interest to calculate the area density, which represents the number of beads relative to the pixel area of the entire image. To extract this information, the `ResultAnalytics` function from the biopixR package is utilized. This function requires the data frame of the remaining coordinates, the cluster size, and the original image obtained from the `sizeFilter` function as inputs.
 
 ```{r}
 result <- ResultAnalytics(res_sizeFilter)
 result$detailed
 ```
 
+While it's possible to showcase a detailed version of results, featuring individual beads with their cluster number, size, intensity, and coordinates, this presentation method can become quite overwhelming, especially when dealing with larger images containing numerous objects. Consequently, the image results are summarized in a single row, emphasizing the key parameters described earlier.
+
 ```{r}
 result$Summary
 ```
 
+A final note regarding the estimated number of rejected objects: A careful observer may have noticed that the actual count of discarded beads is 7. Explaining this discrepancy requires investigating the algorithm, which is prone to an inevitable deviation. Since the beads are not easily distinguished through straightforward labeling, simple counting, which would offer the most accurate result, is not feasible. Instead, the algorithm uses an automatic `threshold` to collect all TRUE coordinates and counts them. This count is then divided by the mean size of the beads, and after subtracting the count of passing beads, it yields the number of discarded objects. The potential issue arises from overlapping. This is because when beads overlap, their shared area is counted only once in the image, leading to a lower discarded bead count. It is crucial to consider this when relying on this parameter.
+
 ### relative distance
 
-Another important aspect to consider in bioimaging is the relative distance between individual objects. By examining the spatial relationships between the identified objects, researchers can gain valuable insights into their organization and distribution within the image. This information is critical for understanding biological phenomena such as spatial patterns, cell clustering, or the arrangement of microstructures. In the following sections, we present a method that explores the Euclidean distance between objects in order to enable users to investigate and quantify spatial relationships within their bioimages.
+Another important aspect to consider in bioimaging is the relative distance between individual objects. By examining the spatial relationships between the identified objects, researchers can gain valuable insights into their organization and distribution within the image. This information is critical for understanding biological phenomena such as spatial patterns, cell clustering, or the arrangement of microstructures. In the following sections, we present a method that explores the euclidean distance between objects in order to enable users to investigate and quantify spatial relationships within their bioimages.
 
-*in progress*
+To begin this task, we first summarize the remaining coordinates after applying the `sizeFilters` using the data.table package. This process involves computing the centers, which is also a part of the `objectDetection` algorithm. The calculated centers then serve as the initial reference points for measuring the distances between objects.
+
+```{r}
+DT <- data.table(res_sizeFilter$remaining.coordinates.s)
+res_center <- DT[, .(x = mean(x), y = mean(y)), by = cluster]
+```
+
+The relative distance between multiple objects typically refers to the distances between each pair of objects in relation to each other. The method to calculate relative distance depends on the dimensionality of your objects (e.g., 1D, 2D, 3D) and the specific metric you want to use (e.g., Euclidean distance, Manhattan distance). Here, I'll provide a general approach for 2D objects using the Euclidean distance. Assuming you have a set of points in a 2D space (e.g., x, y coordinates), you can calculate the euclidean distance between each pair of points. The formula for euclidean distance between two points \((x_1, y_1)\) and \((x_2, y_2)\) is given by:
+
+\[ \text{Distance} = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2} \]
+
+```{r}
+euclidean_distance <- function(point1, point2) {
+  sqrt((point2$x - point1$x)^2 + (point2$y - point1$y)^2)
+}
+```
+
+Now, let's apply this function on our generated centers. Initially, we create an empty matrix to store the results. Next, we develop a nested for loop to systematically compare each center with every other center, with the exception of comparing a center to itself, resulting in a missing value. This calculation results in a distance matrix.
+
+```{r}
+num_points <- nrow(res_center)
+relative_distances <- matrix(NA, nrow = num_points, ncol = num_points)
+
+for (i in 1:num_points) {
+  for (j in 1:num_points) {
+    if(i == j) {
+      next
+      } else {
+        relative_distances[i, j] <- euclidean_distance(res_center[i, ], res_center[j, ])
+    }
+  }
+}
+
+as.matrix(relative_distances)
+```
+
+After removing missing values, the average relative distance for each center is calculated, which provides individual insight into its distance from the other beads. The resulting values are then added as a new column to the previously presented detailed results, providing further information about the distinct properties of each bead.
+
+```{r}
+for (a in 1:num_points) {
+  result$detailed$relative_distance[a] <- mean(na.omit(relative_distances[a, ]))
+}
+
+result$detailed
+```
+
+As mentioned previously, the detailed table results for a larger image would unavoidably become overly extensive. The same issue is applicable to the matrix. Therefore, to overcome this issue, instead of relying solely on the detailed table results, the mean relative distance is calculated and included in the summary table.
+
+```{r}
+result$Summary$mean_distance <- mean(result$detailed$relative_distance)
+result$Summary
+```
 
 # Case study: beads in droplets - *in progress*
 
