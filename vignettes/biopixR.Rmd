@@ -211,11 +211,79 @@ result$Summary
 
 # Case study: beads in droplets - *in progress*
 
-## dealing with discontinous edges
+To further illustrate the package's capabilities, the following section presents a brief case study mainly focused on addressing discontinuous edges in image analysis. The study showcases the integration of crucial data from two images to determine the quantity of droplets and beads. Additionally, it analyzes the frequency of events where a single bead combines with a droplet in comparison to situations where multiple beads are present in a single droplet. The study employs an algorithm that focuses on filling gaps in discontinuous edges. This is achieved through a combination of detecting line ends and interpolating pixels. By using this comprehensive method, the study provides valuable perspectives on the distribution and correlation between droplets and beads in the provided image. These findings demonstrate the flexibility of the package to handle complex image analysis scenarios.
+
+The following images serve as test subjects for the upcoming study. The first image displays a brightfield view showing droplets, some of which contain beads. The second image on the left displays the fluorescent channel, exhibiting only the beads.
 
 ```{r fig.show='hold', out.width="49%"}
 plot(droplets)
 plot(droplet_beads)
+```
+
+## dealing with discontinous edges
+
+```{r}
+# preprocessing: threshold, negate and mirroring
+thresh <- threshold(droplets, "13%")
+thresh_cimg <- as.cimg(thresh)
+thresh_magick <- cimg2magick(thresh_cimg)
+neg_thresh <- image_negate(thresh_magick)
+neg_thresh_cimg <- magick2cimg(neg_thresh)
+neg_thresh_m <- mirror(neg_thresh_cimg, axis = "x")
+
+# first remove beads from droplet image (important for the linking of
+# discontinuous edges, as otherwise they may connect with the beads)
+# removes objects to prevent reconnecting with labeled regions that
+# are not lines/edges
+beads_to_del <- droplet_beads
+bead_coords <-
+  objectDetection(beads_to_del, alpha = 1, sigma = 0.1)
+
+# transform binary image to array in order to modify individual values
+thresh_array <- as.array(neg_thresh_m)
+for (i in 1:nrow(bead_coords$coordinates)) {
+  thresh_array[bead_coords$coordinates[i, 1],
+               bead_coords$coordinates[i, 2], 1, 1] <- 0
+}
+# removed beads from droplets and retransformation to cimg
+thresh_clean_cimg <- as.cimg(thresh_array)
+
+# same orientation for 'cimg' and 'magick-image'
+thresh_clean_m <- mirror(thresh_clean_cimg, axis = "x")
+thresh_clean_magick <- cimg2magick(thresh_clean_m)
+
+# getting coordinates of all line ends and only diagonal line ends
+mo1_lineends <- image_morphology(thresh_clean_magick,
+                                 "HitAndMiss", "LineEnds")
+
+# transform extracted coordinates into data frames
+lineends_cimg <- magick2cimg(mo1_lineends)
+
+end_points <- which(lineends_cimg == TRUE, arr.ind = TRUE)
+end_points_df <- as.data.frame(end_points)
+colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
+
+changePixelColor(thresh_clean_cimg, end_points_df, color = "green")
+```
+
+
+```{r}
+closed_gaps <- fillLineGaps(droplets,
+                            droplet_beads,
+                            threshold = "13%",
+                            alpha = 1,
+                            sigma = 0.1,
+                            radius = 5,
+                            iterations = 3,
+                            visualize = FALSE)
+```
+
+```{r fig.show='hold', out.width="49%"}
+t2 <- (threshold(droplets, "13%") - closed_gaps)
+coord <- which(t2 == 0, arr.ind = TRUE) 
+changePixelColor(closed_gaps, coord, color = "purple")
+
+closed_gaps |> plot()
 ```
 
 
