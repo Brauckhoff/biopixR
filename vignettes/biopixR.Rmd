@@ -213,4 +213,10 @@ result$Summary
 
 ## dealing with discontinous edges
 
+```{r fig.show='hold', out.width="49%"}
+plot(droplets)
+plot(droplet_beads)
+```
+
+
 ## characterizing partitions 
