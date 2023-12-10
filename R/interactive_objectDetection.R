@@ -4,7 +4,7 @@
 #' objects at varying threshold an smoothing parameters.
 #' @param image image (preferred import: \code{\link[imager]{load.image}})
 #' @param resolution 	resolution of slider
-#' @param return_param Should the final variables for alpha and sigma should be
+#' @param return_param Used to define the final parameter values for alpha and sigma
 #' printed in the console (TRUE or FALSE).
 #' @returns values of alpha and sigma
 #' @import magick
