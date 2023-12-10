@@ -1,6 +1,6 @@
 #' Pixel Interpolation
 #'
-#' Connects two points in a matrix, array or an image.
+#' Connects two points in a matrix, array, or an image.
 #' @param row1 first row: together with col1 coordinate for the first point
 #' @param col1 first column: together with row1 coordinate for the first point
 #' @param row2 second row: together with col2 coordinate for the second point
