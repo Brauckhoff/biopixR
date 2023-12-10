@@ -1,6 +1,6 @@
 #' Change the color of pixels
 #'
-#' Can be used to change color of specified pixels in an image. The coordinates
+#' Can be used to change the color of specified pixels in an image. The coordinates
 #' of the pixels are needed to colorize them.
 #' @param image image (import by \code{\link[imager]{load.image}})
 #' @param coord Coordinates specifying which pixels to be colored (should
