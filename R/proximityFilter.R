@@ -1,4 +1,4 @@
-#' Proximity based exclusion
+#' Proximity-based exclusion
 #'
 #' To detect objects within a defined range of one another, it is necessary to
 #' calculate their centers to determine proximity. Pairs that are too close
