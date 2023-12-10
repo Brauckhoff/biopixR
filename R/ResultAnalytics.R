@@ -1,12 +1,12 @@
 #' Bead Image Summary
 #'
-#' Extracts all important information of the remaining beads. This function
+#' Extracts all important information of the remaining microbeads. This function
 #' summarizes the data obtained by previous functions: objectDetection,
-#' proximityFilter and sizeFilter. Gives information like amount, intensity,
+#' proximityFilter and sizeFilter. Provides information like amount, intensity,
 #' size and density.
 #' @param res_sizeFilter list obtained by the sizeFilter function
 #' @returns list of 2 objects:
-#' 1. summary of whole all beads in the image
+#' 1. summary of all the microbeads in the image
 #' 2. detailed information about every single bead
 #' @import data.table
 #' @examples
@@ -48,7 +48,7 @@ ResultAnalytics <- function(res_sizeFilter) {
     y = intense$y
   )
 
-  # approximation of the amount of discarded pixels
+  # approximate amount of discarded pixels
   # calculate amount of true coordinates
   amount_true <- length(which(threshold(pic)) == TRUE)
   dis_count <- round((amount_true / mean(unlist(cluster_size))) - nrow(intense))
