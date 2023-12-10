@@ -12,23 +12,23 @@
 #' @param lineends_cimg Image with dimensions of the image with discontinuous
 #' edges. Just for giving the dimensions of the output matrix.
 #' @param radius maximal radius that should be scanned for another cluster
-#' @return Binary matrix that can be applied as overlay for example with
+#' @return Binary matrix that can be applied as an overlay, for example with
 #' \code{\link[imager]{imager.combine}} to fill the gaps between line ends.
 #' @details
 #' This function is intended to be part of the fillLineGaps function, which
 #' does the thresholding and line end detection preprocessing. The
 #' adaptiveInterpolation creates a matrix in the dimensions of the original
 #' image. At the beginning there are only background values (0) = black image.
-#' The function then searches for LineEnds and searches a given radius around
+#' The function then searches for LineEnds and looks for a given radius around
 #' this line end for the nearest labeled region. The own cluster of the line
 #' end is of course not considered as nearest neighbor.If another cluster is
 #' found, the interpolatePixels function is used to connect the line end to the
 #' found cluster. This means that specified pixels of the matrix are
 #' transformed to a foreground value of (1). The diagonal line ends get a
-#' special treatment, because for the labeling function the diagonal pixels
+#' special treatment, because for the labeling function,7 the diagonal pixels
 #' are always treated as a separate cluster, which makes them difficult to
 #' reconnect. To deal with this problem, diagonal line ends ignore not only
-#' their own cluster, but also the cluster of the direct neighbor. After that,
+#' their cluster, but also the cluster of the direct neighbor. Thereafter,
 #' the same procedure as before is repeated, where pixel values are changed
 #' according to the interpolatePixel function.
 #' @examples
