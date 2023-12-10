@@ -1,7 +1,7 @@
-#' Size based exclusion
+#' Size-based exclusion
 #'
 #' Calculates the size of the objects in an image and discards objects based
-#' on a lower and a upper size limit. (Input can be obtained by proximityFilter
+#' on a lower and an upper size limit. (Input can be obtained by proximityFilter
 #' function)
 #' @param res_proximityFilter list of 2 objects:
 #' 1. named 'remaining.centers' - containing data frame with center coordinates;
