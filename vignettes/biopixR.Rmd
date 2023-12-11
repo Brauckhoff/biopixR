@@ -130,7 +130,13 @@ res_sizeFilter <- sizeFilter(res_proximityFilter,
 **visualization sizeFilter**:
 
 ```{r}
+DT <- data.table(res_sizeFilter$remaining.coordinates.s)
+res_center <- DT[, .(x = mean(x), y = mean(y)), by = cluster]
+
 changePixelColor(beads, res_sizeFilter$remaining.coordinates.s, color = "darkgreen")
+text(res_center$x,
+     res_center$y,
+     res_center$cluster, col = "grey")
 ```
 
 The objective of this chapter has been accomplished, as demonstrated by the most recent graph. After eliminating the multiplet with the `proximityFilter`, the doublet has now been removed from the dataset using the `sizeFilter`. To present this outcome, the `changePixelColor` function was once again employed, coloring every remaining pixel. Subsequently, the remaining beads are highlighted in dark green, indicating their successful passage through the filtering process.
@@ -222,7 +228,9 @@ plot(droplet_beads)
 
 ## dealing with discontinous edges
 
-```{r}
+In typical fashion for image analysis, this study starts by applying a threshold to the bright-field image. Subsequently, the resulting image uncovers a distinct challenge: the edges of individual partitions are not continuous. In order to differentiate individual partitions and evaluate whether they contain beads, it is crucial to bridge these gaps. Fortunately, the package offers a specialized function, `fillLineGaps`, to address this issue in image analysis. This algorithm identifies line endpoints and connects them to the nearest neighboring edge that is not their own. Additionally, the `objectDetection` function can eliminate specific objects, such as beads. This step is crucial for avoiding the unwanted outcome of line endpoints becoming connected to beads. The code chunks below, derived from the `fillLineGaps` function, visually demonstrating the elimination of beads and the detection of line ends by highlighting them with the `changePixelColor` function.
+
+```{r fig.show='hold', out.width="49%"}
 # preprocessing: threshold, negate and mirroring
 thresh <- threshold(droplets, "13%")
 thresh_cimg <- as.cimg(thresh)
@@ -248,6 +256,13 @@ for (i in 1:nrow(bead_coords$coordinates)) {
 # removed beads from droplets and retransformation to cimg
 thresh_clean_cimg <- as.cimg(thresh_array)
 
+# displaying problem of discontinous edges
+plot(thresh_cimg)
+# displaying removed beads
+plot(thresh_clean_cimg)
+```
+
+```{r}
 # same orientation for 'cimg' and 'magick-image'
 thresh_clean_m <- mirror(thresh_clean_cimg, axis = "x")
 thresh_clean_magick <- cimg2magick(thresh_clean_m)
@@ -263,8 +278,10 @@ end_points <- which(lineends_cimg == TRUE, arr.ind = TRUE)
 end_points_df <- as.data.frame(end_points)
 colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
 
+# highlighted line ends
 changePixelColor(thresh_clean_cimg, end_points_df, color = "green")
 ```
+
 
 
 ```{r}
@@ -286,5 +303,65 @@ changePixelColor(closed_gaps, coord, color = "purple")
 closed_gaps |> plot()
 ```
 
-
 ## characterizing partitions 
+
+```{r}
+lab_partitions <- label(closed_gaps)
+df_lab_part <- as.data.frame(lab_partitions) |>
+  subset(value > 0)
+```
+
+```{r}
+x <- list()
+y <- list()
+value <- list()
+
+
+for (g in 1:nrow(df_lab_part)) {
+  #droplets_array <- as.array(droplets)
+  if (closed_gaps[df_lab_part$x[g], df_lab_part$y[g], 1, 1] == 0) {
+    x[g] <- df_lab_part$x[g]
+    y[g] <- df_lab_part$y[g]
+    value[g] <- df_lab_part$value[g]
+  }
+}
+
+
+clean_lab_df <- data.frame(x = unlist(x),
+                           y = unlist(y),
+                           value = unlist(value))
+```
+
+```{r fig.align='center', out.width="75%"}
+DT_droplet <- data.table(clean_lab_df)
+
+grouped_droplets <-
+  DT_droplet[, .(mx = mean(x), my = mean(y)), by = value]
+
+plot(closed_gaps)
+text(grouped_droplets$mx,
+     grouped_droplets$my,
+     grouped_droplets$value, col = "grey")
+```
+
+```{r}
+bead_partition <- list()
+for(c in 1:nrow(bead_coords$centers)) {
+  partition_pos <- which(
+    clean_lab_df$x == round(bead_coords$centers$mxx[c]) &
+      clean_lab_df$y == round(bead_coords$centers$myy[c])
+  )
+  bead_partition[c] <- clean_lab_df$value[partition_pos]
+}
+```
+
+```{r}
+res_part <- table(as.character(bead_partition))
+
+data.frame(number_of_partitions = nrow(grouped_droplets),
+           empty_partitions = nrow(grouped_droplets) - length(unique(bead_partition)),
+           bead_partitions = length(unique(bead_partition)),
+           single_bead = length(which(res_part == 1)),
+           muliple_beads = length(which(res_part > 1)))
+```
+
