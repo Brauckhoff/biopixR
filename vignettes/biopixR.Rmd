@@ -215,7 +215,7 @@ result$Summary$mean_distance <- mean(result$detailed$relative_distance)
 result$Summary
 ```
 
-# Case study: beads in droplets - *in progress*
+# Case study: beads in droplets
 
 To further illustrate the package's capabilities, the following section presents a case study mainly focused on addressing discontinuous edges in image analysis. The study showcases the integration of crucial data from two images to determine the quantities of droplets and beads. Additionally, it analyzes the frequency of events where a single microbead combines with a droplet in comparison to situations where multiple beads are present in a single droplet. The study employs an algorithm that focuses on filling gaps along discontinuous edges. This is achieved through a combination of detecting line ends and interpolating pixels. By using this comprehensive method, the study provides valuable perspectives on the distribution and correlation between droplets and beads in the provided image. These findings demonstrate the flexibility of the package to handle complex image analysis scenarios.
 
@@ -262,7 +262,7 @@ plot(thresh_cimg)
 plot(thresh_clean_cimg)
 ```
 
-```{r}
+```{r fig.align='center'}
 # same orientation for 'cimg' and 'magick-image'
 thresh_clean_m <- mirror(thresh_clean_cimg, axis = "x")
 thresh_clean_magick <- cimg2magick(thresh_clean_m)
@@ -282,9 +282,9 @@ colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
 changePixelColor(thresh_clean_cimg, end_points_df, color = "green")
 ```
 
+After reviewing part of the `fillLineGaps` function, let us apply it to the example images provided. The first three parameters have already been discussed, which entail converting to binary using thresholding and eliminating identified objects. The alpha and sigma parameters, denoting the threshold and smoothing factor, are derived from the `cannyEdge` function in the imager package. Moving on to the next parameter, the radius determines the maximum pixel range around each line end that ought to be scanned for another edge. The iterations parameter specifies the number of times the algorithm must be applied to the given image. The function incorporates an internal visualization that highlights the pixels added by the algorithm to fill the line gaps.
 
-
-```{r}
+```{r fig.show='hold', out.width="49%"}
 closed_gaps <- fillLineGaps(droplets,
                             droplet_beads,
                             threshold = "13%",
@@ -292,30 +292,31 @@ closed_gaps <- fillLineGaps(droplets,
                             sigma = 0.1,
                             radius = 5,
                             iterations = 3,
-                            visualize = FALSE)
-```
-
-```{r fig.show='hold', out.width="49%"}
-t2 <- (threshold(droplets, "13%") - closed_gaps)
-coord <- which(t2 == 0, arr.ind = TRUE) 
-changePixelColor(closed_gaps, coord, color = "purple")
+                            visualize = TRUE)
 
 closed_gaps |> plot()
 ```
 
-## characterizing partitions 
+As intended, the contours show reduced fragmentation and improved continuity, enabling further analysis to extract meaningful information from the image. While this accomplishment is remarkable, it is important to acknowledge the algorithm's limitations. The algorithm performs admirably in situations where relatively straight lines are fragmented, but challenges arise in more complicated situations. One issue arises from diagonal line endings where, for lines with a one-pixel width, each pixel is treated as a separate cluster. As a result, the direct neighbor meets the reconnection requirements. To address this problem, diagonal line endings will not reconnect with their own cluster or the first direct neighbor's cluster. A different issue arises when there are multiple edges in the scan area. In these instances, the endpoint will reconnect with all of them, potentially generating new small partitions and a clotted-like structure. Despite this, the algorithm successfully manages to close gaps in the majority of cases, rendering it satisfactory for our specific example.
+
+## characterizing partitions - *in progress*
+
+Let's examine whether we can now distinguish individual partitions after reducing the discontinuity. This is achieved by labeling the 'closed_gaps' image. However, we should abstain from visualizing the image at this point, as it would display a multitude of colors since every pixel is labeled.
 
 ```{r}
+# label resulting image with filled gaps
 lab_partitions <- label(closed_gaps)
 df_lab_part <- as.data.frame(lab_partitions) |>
   subset(value > 0)
 ```
 
-```{r}
+In the following chunk,  the labeled edges will be discarded to isolate individual partitions. This will be achieved by only taking into account coordinates that are equal to zero. The end result will be displayed with the use of the `changePixelColor` function, which colors every pixel except for the contours. (It's worth noting that the top-left partition is excluded for unknown reasons.)
+
+```{r fig.align='center'}
+# removing the edges as labeled regions
 x <- list()
 y <- list()
 value <- list()
-
 
 for (g in 1:nrow(df_lab_part)) {
   #droplets_array <- as.array(droplets)
@@ -326,13 +327,18 @@ for (g in 1:nrow(df_lab_part)) {
   }
 }
 
-
+# data frame of labeled partitions (without contours)
 clean_lab_df <- data.frame(x = unlist(x),
                            y = unlist(y),
                            value = unlist(value))
+
+changePixelColor(closed_gaps, clean_lab_df, color = "purple")
 ```
 
-```{r fig.align='center', out.width="75%"}
+Let's summarize the clusters to confirm that they are recognized as separate partitions. This is done by labeling each partition with its cluster number written in the middle, and as intended, the cluster numbers are different for each partition.
+
+```{r fig.align='center', out.width="100%"}
+# summarizing data frame by cluster (value)
 DT_droplet <- data.table(clean_lab_df)
 
 grouped_droplets <-
@@ -341,10 +347,14 @@ grouped_droplets <-
 plot(closed_gaps)
 text(grouped_droplets$mx,
      grouped_droplets$my,
-     grouped_droplets$value, col = "grey")
+     grouped_droplets$value, col = "gray",
+     cex = 0.5)
 ```
 
+Once the partitions have been identified, the main goal is to determine the quantity of beads in each one. This can be achieved without analyzing every single pixel by examining the center coordinates of the beads. Afterwards, each partition is analyzed to confirm which contains coordinates that match a bead center. The result is shown in a brief table containing the cluster number in the first row and the corresponding number of beads in each partition in the second row.
+
 ```{r}
+# checking in which partition the center coordinates of the beads are present
 bead_partition <- list()
 for(c in 1:nrow(bead_coords$centers)) {
   partition_pos <- which(
@@ -353,15 +363,23 @@ for(c in 1:nrow(bead_coords$centers)) {
   )
   bead_partition[c] <- clean_lab_df$value[partition_pos]
 }
+res_part <- table(as.character(bead_partition))
+res_part
 ```
 
-```{r}
-res_part <- table(as.character(bead_partition))
+**At last the results of this case study are presented**:
 
+```{r}
 data.frame(number_of_partitions = nrow(grouped_droplets),
            empty_partitions = nrow(grouped_droplets) - length(unique(bead_partition)),
            bead_partitions = length(unique(bead_partition)),
            single_bead = length(which(res_part == 1)),
            muliple_beads = length(which(res_part > 1)))
 ```
+
+```{r fig.align='center'}
+plot(droplets)
+```
+
+## analysis of the partition size - *in progress*
 
