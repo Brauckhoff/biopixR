@@ -27,9 +27,9 @@ options(digits = 3)
 
 # Getting started
 
-The biopixR package includes an image of microparticles (microbeads) as an example to demonstrate its analytical and processing abilities for biological imagery. This sample image displays the package's features, enabling users to experiment with image analysis and manipulation within the contexts of biotechnology and life sciences. Researchers and practitioners can utilize this illustration to comprehend the application of biopixR to their individual imaging requirements, whether pertaining to cell biology, microscopy, or any other biological imaging applications.
+The biopixR package includes an image of microbeads as an example to demonstrate its analytical and processing abilities for biological imagery. This sample image displays the package's features, enabling users to experiment with image analysis and manipulation within the contexts of biotechnology and life sciences. Researchers and practitioners can utilize this illustration to comprehend the application of biopixR to their individual imaging requirements, whether pertaining to cell biology, microscopy, or any other biological imaging applications.
 
-## detecting objects in an image
+## Detecting objects in an image
 
 ```{r beads}
 library(biopixR)
@@ -42,13 +42,13 @@ As the biopixR package primarily uses the image processing packages imager and m
 class(beads)
 ```
 
-The objective of this task is to extract important information from an image consisting of beads. As a preliminary step, it is essential to distinguish between individual beads and acquire their corresponding coordinates or positions. The `objectDetection` function uses edge detection and labeling techniques to gather elaborate information about the beads, allowing for the identification and differentiation of individual particles according to their unique edges. This procedure assists in deriving precise coordinates for every microbead in the image, which sets the groundwork for subsequent analysis and characterization of the microparticles within the biopixR package.
+The objective of this task is to extract important information from an image consisting of microbeads. As a preliminary step, it is essential to distinguish between individual microbeads and acquire their corresponding coordinates or positions. The `objectDetection` function uses edge detection and labeling techniques to gather elaborate information about the microbeads, allowing for the identification and differentiation of individual particles according to their unique edges. This procedure assists in deriving precise coordinates for every microbead in the image, which sets the groundwork for subsequent analysis and characterization of the microbeads within the biopixR package.
 
 ```{r objectDetection}
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
 ```
 
-This function generates a list of objects. Let's examine the specific outcomes and explore methods for visualizing them, starting with the center coordinates of the beads:
+This function generates a list of objects. Let's examine the specific outcomes and explore methods for visualizing them, starting with the center coordinates of the microbeads:
 
 ```{r visualization_1}
 plot(beads)
@@ -59,7 +59,7 @@ with(res_objectDetection$centers,
             pch = 19))
 ```
 
-Upon observation, it is apparent that each individual microbead is correctly identified with a singular point at its center and differentiated by varying colors to indicate their distinctiveness, which meets our intended objective. Nevertheless, the markings of clotted beads, which are later referred to as doublets or multiplets, do not adhere to the expected pattern. Doublets being identified as a single entity is a logical consequence of their edges vanishing along the contact surface, resulting in the observed behavior. The multiplets make this matter more complex. The challenge of accurately identifying the edges between beads is similar to that of doublets. On the other hand, the `objectDetection` function utilizes labeling post edge detection, employing a filling process similar to the EBImage `fillHull` function. In this step, the function does not recognize the space within the multiplet as a single area to be filled, resulting in an unfilled space. Then, during the subsequent labeling, multiple 'centers' are assigned to the still-present edges, generating several detected points along the edges of the multiplet. The next visualization displays the latter phenomenon.
+Upon observation, it is apparent that each individual microbead is correctly identified with a singular point at its center and differentiated by varying colors to indicate their distinctiveness, which meets our intended objective. Nevertheless, the markings of clotted microbeads, which are later referred to as doublets or multiplets, do not adhere to the expected pattern. Doublets being identified as a single entity is a logical consequence of their edges vanishing along the contact surface, resulting in the observed behavior. The multiplets make this matter more complex. The challenge of accurately identifying the edges between microbeads is similar to that of doublets. On the other hand, the `objectDetection` function utilizes labeling post edge detection, employing a filling process similar to the EBImage `fillHull` function. In this step, the function does not recognize the space within the multiplet as a single area to be filled, resulting in an unfilled space. Then, during the subsequent labeling, multiple 'centers' are assigned to the still-present edges, generating several detected points along the edges of the multiplet. The next visualization displays the latter phenomenon.
 
 Let's examine the next output from `objectDetection`. This function captures the coordinates of labeled regions, providing precise details about the position of each microbead. By leveraging another function within the package, `changePixelColor`, we can selectively color-specific coordinates in a cimg. Thus, we can apply this function to tint all the extracted coordinates in the microbead image and assess whether the outcome aligns with our expectations.
 
@@ -67,7 +67,7 @@ Let's examine the next output from `objectDetection`. This function captures the
 changePixelColor(beads, res_objectDetection$coordinates, color = "purple")
 ```
 
-As expected, all individual beads (singlets) and the doublet are fully colored, indicating the successful collection of all related coordinates. As previously mentioned, the collection procedure solely evaluates the contours of the multiplet. Although unintentional, this result offers an advantage, as it is crucial to exclude multiplets and doublets from subsequent analysis due to their proximity. As they are in close proximity, there is a possibility of inducing fluorescence in one another, thereby producing misleading signals and contributing to false positives during analysis.
+As expected, all individual microbeads (singlets) and the doublet are fully colored, indicating the successful collection of all related coordinates. As previously mentioned, the collection procedure solely evaluates the contours of the multiplet. Although unintentional, this result offers an advantage, as it is crucial to exclude multiplets and doublets from subsequent analysis due to their proximity. As they are in close proximity, there is a possibility of inducing fluorescence in one another, thereby producing misleading signals and contributing to false positives during analysis.
 
 The function incorporates an internal visualization feature that utilizes the `drawcircles` function from the imager package to outline circles around the identified centers, replicating the initial plot. 
 
@@ -75,11 +75,11 @@ The function incorporates an internal visualization feature that utilizes the `d
 res_objectDetection$marked_beads |> plot()
 ```
 
-Nonetheless, a crucial differentiation occurs in obtaining the highlighted beads as a cimg, which opens up possibilities for the creation of an interactive tool using tcltk. This step facilitates the development of an interactive interface, empowering users to dynamically explore the adjustment of various variables and observe the corresponding shifts in detected centers. The interactive interface is presented through the `interactive_objectDetection` function within the biopixR package.
+Nonetheless, a crucial differentiation occurs in obtaining the highlighted microbeads as a cimg, which opens up possibilities for the creation of an interactive tool using tcltk. This step facilitates the development of an interactive interface, empowering users to dynamically explore the adjustment of various variables and observe the corresponding shifts in detected centers. The interactive interface is presented through the `interactive_objectDetection` function within the biopixR package.
 
-## filter beads according to size and proximity
+## Filter microbeads according to size and proximity
 
-As stated previously, it is crucial to remove doublets and multiplets prior to analysis. This objective will be addressed in the next section, where we will use the `proximityFilter` to achieve this goal. The function works by examining each collected center and scanning a specific radius for additional centers. If another center is detected within this range, both are discarded due to their proximity. This method is especially efficient in dealing with multiplets as the identified centers along the contours are frequently found in proximity. Furthermore, even beads that were at first identified as singles are tested to ensure that there are no neighboring centers within the defined range. Users can customize the radius for this examination as required.
+As stated previously, it is crucial to remove doublets and multiplets prior to analysis. This objective will be addressed in the next section, where we will use the `proximityFilter` to achieve this goal. The function works by examining each collected center and scanning a specific radius for additional centers. If another center is detected within this range, both are discarded due to their proximity. This method is especially efficient in dealing with multiplets as the identified centers along the contours are frequently found in proximity. Furthermore, even microbeads that were at first identified as singles are tested to ensure that there are no neighboring centers within the defined range. Users can customize the radius for this examination as required.
 
 ```{r}
 res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
@@ -101,7 +101,7 @@ with(res_proximityFilter$discard,
             pch = 19))
 ```
 
-As expected, the centers that were found along the contours of the multiplet are now eliminated due to their proximity. To conduct a small experiment, I will increase the radius for the subsequent plot, intending to discard not only the multiplet but also the two beads in the upper-middle section.
+As expected, the centers that were found along the contours of the multiplet are now eliminated due to their proximity. To conduct a small experiment, I will increase the radius for the subsequent plot, intending to discard not only the multiplet but also the two microbeads in the upper-middle section.
 
 ```{r}
 small_experiment <- proximityFilter(res_objectDetection, radius = 13)
@@ -119,7 +119,7 @@ with(small_experiment$discard,
             pch = 19))
 ```
 
-After the successful completion of the small experiment, our attention now returns to the main objective of removing the doublets. To achieve this, the `sizeFilter` will be employed on the remaining beads, utilizing both the centers and all coordinates. The `sizeFilter` algorithm calculates the number of pixels in each labeled object, allowing the user to set individual limits to discard doublets. In scenarios where the contour of the multiplet might be perceived as a single region, removal based on distance alone may not be effective. Therefore, the `sizeFilter` provides an additional option by allowing the establishment of a lower limit.
+After the successful completion of the small experiment, our attention now returns to the main objective of removing the doublets. To achieve this, the `sizeFilter` will be employed on the remaining microbeads, utilizing both the centers and all coordinates. The `sizeFilter` algorithm calculates the number of pixels in each labeled object, allowing the user to set individual limits to discard doublets. In scenarios where the contour of the multiplet might be perceived as a single region, removal based on distance alone may not be effective. Therefore, the `sizeFilter` provides an additional option by allowing the establishment of a lower limit.
 
 ```{r}
 res_sizeFilter <- sizeFilter(res_proximityFilter,
@@ -139,26 +139,26 @@ text(res_center$x,
      res_center$cluster, col = "grey")
 ```
 
-The objective of this chapter has been accomplished, as demonstrated by the most recent graph. After eliminating the multiplet with the `proximityFilter`, the doublet has now been removed from the dataset using the `sizeFilter`. To present this outcome, the `changePixelColor` function was once again employed, coloring every remaining pixel. Subsequently, the remaining beads are highlighted in dark green, indicating their successful passage through the filtering process.
+The objective of this chapter has been accomplished, as demonstrated by the most recent graph. After eliminating the multiplet with the `proximityFilter`, the doublet has now been removed from the dataset using the `sizeFilter`. To present this outcome, the `changePixelColor` function was once again employed, coloring every remaining pixel. Subsequently, the remaining microbeads are highlighted in dark green, indicating their successful passage through the filtering process.
 
-## displaying results
+## Displaying results
 
-To conclude this chapter, we need to extract meaningful information from the filtered data set. One of the most fundamental results to be displayed after applying a filter is undoubtedly the number of remaining and discarded objects. As the size of the objects has already been analyzed through the `sizeFilter`, this information should also be included in the display. Moreover, the intensity of the signal is a crucial parameter for both beads and any fluorescent image. Finally, it may be of interest to calculate the area density, which represents the number of beads relative to the pixel area of the entire image. To extract this information, the `ResultAnalytics` function from the biopixR package is utilized. This function requires the data frame of the remaining coordinates, the cluster size, and the original image obtained from the `sizeFilter` function as inputs.
+To conclude this chapter, we need to extract meaningful information from the filtered data set. One of the most fundamental results to be displayed after applying a filter is undoubtedly the number of remaining and discarded objects. As the size of the objects has already been analyzed through the `sizeFilter`, this information should also be included in the display. Moreover, the intensity of the signal is a crucial parameter for both microbeads and any fluorescent image. Finally, it may be of interest to calculate the area density, which represents the number of microbeads relative to the pixel area of the entire image. To extract this information, the `ResultAnalytics` function from the biopixR package is utilized. This function requires the data frame of the remaining coordinates, the cluster size, and the original image obtained from the `sizeFilter` function as inputs.
 
 ```{r}
 result <- ResultAnalytics(res_sizeFilter)
 result$detailed
 ```
 
-While it's possible to showcase a detailed version of results featuring individual beads with their cluster number, size, intensity, and coordinates, this presentation method can become quite overwhelming, especially when dealing with larger images containing numerous objects. Consequently, the image results are summarized in a single row, emphasizing the key parameters described earlier.
+While it's possible to showcase a detailed version of results featuring individual microbeads with their cluster number, size, intensity, and coordinates, this presentation method can become quite overwhelming, especially when dealing with larger images containing numerous objects. Consequently, the image results are summarized in a single row, emphasizing the key parameters described earlier.
 
 ```{r}
 result$Summary
 ```
 
-A final note regarding the estimated number of rejected objects: A careful observer may have noticed that the actual count of discarded beads is 7. Explaining this discrepancy requires investigating the algorithm, which is prone to an inevitable deviation. Since the beads are not easily distinguished through straightforward labeling, simple counting, which would offer the most accurate result, is not feasible. Instead, the algorithm uses an automatic `threshold` to collect all TRUE coordinates and count them. This count is then divided by the mean size of the beads, and after subtracting the count of passing beads, it yields the number of discarded objects. The potential issue arises from overlapping. This is because when beads overlap, their shared area is counted only once in the image, leading to a lower discarded microbead count. It is crucial to consider this when relying on this parameter.
+A final note regarding the estimated number of rejected objects: A careful observer may have noticed that the actual count of discarded microbeads is 7. Explaining this discrepancy requires investigating the algorithm, which is prone to an inevitable deviation. Since the microbeads are not easily distinguished through straightforward labeling, simple counting, which would offer the most accurate result, is not feasible. Instead, the algorithm uses an automatic `threshold` to collect all TRUE coordinates and count them. This count is then divided by the mean size of the microbeads, and after subtracting the count of passing microbeads, it yields the number of discarded objects. The potential issue arises from overlapping. This is because when microbeads overlap, their shared area is counted only once in the image, leading to a lower discarded microbead count. It is crucial to consider this when relying on this parameter.
 
-### relative distance
+### Relative distance between microparticles
 
 Another important aspect to consider in bioimaging is the relative distance between individual objects. By examining the spatial relationships between the identified objects, researchers can gain valuable insights into their organization and distribution within the image. This information is critical for understanding biological phenomena such as spatial patterns, cell clustering, or the arrangement of microstructures. In the following sections, we present a method that explores the Euclidean distance between objects to enable users to investigate and quantify spatial relationships within their bioimages.
 
@@ -198,7 +198,7 @@ for (i in 1:num_points) {
 as.matrix(relative_distances)
 ```
 
-After removing missing values, the average relative distance for each center is calculated, which provides individual insight into its distance from the other beads. The resulting values are then added as a new column to the previously presented detailed results, providing further information about the distinct properties of each microbead.
+After removing missing values, the average relative distance for each center is calculated, which provides individual insight into its distance from the other microbeads. The resulting values are then added as a new column to the previously presented detailed results, providing further information about the distinct properties of each microbead.
 
 ```{r}
 for (a in 1:num_points) {
@@ -215,20 +215,20 @@ result$Summary$mean_distance <- mean(result$detailed$relative_distance)
 result$Summary
 ```
 
-# Case study: beads in droplets
+# Case study: microbeads in droplets
 
-To further illustrate the package's capabilities, the following section presents a case study mainly focused on addressing discontinuous edges in image analysis. The study showcases the integration of crucial data from two images to determine the quantities of droplets and beads. Additionally, it analyzes the frequency of events where a single microbead combines with a droplet in comparison to situations where multiple beads are present in a single droplet. The study employs an algorithm that focuses on filling gaps along discontinuous edges. This is achieved through a combination of detecting line ends and interpolating pixels. By using this comprehensive method, the study provides valuable perspectives on the distribution and correlation between droplets and beads in the provided image. These findings demonstrate the flexibility of the package to handle complex image analysis scenarios.
+To further illustrate the package's capabilities, the following section presents a case study mainly focused on addressing discontinuous edges in image analysis. The study showcases the integration of crucial data from two images to determine the quantities of droplets and microbeads. Additionally, the analysis aims to investigate the frequency of events in which a single microbead joins a droplet, as opposed to situations in which multiple microbeads are present in a single droplet. The study employs an algorithm that focuses on filling gaps along discontinuous edges. This is achieved through a combination of detecting line ends and interpolating pixels. By using this comprehensive method, the study provides valuable perspectives on the distribution between droplets and microbeads in the provided image. These findings demonstrate the flexibility of the package to handle complex image analysis scenarios.
 
-The following images serve as test subjects for the upcoming study. The first image displays a brightfield view showing droplets, some of which contain beads. The second image on the left displays the fluorescent channel, exhibiting only the beads.
+The following images serve as test subjects for the upcoming study. The first image displays a brightfield view showing droplets, some of which contain microbeads. The second image on the left displays the fluorescent channel, exhibiting only the microbeads.
 
 ```{r fig.show='hold', out.width="49%"}
 plot(droplets)
 plot(droplet_beads)
 ```
 
-## dealing with discontinous edges
+## Dealing with discontinous edges
 
-In typical fashion for image analysis, this study starts by applying a threshold to the bright-field image. Subsequently, the resulting image uncovers a distinct challenge: the edges of individual partitions are not continuous. In order to differentiate individual partitions and evaluate whether they contain beads, it is crucial to bridge these gaps. Fortunately, the package offers a specialized function, `fillLineGaps`, to address this issue in image analysis. This algorithm identifies line endpoints and connects them to the nearest neighboring edge that is not their own. Additionally, the `objectDetection` function can eliminate specific objects, such as beads. This step is crucial for avoiding the unwanted outcome of line endpoints becoming connected to beads. The code chunks below, derived from the `fillLineGaps` function, visually demonstrating the elimination of beads and the detection of line ends by highlighting them with the `changePixelColor` function.
+In typical fashion for image analysis, this study starts by applying a threshold to the bright-field image. Subsequently, the resulting image uncovers a distinct challenge: the edges of individual partitions are not continuous. In order to differentiate individual partitions and evaluate whether they contain microbeads, it is crucial to bridge these gaps. Fortunately, the package offers a specialized function, `fillLineGaps`, to address this issue in image analysis. This algorithm identifies line endpoints and connects them to the nearest neighboring edge that is not their own. Additionally, the `objectDetection` function can eliminate specific objects, such as microbeads. This step is crucial for avoiding the unwanted outcome of line ends becoming connected to microbeads. The code chunks below, derived from the `fillLineGaps` function, visually demonstrating the elimination of microbeads and the detection of line ends by highlighting them with the `changePixelColor` function.
 
 ```{r fig.show='hold', out.width="49%"}
 # preprocessing: threshold, negate and mirroring
@@ -239,8 +239,8 @@ neg_thresh <- image_negate(thresh_magick)
 neg_thresh_cimg <- magick2cimg(neg_thresh)
 neg_thresh_m <- mirror(neg_thresh_cimg, axis = "x")
 
-# first remove beads from droplet image (important for the linking of
-# discontinuous edges, as otherwise they may connect with the beads)
+# first remove microbeads from droplet image (important for the linking of
+# discontinuous edges, as otherwise they may connect with the microbeads)
 # removes objects to prevent reconnecting with labeled regions that
 # are not lines/edges
 beads_to_del <- droplet_beads
@@ -253,12 +253,12 @@ for (i in 1:nrow(bead_coords$coordinates)) {
   thresh_array[bead_coords$coordinates[i, 1],
                bead_coords$coordinates[i, 2], 1, 1] <- 0
 }
-# removed beads from droplets and retransformation to cimg
+# removed microbeads from droplets and retransformation to cimg
 thresh_clean_cimg <- as.cimg(thresh_array)
 
 # displaying problem of discontinous edges
 plot(thresh_cimg)
-# displaying removed beads
+# displaying removed microbeads
 plot(thresh_clean_cimg)
 ```
 
@@ -267,11 +267,11 @@ plot(thresh_clean_cimg)
 thresh_clean_m <- mirror(thresh_clean_cimg, axis = "x")
 thresh_clean_magick <- cimg2magick(thresh_clean_m)
 
-# getting coordinates of all line ends and only diagonal line ends
+# getting coordinates of all line ends
 mo1_lineends <- image_morphology(thresh_clean_magick,
                                  "HitAndMiss", "LineEnds")
 
-# transform extracted coordinates into data frames
+# transform extracted coordinates into data frame
 lineends_cimg <- magick2cimg(mo1_lineends)
 
 end_points <- which(lineends_cimg == TRUE, arr.ind = TRUE)
@@ -282,7 +282,7 @@ colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
 changePixelColor(thresh_clean_cimg, end_points_df, color = "green")
 ```
 
-After reviewing part of the `fillLineGaps` function, let us apply it to the example images provided. The first three parameters have already been discussed, which entail converting to binary using thresholding and eliminating identified objects. The alpha and sigma parameters, denoting the threshold and smoothing factor, are derived from the `cannyEdge` function in the imager package. Moving on to the next parameter, the radius determines the maximum pixel range around each line end that ought to be scanned for another edge. The iterations parameter specifies the number of times the algorithm must be applied to the given image. The function incorporates an internal visualization that highlights the pixels added by the algorithm to fill the line gaps.
+After reviewing part of the `fillLineGaps` function, let us apply it to the example images provided. The first three parameters have already been discussed, which entail converting to binary using thresholding and eliminating identified objects. The alpha and sigma parameters, denoting the threshold and smoothing factor, are derived from the `cannyEdge` function in the imager package. Moving on to the next parameter, the radius determines the maximum pixel range around each line end that ought to be scanned for another edge. The iterations parameter specifies the number of times the algorithm will be applied to the given image. The function incorporates an internal visualization that highlights the pixels added by the algorithm to fill the line gaps. In the following images the visualization and the result of the function are displayed.
 
 ```{r fig.show='hold', out.width="49%"}
 closed_gaps <- fillLineGaps(droplets,
@@ -299,9 +299,9 @@ closed_gaps |> plot()
 
 As intended, the contours show reduced fragmentation and improved continuity, enabling further analysis to extract meaningful information from the image. While this accomplishment is remarkable, it is important to acknowledge the algorithm's limitations. The algorithm performs admirably in situations where relatively straight lines are fragmented, but challenges arise in more complicated situations. One issue arises from diagonal line endings where, for lines with a one-pixel width, each pixel is treated as a separate cluster. As a result, the direct neighbor meets the reconnection requirements. To address this problem, diagonal line endings will not reconnect with their own cluster or the first direct neighbor's cluster. A different issue arises when there are multiple edges in the scan area. In these instances, the endpoint will reconnect with all of them, potentially generating new small partitions and a clotted-like structure. Despite this, the algorithm successfully manages to close gaps in the majority of cases, rendering it satisfactory for our specific example.
 
-## characterizing partitions - *in progress*
+## Characterizing partitions
 
-Let's examine whether we can now distinguish individual partitions after reducing the discontinuity. This is achieved by labeling the 'closed_gaps' image. However, we should abstain from visualizing the image at this point, as it would display a multitude of colors since every pixel is labeled.
+Having resolved the initial difficulty of the discontinuous edges, the focus returns to the characterization of the partitions. Let's examine whether we can now distinguish individual partitions after reducing the discontinuity. This is achieved by labeling the 'closed_gaps' image. However, we should abstain from visualizing the image at this point, as it would display a multitude of colors since every pixel should be labeled.
 
 ```{r}
 # label resulting image with filled gaps
@@ -310,7 +310,7 @@ df_lab_part <- as.data.frame(lab_partitions) |>
   subset(value > 0)
 ```
 
-In the following chunk,  the labeled edges will be discarded to isolate individual partitions. This will be achieved by only taking into account coordinates that are equal to zero. The end result will be displayed with the use of the `changePixelColor` function, which colors every pixel except for the contours. (It's worth noting that the top-left partition is excluded for unknown reasons.)
+In the following section, the labeled edges will be discarded to isolate individual partitions. This will be achieved by only taking into account coordinates that are equal to zero. The end result will be displayed with the use of the `changePixelColor` function, which colors every pixel except for the contours. (It's worth noting that the top-left partition is excluded for unknown reasons.)
 
 ```{r fig.align='center'}
 # removing the edges as labeled regions
@@ -335,7 +335,7 @@ clean_lab_df <- data.frame(x = unlist(x),
 changePixelColor(closed_gaps, clean_lab_df, color = "purple")
 ```
 
-Let's summarize the clusters to confirm that they are recognized as separate partitions. This is done by labeling each partition with its cluster number written in the middle, and as intended, the cluster numbers are different for each partition.
+Let's summarize the clusters to validate their recognition as distinct partitions. This is done by grouping the data by cluster and calculating the mean coordinates using the data.table package. The resulting labeling of each partition contains its cluster number in the center, and as desired, each partition is distinguished by a unique cluster number.
 
 ```{r fig.align='center', out.width="100%"}
 # summarizing data frame by cluster (value)
@@ -351,10 +351,10 @@ text(grouped_droplets$mx,
      cex = 0.5)
 ```
 
-Once the partitions have been identified, the main goal is to determine the quantity of beads in each one. This can be achieved without analyzing every single pixel by examining the center coordinates of the beads. Afterwards, each partition is analyzed to confirm which contains coordinates that match a bead center. The result is shown in a brief table containing the cluster number in the first row and the corresponding number of beads in each partition in the second row.
+Once the partitions have been identified, the main goal is to determine the quantity of microbeads in each one. This can be achieved without analyzing every single pixel by using the center coordinates of the microbeads. Each partition is analyzed to confirm which contains coordinates that match a microbead center. The result is shown in a brief table containing the cluster number in the first row and the corresponding number of microbeads in each partition in the second row.
 
 ```{r}
-# checking in which partition the center coordinates of the beads are present
+# checking in which partition the center coordinates of the microbeads are present
 bead_partition <- list()
 for(c in 1:nrow(bead_coords$centers)) {
   partition_pos <- which(
@@ -367,7 +367,7 @@ res_part <- table(as.character(bead_partition))
 res_part
 ```
 
-**At last the results of this case study are presented**:
+As previously mentioned, this table may be overly extensive and difficult to extract information from at first glance. Therefore, a brief data frame is produced, presenting only the most essential information collected from the two images. Moreover, for reference, the initial image of droplets that contain the microbeads is presented below.
 
 ```{r}
 data.frame(number_of_partitions = nrow(grouped_droplets),
@@ -381,5 +381,5 @@ data.frame(number_of_partitions = nrow(grouped_droplets),
 plot(droplets)
 ```
 
-## analysis of the partition size - *in progress*
+### Analysis of the partition size - *in progress*
 
