@@ -14,7 +14,7 @@ The rise of high-resolution imaging technologies has led to an exponential incre
 This project aims to meet the immediate need for effective bead microparticle analysis and contribute to the broader field of image processing methodologies in the R programming environment. By providing a comprehensive and adaptable framework, the work empowers researchers and practitioners to extract meaningful insights from image data, thus enhancing our understanding of bead microparticles and their diverse applications.
 
 
-## Examples
+## Example I
 
 The objective of this task is to extract important data from an image of beads. The first step involves identifying individual beads and acquiring their coordinates using the `objectDetection` function, utilizing edge detection and labeling for thorough analysis and identification of distinct edges. This will enable precise coordinate extraction and provide a basis for further analysis using the biopixR package.
 
@@ -73,7 +73,6 @@ changePixelColor(beads, res_sizeFilter$remaining.coordinates.s, color = "darkgre
 ![4 1](https://github.com/Brauckhoff/biopixR/assets/121032772/e4c93b06-dbf4-4924-94be-fafd311b3918)
 
 
-
 In conclusion, obtaining meaningful information from the filtered dataset is essential. The main findings encompass the number of objects that remained and were discarded, object sizes analyzed via the `sizeFilter`, signal intensity, and area density. The `ResultAnalytics` function of biopixR extracts and calculates the described parameters. It requires input of the data frame with remaining coordinates, cluster size, and the original image obtained through the `sizeFilter` function.
 
 ```{r}
@@ -84,13 +83,92 @@ Number_of_Beads | Mean_Size | Mean_intensity | Bead_density | Estimated_rejected
 --- | --- | --- | --- | --- | ---
 8 | 94.8 | 0.59 | 0.0469 | 6 | 67.1
 
+
 For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://github.com/Brauckhoff/biopixR/blob/main/vignettes/biopixR.Rmd).
 
+
+## Example II
+
+The objective of this example is to address discontinuous edges by filling gaps in lines. To demonstrate the versatility of the package, an algorithm is used to fill gaps in these discontinuous edges, providing valuable insights into the distribution of droplets and microbeads.
+
+```{r}
+threshold(droplets, "13%") |> plot()
+```
+![5 1](https://github.com/Brauckhoff/biopixR/assets/121032772/95102d49-9f78-4f86-884c-13c6160ec75d)
+
+
+
+
+```{r}
+thresh_cimg <- as.cimg(thresh)
+thresh_magick <- cimg2magick(thresh_cimg)
+neg_thresh <- image_negate(thresh_magick)
+neg_thresh_cimg <- magick2cimg(neg_thresh)
+neg_thresh_m <- mirror(neg_thresh_cimg, axis = "x")
+neg_thresh_m |> plot()
+```
+![5 3](https://github.com/Brauckhoff/biopixR/assets/121032772/f993ac0a-b682-4d8c-a3bd-6c5458edab01)
+
+
+```{r}
+# same orientation for 'cimg' and 'magick-image'
+thresh_clean_m <- mirror(neg_thresh_m, axis = "x")
+thresh_clean_magick <- cimg2magick(thresh_clean_m)
+
+# getting coordinates of all line ends
+mo1_lineends <- image_morphology(thresh_clean_magick,
+                                 "HitAndMiss", "LineEnds")
+
+# transform extracted coordinates into data frame
+lineends_cimg <- magick2cimg(mo1_lineends)
+
+end_points <- which(lineends_cimg == TRUE, arr.ind = TRUE)
+end_points_df <- as.data.frame(end_points)
+colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
+
+# highlighted line ends
+changePixelColor(neg_thresh_m, end_points_df, color = "green")
+```
+![6 2](https://github.com/Brauckhoff/biopixR/assets/121032772/7e8be967-7ada-4f1e-a59d-6139623bc16b)
+
+
+```{r}
+closed_gaps <- fillLineGaps(droplets,
+                            droplet_beads,
+                            threshold = "13%",
+                            alpha = 1,
+                            sigma = 0.1,
+                            radius = 5,
+                            iterations = 3,
+                            visualize = TRUE)
+
+closed_gaps |> plot()
+```
+![7 1](https://github.com/Brauckhoff/biopixR/assets/121032772/f691ca38-af52-4941-abb3-c98ec7c26ae2)
+
+
+
+
+![8 3](https://github.com/Brauckhoff/biopixR/assets/121032772/4714dcfa-0d69-48d9-8267-771d55c24c08)
+
+
+
+
+partitions | empty_partitions | bead_partitions | single_bead | multiple_beads  
+--- | --- | --- | --- | --- 
+125 | 121 | 4 | 3 | 1 
+
+
+For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://github.com/Brauckhoff/biopixR/blob/main/vignettes/biopixR.Rmd).
+
+
 ## Installation
+
 ```{r}
 install.package("devtools")
 devtools::install_github("Brauckhoff/biopixR")
 ```
+
 
 # Related Research
 
