@@ -20,7 +20,7 @@ Cimg with changed colors at desired positions and
 plot of the cimg
 }
 \description{
-Can be used to change color of specified pixels in an image. The coordinates
+Can be used to change the color of specified pixels in an image. The coordinates
 of the pixels are needed to colorize them.
 }
 \examples{

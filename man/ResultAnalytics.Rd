@@ -12,14 +12,14 @@ ResultAnalytics(res_sizeFilter)
 \value{
 list of 2 objects:
 \enumerate{
-\item summary of whole all beads in the image
+\item summary of all the microbeads in the image
 \item detailed information about every single bead
 }
 }
 \description{
-Extracts all important information of the remaining beads. This function
+Extracts all important information of the remaining microbeads. This function
 summarizes the data obtained by previous functions: objectDetection,
-proximityFilter and sizeFilter. Gives information like amount, intensity,
+proximityFilter and sizeFilter. Provides information like amount, intensity,
 size and density.
 }
 \examples{

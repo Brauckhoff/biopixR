@@ -2,7 +2,7 @@
 % Please edit documentation in R/proximityFilter.R
 \name{proximityFilter}
 \alias{proximityFilter}
-\title{Proximity based exclusion}
+\title{Proximity-based exclusion}
 \usage{
 proximityFilter(res_objectDetection, radius = 10)
 }

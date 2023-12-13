@@ -279,7 +279,7 @@ end_points_df <- as.data.frame(end_points)
 colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
 
 # highlighted line ends
-changePixelColor(thresh_clean_cimg, end_points_df, color = "green")
+vis_lineend <- changePixelColor(thresh_clean_cimg, end_points_df, color = "green")
 ```
 
 After reviewing part of the `fillLineGaps` function, let us apply it to the example images provided. The first three parameters have already been discussed, which entail converting to binary using thresholding and eliminating identified objects. The alpha and sigma parameters, denoting the threshold and smoothing factor, are derived from the `cannyEdge` function in the imager package. Moving on to the next parameter, the radius determines the maximum pixel range around each line end that ought to be scanned for another edge. The iterations parameter specifies the number of times the algorithm will be applied to the given image. The function incorporates an internal visualization that highlights the pixels added by the algorithm to fill the line gaps. In the following images the visualization and the result of the function are displayed.
@@ -298,6 +298,24 @@ closed_gaps |> plot()
 ```
 
 As intended, the contours show reduced fragmentation and improved continuity, enabling further analysis to extract meaningful information from the image. While this accomplishment is remarkable, it is important to acknowledge the algorithm's limitations. The algorithm performs admirably in situations where relatively straight lines are fragmented, but challenges arise in more complicated situations. One issue arises from diagonal line endings where, for lines with a one-pixel width, each pixel is treated as a separate cluster. As a result, the direct neighbor meets the reconnection requirements. To address this problem, diagonal line endings will not reconnect with their own cluster or the first direct neighbor's cluster. A different issue arises when there are multiple edges in the scan area. In these instances, the endpoint will reconnect with all of them, potentially generating new small partitions and a clotted-like structure. Despite this, the algorithm successfully manages to close gaps in the majority of cases, rendering it satisfactory for our specific example.
+
+### Animated visualization of the `fillLineGaps` algorithm
+
+```{r fig.align='center'}
+first_img <- vis_lineend
+second_img <- closed_gaps
+
+first_m <- mirror(first_img, axis = "x")
+second_m <- mirror(second_img, axis = "x")
+
+first_magick <- cimg2magick(first_m)
+second_magick <- cimg2magick(second_m)
+
+img <- c(first_magick, second_magick)
+
+image_animate(image_scale(img, "500x635"), fps = 1, dispose = "previous")
+```
+
 
 ## Characterizing partitions
 
@@ -367,19 +385,53 @@ res_part <- table(as.character(bead_partition))
 res_part
 ```
 
-As previously mentioned, this table may be overly extensive and difficult to extract information from at first glance. Therefore, a brief data frame is produced, presenting only the most essential information collected from the two images. Moreover, for reference, the initial image of droplets that contain the microbeads is presented below.
+### Analysis of the partition size - *in progress*
+
+This section analyzes partition sizes, which is critical due to the potential creation of small inclusions by the `fillLineGaps` algorithm, leading to 'false' partitions. The analysis involves counting the pixels within each partition and generating a histogram, which reveals a positively skewed distribution (`e1071::skewness(size_df$size)` = 3.63). As a result, the majority of partitions appear to be small, with sizes less than 100 pixels.
 
 ```{r}
-data.frame(number_of_partitions = nrow(grouped_droplets),
-           empty_partitions = nrow(grouped_droplets) - length(unique(bead_partition)),
+size_list <- list()
+for(d in unique(clean_lab_df$value)) {
+  pxl_number <- which(clean_lab_df$value == d)
+  size <- length(pxl_number)
+  size_list[d] <- size
+}
+
+size_df <- data.frame(partition = unique(clean_lab_df$value),
+           size = unlist(size_list))
+
+hist(size_df$size, 
+     main = "Histogramm of partition size",
+     xlab = "size",
+     #labels = TRUE,
+     breaks = "Scott",
+     ylim = c(0, 120),
+     xlim = c(0, 1400))
+```
+
+To reduce errors caused by incorrectly created partitions, any partitions with a size of one pixel will be discarded. Although this may result in the removal of some correctly reconnected small partitions, it is expected to improve accuracy by eliminating certain falsely generated partitions. The objective is to achieve a result that more accurately represents the true values.
+
+```{r}
+small <- which(size_df$size == 1)
+number_small <- length(small)
+```
+
+The data frame will be adjusted in the next section by subtracting the count of small partitions.
+
+## Displaying result
+
+As previously mentioned, the former table may be overly extensive and difficult to extract information from at first glance. Therefore, a brief data frame is produced, presenting only the most essential information collected from the two images. Moreover, for reference, the initial image of droplets that contain the microbeads is presented below.
+
+```{r}
+data.frame(partitions = nrow(grouped_droplets) - number_small,
+           empty_partitions = nrow(grouped_droplets) - length(unique(bead_partition)) - number_small,
            bead_partitions = length(unique(bead_partition)),
            single_bead = length(which(res_part == 1)),
            muliple_beads = length(which(res_part > 1)))
 ```
 
-```{r fig.align='center'}
+```{r fig.show='hold', out.width="49%"}
 plot(droplets)
+plot(closed_gaps)
 ```
-
-### Analysis of the partition size - *in progress*
 

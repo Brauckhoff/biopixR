@@ -11,6 +11,7 @@ fillLineGaps(
   alpha = 0.75,
   sigma = 0.1,
   radius = 5,
+  iterations = 2,
   visualize = TRUE
 )
 }
@@ -29,6 +30,9 @@ before applying the fill algorithm.}
 \item{sigma}{smoothing (from \code{\link[imager]{cannyEdges}}).}
 
 \item{radius}{maximal radius that should be scanned for another cluster}
+
+\item{iterations}{how many times the algorithm should find line ends and
+reconnect them to their closest neighbor}
 
 \item{visualize}{If TRUE (default) a plot is displayed highlighting the
 added pixels in the original image.}

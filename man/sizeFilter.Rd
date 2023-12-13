@@ -2,7 +2,7 @@
 % Please edit documentation in R/sizeFilter.R
 \name{sizeFilter}
 \alias{sizeFilter}
-\title{Size based exclusion}
+\title{Size-based exclusion}
 \usage{
 sizeFilter(res_proximityFilter, lowerlimit = 50, upperlimit = 150)
 }
@@ -31,7 +31,7 @@ list of 3 objects:
 }
 \description{
 Calculates the size of the objects in an image and discards objects based
-on a lower and a upper size limit. (Input can be obtained by proximityFilter
+on a lower and an upper size limit. (Input can be obtained by proximityFilter
 function)
 }
 \examples{

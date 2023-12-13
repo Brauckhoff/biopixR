@@ -11,7 +11,7 @@ interactive_objectDetection(image, resolution = 0.1, return_param = FALSE)
 
 \item{resolution}{resolution of slider}
 
-\item{return_param}{Should the final variables for alpha and sigma should be
+\item{return_param}{Used to define the final parameter values for alpha and sigma
 printed in the console (TRUE or FALSE).}
 }
 \value{

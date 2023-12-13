@@ -19,7 +19,7 @@ interpolatePixels(row1, col1, row2, col2)
 matrix containing the coordinates to connect the two input points
 }
 \description{
-Connects two points in a matrix, array or an image.
+Connects two points in a matrix, array, or an image.
 }
 \examples{
 test <- matrix(0, 4, 4)
