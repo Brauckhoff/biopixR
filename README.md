@@ -89,17 +89,10 @@ For more detailed information about the features and capabilities of the package
 
 ## Example II
 
-The objective of this example is to address discontinuous edges by filling gaps in lines. To demonstrate the versatility of the package, an algorithm is used to fill gaps in these discontinuous edges, providing valuable insights into the distribution of droplets and microbeads.
+The objective of this example is to address discontinuous edges by filling gaps in lines. To demonstrate the versatility of the package, an algorithm is used to fill gaps in these discontinuous edges, providing valuable insights into the distribution of droplets and microbeads. To showcase the algorithm's functionality, a simplified presentation of part of the preprocessing progress is provided, highlighting thresholding and line end detection.
 
 ```{r}
-threshold(droplets, "13%") |> plot()
-```
-![5 1](https://github.com/Brauckhoff/biopixR/assets/121032772/95102d49-9f78-4f86-884c-13c6160ec75d)
-
-
-
-
-```{r}
+thresh <- threshold(droplets, "13%") |> plot()
 thresh_cimg <- as.cimg(thresh)
 thresh_magick <- cimg2magick(thresh_cimg)
 neg_thresh <- image_negate(thresh_magick)
@@ -147,12 +140,12 @@ closed_gaps |> plot()
 ![7 1](https://github.com/Brauckhoff/biopixR/assets/121032772/f691ca38-af52-4941-abb3-c98ec7c26ae2)
 
 
-
+**animation showing the closing of gaps with the **
 
 ![8 3](https://github.com/Brauckhoff/biopixR/assets/121032772/4714dcfa-0d69-48d9-8267-771d55c24c08)
 
 
-
+After closing the gaps in the lines, important information is extracted and displayed as shown below. The process of feature extraction is described in detail in our [vignettes](https://github.com/Brauckhoff/biopixR/blob/main/vignettes/biopixR.Rmd).
 
 partitions | empty_partitions | bead_partitions | single_bead | multiple_beads  
 --- | --- | --- | --- | --- 
