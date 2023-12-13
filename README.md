@@ -89,7 +89,7 @@ For more detailed information about the features and capabilities of the package
 
 ## Example II
 
-The objective of this example is to address discontinuous edges by filling gaps in lines. To demonstrate the versatility of the package, an algorithm is used to fill gaps in these discontinuous edges, providing valuable insights into the distribution of droplets and microbeads. To showcase the algorithm's functionality, a simplified presentation of part of the preprocessing progress is provided, highlighting thresholding and line end detection.
+The objective of this example is to address discontinuous edges by filling gaps in lines. To demonstrate the versatility of the package, an algorithm is used to fill gaps in these discontinuous edges, providing valuable insights into the distribution of droplets and microbeads. To demonstrate the algorithm's functionality, a simplified overview of the preprocessing process is presented, focusing on thresholding and detecting line endings.
 
 ```{r}
 thresh <- threshold(droplets, "13%") |> plot()
@@ -102,6 +102,8 @@ neg_thresh_m |> plot()
 ```
 ![5 3](https://github.com/Brauckhoff/biopixR/assets/121032772/f993ac0a-b682-4d8c-a3bd-6c5458edab01)
 
+
+**Detection of line ends**:
 
 ```{r}
 # same orientation for 'cimg' and 'magick-image'
@@ -125,6 +127,8 @@ changePixelColor(neg_thresh_m, end_points_df, color = "green")
 ![6 2](https://github.com/Brauckhoff/biopixR/assets/121032772/7e8be967-7ada-4f1e-a59d-6139623bc16b)
 
 
+The fillLineGaps function from the package is utilized to address the challenge of discontinuous edges. After applying a threshold, the function identifies line endpoints and connects them to the nearest neighboring edge, ensuring more continuous partition boundaries. Additionally, the objectDetection function is incorporated to exclude specific objects, such as microbeads, to prevent unwanted connections. The resulting output displays the line ends reconnected and microbeads removed.
+
 ```{r}
 closed_gaps <- fillLineGaps(droplets,
                             droplet_beads,
@@ -133,14 +137,14 @@ closed_gaps <- fillLineGaps(droplets,
                             sigma = 0.1,
                             radius = 5,
                             iterations = 3,
-                            visualize = TRUE)
+                            visualize = FALSE)
 
 closed_gaps |> plot()
 ```
 ![7 1](https://github.com/Brauckhoff/biopixR/assets/121032772/f691ca38-af52-4941-abb3-c98ec7c26ae2)
 
 
-**animation showing the closing of gaps with the **
+**Animation displaying the closing of gaps with the fillLineGaps function**:
 
 ![8 3](https://github.com/Brauckhoff/biopixR/assets/121032772/4714dcfa-0d69-48d9-8267-771d55c24c08)
 
