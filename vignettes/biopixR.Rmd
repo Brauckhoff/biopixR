@@ -409,7 +409,7 @@ hist(size_df$size,
      xlim = c(0, 1400))
 ```
 
-To reduce errors caused by incorrectly created partitions, any partitions with a size of one pixel will be discarded. Although this may result in the removal of some correctly reconnected small partitions, it is expected to improve accuracy by eliminating certain falsely generated partitions. The objective is to achieve a result that more accurately represents the true values.
+To reduce errors caused by incorrectly created partitions, any partitions with a size of one pixel will be discarded. Although this may result in the removal of some correctly reconnected small partitions, it is expected to improve accuracy by eliminating certain falsely generated partitions. 
 
 ```{r}
 small <- which(size_df$size == 1)
