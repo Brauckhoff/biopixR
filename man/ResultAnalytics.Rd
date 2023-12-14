@@ -23,7 +23,58 @@ proximityFilter and sizeFilter. Provides information like amount, intensity,
 size and density.
 }
 \examples{
-res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
+img <- beads
+alpha = 0.75
+sigma = 0.1
+
+if(class(img)[1] != "cimg") {
+  stop(
+    "image must be of class 'cimg'"
+  )
+}
+
+
+if(dim(img)[4] != 1) {
+  img <- grayscale(image)
+}
+
+
+edge_img <- cannyEdges(img, alpha = alpha, sigma = sigma)
+
+
+first_lab <- label(edge_img)
+fill_hulls <- which(first_lab != 0)
+filled_img <- edge_img
+filled_img[fill_hulls] <- TRUE
+labeled_img <- label(filled_img)
+
+df_lab_img <- as.data.frame(labeled_img) |>
+  subset(value > 0)
+DT <- data.table(df_lab_img)
+
+grouped_lab_img <-
+  DT[, .(mxx = mean(x), myy = mean(y)), by = value]
+
+img_rgb <- add.color(img, simple = TRUE)
+circ_img <- draw_circle(
+  img_rgb,
+  grouped_lab_img$mxx,
+  grouped_lab_img$myy,
+  radius = 2,
+  filled = TRUE,
+  color = "purple"
+)
+
+out <- list(
+  centers = grouped_lab_img,
+  coordinates = df_lab_img,
+  image = img,
+  marked_beads = circ_img)
+
+res_objectDetection <- out
+
+
+
 res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
 res_sizeFilter <- sizeFilter(res_proximityFilter, lowerlimit = 50, upperlimit = 150)
 ResultAnalytics(res_sizeFilter)
