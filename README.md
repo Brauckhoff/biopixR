@@ -73,7 +73,7 @@ changePixelColor(beads, res_sizeFilter$remaining.coordinates.s, color = "darkgre
 ![4 1](https://github.com/Brauckhoff/biopixR/assets/121032772/e4c93b06-dbf4-4924-94be-fafd311b3918)
 
 
-In conclusion, obtaining meaningful information from the filtered dataset is essential. The main findings encompass the number of objects that remained and were discarded, object sizes analyzed via the `sizeFilter`, signal intensity, and area density. The `ResultAnalytics` function of biopixR extracts and calculates the described parameters. It requires input of the data frame with remaining coordinates, cluster size, and the original image obtained through the `sizeFilter` function.
+In conclusion, obtaining meaningful information from the filtered dataset is essential. The main findings encompass the number of objects that remained and were discarded, object sizes analyzed via the `sizeFilter`, signal intensity, and area density. The `resultAnalytics` function of biopixR extracts and calculates the described parameters. It requires input of the data frame with remaining coordinates, cluster size, and the original image obtained through the `sizeFilter` function.
 
 ```{r}
 result <- resultAnalytics(res_sizeFilter)
