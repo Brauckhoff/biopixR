@@ -143,10 +143,10 @@ The objective of this chapter has been accomplished, as demonstrated by the most
 
 ## Displaying results
 
-To conclude this chapter, we need to extract meaningful information from the filtered data set. One of the most fundamental results to be displayed after applying a filter is undoubtedly the number of remaining and discarded objects. As the size of the objects has already been analyzed through the `sizeFilter`, this information should also be included in the display. Moreover, the intensity of the signal is a crucial parameter for both microbeads and any fluorescent image. Finally, it may be of interest to calculate the area density, which represents the number of microbeads relative to the pixel area of the entire image. To extract this information, the `ResultAnalytics` function from the biopixR package is utilized. This function requires the data frame of the remaining coordinates, the cluster size, and the original image obtained from the `sizeFilter` function as inputs.
+To conclude this chapter, we need to extract meaningful information from the filtered data set. One of the most fundamental results to be displayed after applying a filter is undoubtedly the number of remaining and discarded objects. As the size of the objects has already been analyzed through the `sizeFilter`, this information should also be included in the display. Moreover, the intensity of the signal is a crucial parameter for both microbeads and any fluorescent image. Finally, it may be of interest to calculate the area density, which represents the number of microbeads relative to the pixel area of the entire image. To extract this information, the `resultAnalytics` function from the biopixR package is utilized. This function requires the data frame of the remaining coordinates, the cluster size, and the original image obtained from the `sizeFilter` function as inputs.
 
 ```{r}
-result <- ResultAnalytics(res_sizeFilter)
+result <- resultAnalytics(res_sizeFilter)
 result$detailed
 ```
 

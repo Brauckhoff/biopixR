@@ -9,11 +9,11 @@ changePixelColor(image, coords, color = "green")
 \arguments{
 \item{image}{image (import by \code{\link[imager]{load.image}})}
 
+\item{coords}{Coordinates specifying which pixels to be colored (should
+be a X|Y Data frame (first column: X; second column: Y))}
+
 \item{color}{Color with which to replace specified pixels. Can be either a
 an RGB triplet or one of the colors listed by \code{\link[grDevices]{colors}}.}
-
-\item{coord}{Coordinates specifying which pixels to be colored (should
-be a X|Y Data frame (first column: X; second column: Y))}
 }
 \value{
 Cimg with changed colors at desired positions and

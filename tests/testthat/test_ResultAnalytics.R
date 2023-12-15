@@ -1,28 +1,28 @@
 library(testthat)
 library(biopixR)
 
-test_that("ResultAnalytics",
+test_that("resultAnalytics",
           {
             img <- beads
             res_sizeFilter <- img |>
               objectDetection() |>
               proximityFilter() |>
               sizeFilter()
-            res_ResultAnalytics <- ResultAnalytics(res_sizeFilter)
+            res_resultAnalytics <- resultAnalytics(res_sizeFilter)
 
-            expect_equal(sum(res_ResultAnalytics$detailed$Size),
+            expect_equal(sum(res_resultAnalytics$detailed$Size),
                        nrow(res_sizeFilter$remaining.coordinates.s))
-            expect_equal(length(res_ResultAnalytics$detailed$Beadnumber),
+            expect_equal(length(res_resultAnalytics$detailed$Beadnumber),
                        length(unique(res_sizeFilter$remaining.coordinates.s$cluster)))
 
-            expect_type(res_ResultAnalytics, "list")
-            expect_length(res_ResultAnalytics, 2)
-            expect_s3_class(res_ResultAnalytics$Summary, "data.frame")
-            expect_s3_class(res_ResultAnalytics$detailed, "data.frame")
-            expect_equal(res_ResultAnalytics$Summary$Number_of_Beads,
+            expect_type(res_resultAnalytics, "list")
+            expect_length(res_resultAnalytics, 2)
+            expect_s3_class(res_resultAnalytics$Summary, "data.frame")
+            expect_s3_class(res_resultAnalytics$detailed, "data.frame")
+            expect_equal(res_resultAnalytics$Summary$Number_of_Beads,
                          length(unlist(res_sizeFilter$size)))
-            expect_equal(res_ResultAnalytics$Summary$Number_of_Beads,
-                         nrow(res_ResultAnalytics$detailed))
-            expect_equal(mean(res_ResultAnalytics$detailed$Size),
-                         res_ResultAnalytics$Summary$Mean_Size)
+            expect_equal(res_resultAnalytics$Summary$Number_of_Beads,
+                         nrow(res_resultAnalytics$detailed))
+            expect_equal(mean(res_resultAnalytics$detailed$Size),
+                         res_resultAnalytics$Summary$Mean_Size)
 })

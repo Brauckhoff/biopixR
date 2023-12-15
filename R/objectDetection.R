@@ -6,8 +6,7 @@
 #' recognition.
 #' @param image image (import by \code{\link[imager]{load.image}})
 #' @param alpha threshold adjustment factor
-#' (from \code{\link[imager]{cannyEdges}})
-#' @param sigma smoothing (from \code{\link[imager]{cannyEdges}})
+#' @param sigma smoothing
 #' @returns list of 4 objects:
 #' 1. data frame of labeled region with the central coordinates
 #' 2. all coordinates that are in labeled regions
@@ -37,7 +36,7 @@ objectDetection <- function(image,
   }
 
   # edge detection with default: alpha = 0.75, sigma = 0.1
-  edge_img <- cannyEdges(img, alpha = alpha, sigma = sigma)
+  edge_img <- edgeDetection(img, alpha = alpha, sigma = sigma)
 
   # fill detected edges and label areas
   first_lab <- label(edge_img)

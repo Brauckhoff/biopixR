@@ -13,9 +13,9 @@
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
 #' res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
 #' res_sizeFilter <- sizeFilter(res_proximityFilter, lowerlimit = 50, upperlimit = 150)
-#' ResultAnalytics(res_sizeFilter)
+#' resultAnalytics(res_sizeFilter)
 #' @export
-ResultAnalytics <- function(res_sizeFilter) {
+resultAnalytics <- function(res_sizeFilter) {
   # assign imports
   res_xy_clus <- res_sizeFilter$remaining.coordinates.s
   cluster_size <- res_sizeFilter$size

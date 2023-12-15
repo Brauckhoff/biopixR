@@ -76,7 +76,7 @@ changePixelColor(beads, res_sizeFilter$remaining.coordinates.s, color = "darkgre
 In conclusion, obtaining meaningful information from the filtered dataset is essential. The main findings encompass the number of objects that remained and were discarded, object sizes analyzed via the `sizeFilter`, signal intensity, and area density. The `ResultAnalytics` function of biopixR extracts and calculates the described parameters. It requires input of the data frame with remaining coordinates, cluster size, and the original image obtained through the `sizeFilter` function.
 
 ```{r}
-result <- ResultAnalytics(res_sizeFilter)
+result <- resultAnalytics(res_sizeFilter)
 result$Summary
 ```
 Number_of_Beads | Mean_Size | Mean_intensity | Bead_density | Estimated_rejected | mean_distance 
