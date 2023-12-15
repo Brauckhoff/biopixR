@@ -1,5 +1,10 @@
 # Next version
 
+# 0.0.0.9200
+- added vignettes
+- added edgeDetection
+- devtools::check() errors fixed
+
 # 0.0.0.9100
 - renamed package and functions
 
