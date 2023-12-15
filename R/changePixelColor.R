@@ -10,6 +10,7 @@
 #' @returns
 #' Cimg with changed colors at desired positions and
 #' plot of the cimg
+#' @importFrom grDevices col2rgb
 #' @examples
 #' coordinates <- objectDetection(beads)
 #' changePixelColor(beads, coordinates$coordinates)
@@ -17,7 +18,7 @@
 #' @export
 changePixelColor <- function(image, coords, color = "green") {
   # check class of import
-  if(class(image)[1] != "cimg") {
+  if (class(image)[1] != "cimg") {
     stop(
       "image must be of class 'cimg'"
     )
@@ -25,7 +26,7 @@ changePixelColor <- function(image, coords, color = "green") {
 
   # check if color channels are present and if not add them
   img_dim <- dim(image)
-  if(img_dim[4] != 3) {
+  if (img_dim[4] != 3) {
     image <- add.colour(image)
   }
 

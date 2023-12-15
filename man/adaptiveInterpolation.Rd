@@ -99,6 +99,7 @@ overlay <- adaptiveInterpolation(
   end_points_df,
   diagonal_edges_df,
   clean_lab_df,
-  mat_cimg)
+  mat_cimg
+)
 parmax(list(mat_cimg_m, as.cimg(overlay$overlay))) |> plot()
 }

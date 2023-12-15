@@ -4,7 +4,6 @@ fillInit <- function(strong) {
   DT <- data.table(first)
   grouped_first <-
     DT[, .(x = x[1], y = y[1]), by = value]
-
 }
 
 # starts a fill at each successive location, and accumulates the results
@@ -12,8 +11,10 @@ rescueFill <- function(strong, weak) {
   v <- strong
   v[weak == 1] <- .9
   loc <- fillInit(strong)
-  df <- data.table(x = loc$x,
-                   y = loc$y)
+  df <- data.table(
+    x = loc$x,
+    y = loc$y
+  )
   out <- v
   for (r in 1:nrow(df)) {
     out <-
@@ -25,21 +26,23 @@ rescueFill <- function(strong, weak) {
         sigma = .1,
         high_connexity = TRUE
       )
-
   }
   as.cimg(out == 1)
 }
 
-
 nonmax <- function(gr) {
-  mag <- with(gr, sqrt(x ^ 2 + y ^ 2))
+  mag <- with(gr, sqrt(x^2 + y^2))
   grs <- list(x = gr$x / mag, y = gr$y / mag)
   X <- Xc(gr$x)
   Y <- Yc(gr$y)
-  val.bwd <- interp(mag, data.frame(x = as.vector(X - grs$x),
-                                    y = as.vector(Y - grs$y)))
-  val.fwd <- interp(mag, data.frame(x = as.vector(X + grs$x),
-                                    y = as.vector(Y + grs$y)))
+  val.bwd <- interp(mag, data.frame(
+    x = as.vector(X - grs$x),
+    y = as.vector(Y - grs$y)
+  ))
+  val.fwd <- interp(mag, data.frame(
+    x = as.vector(X + grs$x),
+    y = as.vector(Y + grs$y)
+  ))
 
   throw <- (mag < val.bwd) | (mag < val.fwd)
   mag[throw] <- 0
@@ -66,6 +69,7 @@ guess.kmeans <- function(x) {
 #' @param t2 threshold for strong edges
 #' @param alpha threshold adjustment factor (default 1)
 #' @param sigma smoothing
+#' @importFrom stats kmeans
 #' @examples
 #' edgeDetection(beads) |> plot()
 #' @references https://CRAN.R-project.org/package=imager
@@ -75,20 +79,18 @@ edgeDetection <- function(img,
                           t2,
                           alpha = 1,
                           sigma = 2) {
-
   has.col <- spectrum(img) > 1
-  if (has.col)
-  {
+  if (has.col) {
     warning("Running edge detector on luminance channel")
     img <- grayscale(img)
   }
-  if (depth(img) > 1)
-  {
+  if (depth(img) > 1) {
     stop("Videos not supported, run the function on single frames")
   }
-  mag <- isoblur(img, sigma) |> imgradient("xy") |> nonmax()
-  if (missing(t1))
-  {
+  mag <- isoblur(img, sigma) |>
+    imgradient("xy") |>
+    nonmax()
+  if (missing(t1)) {
     guess <- guess.kmeans(mag)
     t2 <- alpha * guess$t2
     t1 <- alpha * guess$t1
@@ -97,8 +99,9 @@ edgeDetection <- function(img,
   weak <- as.cimg(mag %inr% c(t1, t2))
   out <- rescueFill(strong, weak)
 
-  if (has.col)
+  if (has.col) {
     out <- add.colour(out)
+  }
   attr(out, "thresholds") <- c(t1, t2)
   as.pixset(out)
 }

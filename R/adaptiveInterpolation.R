@@ -76,14 +76,15 @@
 #'   end_points_df,
 #'   diagonal_edges_df,
 #'   clean_lab_df,
-#'   mat_cimg)
+#'   mat_cimg
+#' )
 #' parmax(list(mat_cimg_m, as.cimg(overlay$overlay))) |> plot()
 #' @export
 adaptiveInterpolation <- function(end_points_df,
-                    diagonal_edges_df,
-                    clean_lab_df,
-                    lineends_cimg,
-                    radius = 5) {
+                                  diagonal_edges_df,
+                                  clean_lab_df,
+                                  lineends_cimg,
+                                  radius = 5) {
   # creating an matrix with only 0 = background in the dimensions of the
   # image to be modified
   connected_components <- matrix(0,

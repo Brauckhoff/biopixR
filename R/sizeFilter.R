@@ -22,8 +22,8 @@
 #' sizeFilter(res_proximityFilter, lowerlimit = 50, upperlimit = 150)
 #' @export
 sizeFilter <- function(res_proximityFilter,
-                  lowerlimit = 50,
-                  upperlimit = 150) {
+                       lowerlimit = 50,
+                       upperlimit = 150) {
   # assign imports
   remaining_cluster_df <- res_proximityFilter$remaining.centers
   xy_cords_clus <- res_proximityFilter$remaining.coordinates

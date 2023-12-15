@@ -25,7 +25,7 @@
 #' object removal, LineEnd and diagonal LineEnd detection, and labeling. The
 #' threshold should be set to allow for some remaining "bridge" pixels between
 #' gaps to facilitate reconnection. For more details about reconnection,
-#' please consult \code{\link[biopixeR]{adaptiveInterpolation}}.
+#' please consult adaptiveInterpolation.
 #' Post-processing involves thinning the lines. When removing objects from an
 #' image, their coordinates are collected using the objectDetection function.
 #' Next, the pixels of the detected objects are nullified in the original
@@ -64,8 +64,10 @@ fillLineGaps <-
       # transform binary image to array in order to modify individual values
       thresh_array <- as.array(neg_thresh_m)
       for (i in 1:nrow(bead_coords$coordinates)) {
-        thresh_array[bead_coords$coordinates[i, 1],
-                     bead_coords$coordinates[i, 2], 1, 1] <- 0
+        thresh_array[
+          bead_coords$coordinates[i, 1],
+          bead_coords$coordinates[i, 2], 1, 1
+        ] <- 0
       }
       # removed beads from droplets and retransformation to cimg
       thresh_clean_cimg <- as.cimg(thresh_array)
@@ -79,10 +81,14 @@ fillLineGaps <-
 
     for (i in 1:iterations) {
       # getting coordinates of all line ends and only diagonal line ends
-      mo1_lineends <- image_morphology(thresh_clean_magick,
-                                       "HitAndMiss", "LineEnds")
-      mo2_diagonalends <- image_morphology(thresh_clean_magick,
-                                           "HitAndMiss", "LineEnds:2>")
+      mo1_lineends <- image_morphology(
+        thresh_clean_magick,
+        "HitAndMiss", "LineEnds"
+      )
+      mo2_diagonalends <- image_morphology(
+        thresh_clean_magick,
+        "HitAndMiss", "LineEnds:2>"
+      )
 
       # transform extracted coordinates into data frames
       lineends_cimg <- magick2cimg(mo1_lineends)
@@ -116,7 +122,7 @@ fillLineGaps <-
 
       if (i == 1) {
         for (g in 1:nrow(df_lab)) {
-          #droplets_array <- as.array(droplets)
+          # droplets_array <- as.array(droplets)
           if (thresh_clean_m[df_lab$x[g], df_lab$y[g], 1, 1] == 1) {
             alt_x[g] <- df_lab$x[g]
             alt_y[g] <- df_lab$y[g]
@@ -125,7 +131,7 @@ fillLineGaps <-
         }
       } else {
         for (g in 1:nrow(df_lab)) {
-          #droplets_array <- as.array(droplets)
+          # droplets_array <- as.array(droplets)
           if (out_cimg[df_lab$x[g], df_lab$y[g], 1, 1] == 1) {
             alt_x[g] <- df_lab$x[g]
             alt_y[g] <- df_lab$y[g]
@@ -145,10 +151,11 @@ fillLineGaps <-
       # (0 = background/black & 1 = white/foreground)
       first_overlay <-
         adaptiveInterpolation(end_points_df,
-                              diagonal_edges_df,
-                              clean_lab_df,
-                              lineends_cimg,
-                              radius = radius)
+          diagonal_edges_df,
+          clean_lab_df,
+          lineends_cimg,
+          radius = radius
+        )
 
       # combine matrix with starting image
       if (i == 1) {

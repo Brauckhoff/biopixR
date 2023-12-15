@@ -18,20 +18,20 @@
 #' objectDetection(beads, alpha = 0.75, sigma = 0.1)
 #' @export
 objectDetection <- function(image,
-                     alpha = 0.75,
-                     sigma = 0.1) {
+                            alpha = 0.75,
+                            sigma = 0.1) {
   # assign import
   img <- image
 
   # check class of import
-  if(class(img)[1] != "cimg") {
+  if (class(img)[1] != "cimg") {
     stop(
       "image must be of class 'cimg'"
     )
   }
 
   # in case the image is from a luminescence channel transform to gray scale
-  if(dim(img)[4] != 1) {
+  if (dim(img)[4] != 1) {
     img <- grayscale(image)
   }
 

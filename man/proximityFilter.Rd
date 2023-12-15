@@ -46,20 +46,18 @@ mat[6, 7] <- 1
 mat[7, 3] <- 1
 sim_img <- as.cimg(mat)
 centers <- data.frame(
-mxx = c(3, 5, 6, 7),
-myy = c(5, 2, 7, 3),
-value = c(1:4)
+  mxx = c(3, 5, 6, 7),
+  myy = c(5, 2, 7, 3),
+  value = c(1:4)
 )
 objects <- list(centers = centers)
 proximityFilter(objects, radius = 3)
 
 # Visualization
-\dontrun{
 res_l <- proximityFilter(res_objectDetection, radius = 10)
 changePixelColor(beads, res_l$remaining.coordinates)
 
 # without objectDetection
 res_m <- proximityFilter(objects, radius = 3)
 changePixelColor(sim_img, res_m$remaining.centers)
-}
 }

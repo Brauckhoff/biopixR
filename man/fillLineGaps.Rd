@@ -50,7 +50,7 @@ adaptiveInterpolation. Pre-processing involves thresholding, optional
 object removal, LineEnd and diagonal LineEnd detection, and labeling. The
 threshold should be set to allow for some remaining "bridge" pixels between
 gaps to facilitate reconnection. For more details about reconnection,
-please consult \code{\link[biopixeR]{adaptiveInterpolation}}.
+please consult adaptiveInterpolation.
 Post-processing involves thinning the lines. When removing objects from an
 image, their coordinates are collected using the objectDetection function.
 Next, the pixels of the detected objects are nullified in the original

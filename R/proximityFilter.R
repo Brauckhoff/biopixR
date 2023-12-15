@@ -29,22 +29,20 @@
 #' mat[7, 3] <- 1
 #' sim_img <- as.cimg(mat)
 #' centers <- data.frame(
-#' mxx = c(3, 5, 6, 7),
-#' myy = c(5, 2, 7, 3),
-#' value = c(1:4)
+#'   mxx = c(3, 5, 6, 7),
+#'   myy = c(5, 2, 7, 3),
+#'   value = c(1:4)
 #' )
 #' objects <- list(centers = centers)
 #' proximityFilter(objects, radius = 3)
 #'
 #' # Visualization
-#' \dontrun{
 #' res_l <- proximityFilter(res_objectDetection, radius = 10)
 #' changePixelColor(beads, res_l$remaining.coordinates)
 #'
 #' # without objectDetection
 #' res_m <- proximityFilter(objects, radius = 3)
 #' changePixelColor(sim_img, res_m$remaining.centers)
-#' }
 #' @export
 proximityFilter <- function(res_objectDetection, radius = 10) {
   # assign imports
@@ -60,7 +58,6 @@ proximityFilter <- function(res_objectDetection, radius = 10) {
       if (x == d) {
         next
       } else {
-
         # first: check the surrounding pixels from the current center, if there
         # is another center -> rectangle over hole y axis, with width of
         # 2*radius
@@ -74,14 +71,12 @@ proximityFilter <- function(res_objectDetection, radius = 10) {
           # width of 2*radius
           for (v in y_clus) {
             if (y - radius < v & y + radius > v) {
-
               # third: only if a coordinate is in both rectangles (the radius^2
               # around the current center) it is viewed as too close and
               # therefore discarded
               too_close <- which(grouped_lab_img$myy == v &
                 grouped_lab_img$mxx == d)
               distanced_excl_list[too_close] <- c(too_close)
-
             }
           }
         }
