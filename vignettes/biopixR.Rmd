@@ -509,7 +509,7 @@ majority of cases, rendering it satisfactory for our specific example.
 
 ### Animated visualization of the `fillLineGaps` algorithm
 
-```{r eval=FALSE, fig.align='center', include=FALSE}
+```{r fig.align='center'}
 first_img <- vis_lineend
 second_img <- closed_gaps
 
