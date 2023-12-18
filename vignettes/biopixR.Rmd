@@ -509,7 +509,7 @@ majority of cases, rendering it satisfactory for our specific example.
 
 ### Animated visualization of the `fillLineGaps` algorithm
 
-```{r fig.align='center'}
+```{r eval=FALSE, fig.align='center', include=FALSE}
 first_img <- vis_lineend
 second_img <- closed_gaps
 
@@ -530,7 +530,7 @@ image_animate(image_scale(img, "500x635"), fps = 1, dispose = "previous")
 Having resolved the initial difficulty of the discontinuous edges, the focus
 returns to the characterization of the partitions. Let's examine whether we can
 now distinguish individual partitions after reducing the discontinuity. This is
-achieved by labeling the 'closed\_gaps' image. However, we should abstain from
+achieved by labeling the 'closed_gaps' image. However, we should abstain from
 visualizing the image at this point, as it would display a multitude of colors
 since every pixel should be labeled.
 

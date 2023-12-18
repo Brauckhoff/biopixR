@@ -1,5 +1,11 @@
 # Next version
 
+# 0.0.9
+── R CMD check results ─────────────────────────────────────────────────────────────────────── biopixR 0.0.9 ────
+Duration: 27.4s
+
+0 errors ✔ | 0 warnings ✔ | 0 notes ✔
+
 # 0.0.0.9200
 - added vignettes
 - added edgeDetection

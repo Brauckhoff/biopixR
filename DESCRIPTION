@@ -1,6 +1,6 @@
 Package: biopixR
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9200
+Title: Tools for Bioimage Analysis
+Version: 0.0.9
 Authors@R: 
     c(person("Tim", "Brauckhoff", 
     email = "Tim.Brauckhoff@b-tu.de", 

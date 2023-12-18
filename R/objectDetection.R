@@ -52,7 +52,7 @@ objectDetection <- function(image,
 
   # summarize by cluster and calculate center
   grouped_lab_img <-
-    DT[, .(mxx = mean(x), myy = mean(y)), by = value]
+    DT[, list(mxx = mean(x), myy = mean(y)), by = value]
 
   # visualization by drawing colored circles around the center of detected beads
   img_rgb <- add.color(img, simple = TRUE)

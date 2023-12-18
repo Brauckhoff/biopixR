@@ -1,9 +1,10 @@
+y <- x <- value <- NULL
 fillInit <- function(strong) {
   lab <- label(strong, TRUE) * strong
-  first <- as.data.frame(lab) |> subset(value > 0)
-  DT <- data.table(first)
+  lab_df <- as.data.frame(lab) |> subset(value > 0)
+  DT <- data.table(lab_df)
   grouped_first <-
-    DT[, .(x = x[1], y = y[1]), by = value]
+    DT[, list(x = x[1], y = y[1]), by = value]
 }
 
 # starts a fill at each successive location, and accumulates the results

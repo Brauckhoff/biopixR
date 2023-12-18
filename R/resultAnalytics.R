@@ -16,6 +16,9 @@
 #' resultAnalytics(res_sizeFilter)
 #' @export
 resultAnalytics <- function(res_sizeFilter) {
+  # binding for global variables
+  intensity <- cluster <- NULL
+
   # assign imports
   res_xy_clus <- res_sizeFilter$remaining.coordinates.s
   cluster_size <- res_sizeFilter$size
@@ -31,7 +34,7 @@ resultAnalytics <- function(res_sizeFilter) {
 
   # group data frame by cluster
   DT_intense <- data.table(res_xy_clus)
-  intense <- DT_intense[, .(
+  intense <- DT_intense[, list(
     x = mean(x),
     y = mean(y),
     intensity = mean(intensity)
