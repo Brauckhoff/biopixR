@@ -33,7 +33,10 @@ jobs:
           needs: check
 
       - name: Run R CMD check
-        run: R CMD check --no-manual biopixR
+        run: R CMD check --no-manual
 
-      - name: Results
-        uses: r-lib/actions/check-r-package@v2
+      - name: Upload check results
+        uses: actions/upload-artifact@v2
+        with:
+          name: r-check-results
+          path: biopixR.Rcheck
