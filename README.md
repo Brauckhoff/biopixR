@@ -167,6 +167,14 @@ devtools::install_github("Brauckhoff/biopixR")
 ```
 
 
+## Code citation
+
+The following functions are adapted from other packages and are not solely the author's own work:
+- `edgeDetection` based on `cannyEdges` from the imager package (https://cran.r-project.org/package=imager)
+- `interactive_objectDetection` based on `interactive_blur` from the magickGUI package (https://cran.r-project.org/package=magickGUI)
+- `changePixelColor` based on `changePixelColor` from the countcolor package (https://cran.r-project.org/package=countcolors)
+
+
 # Related Research
 
 - Reimann, R., Zeng, B., Jakopec, M., Burdukiewicz, M., Petrick, I., Schierack, P., Rödiger, S., 2020. Classification of dead and living microalgae Chlorella vulgaris by bioimage informatics and machine learning. Algal Research 48, 101908. https://doi.org/10.1016/j.algal.2020.101908
