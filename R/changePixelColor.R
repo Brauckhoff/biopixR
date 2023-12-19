@@ -17,6 +17,8 @@
 #' @references https://CRAN.R-project.org/package=countcolors
 #' @export
 changePixelColor <- function(image, coords, color = "green") {
+  # this code is partialy based on the changePixelColor function from the countcolors 
+  # package (v0.9.1)
   # check class of import
   if (class(image)[1] != "cimg") {
     stop(
