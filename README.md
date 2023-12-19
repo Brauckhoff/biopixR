@@ -172,7 +172,7 @@ devtools::install_github("Brauckhoff/biopixR")
 The following functions are adapted from other packages and are not solely the author's own work:
 - `edgeDetection` based on `cannyEdges` from the imager package (https://cran.r-project.org/package=imager)
 - `interactive_objectDetection` based on `interactive_blur` from the magickGUI package (https://cran.r-project.org/package=magickGUI)
-- `changePixelColor` based on `changePixelColor` from the countcolor package (https://cran.r-project.org/package=countcolors)
+- `changePixelColor` based on `changePixelColor` from the countcolors package (https://cran.r-project.org/package=countcolors)
 
 
 # Related Research
