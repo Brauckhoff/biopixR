@@ -33,7 +33,7 @@ jobs:
           needs: check
 
       - name: Run R CMD check
-        run: R CMD check --no-manual
+        run: R CMD check --no-manual biopixR
 
       - name: Upload check results
         uses: actions/upload-artifact@v2
