@@ -1,7 +1,7 @@
 # biopixR - Package for analysis of bioimage image data
 
 ## Introduction
-In the rapidly evolving landscape of scientific research and technology, the field of image analysis and processing has become indispensable, providing unprecedented insight into complex phenomena. This project aims to utilize image processing techniques, using the R programming language, to analyze and characterize bead microparticles.Microparticles find extensive utility in various scientific domains, including medical diagnostics, environmental monitoring, and materials science.
+In the rapidly evolving landscape of scientific research and technology, the field of image analysis and processing has become indispensable, providing unprecedented insight into complex phenomena. This project aims to utilize image processing techniques, using the R programming language, to analyze and characterize bead microparticles. Microparticles find extensive utility in various scientific domains, including medical diagnostics, environmental monitoring, and materials science.
 
 The rise of high-resolution imaging technologies has led to an exponential increase in the volume and complexity of image data, requiring sophisticated computational methods for efficient analysis. In this context, R is a standout programming language that excels in statistical computing and graphics. Leveraging the rich ecosystem of R packages, this project aims to develop an automated image analysis pipeline for bead microparticles. 
 
