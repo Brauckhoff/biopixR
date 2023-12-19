@@ -22,7 +22,11 @@ This function uses the objectDetection function to visualize the detected
 objects at varying threshold an smoothing parameters.
 }
 \examples{
-interactive_objectDetection(beads)
+\donttest{
+if(interactive()) {
+  interactive_objectDetection(beads)
+}
+}
 }
 \references{
 https://CRAN.R-project.org/package=magickGUI

@@ -1,5 +1,14 @@
 # Next version
 
+# 0.1.0
+- passing rhub check on multiple OS 
+(https://builder.r-hub.io/status/biopixR_0.0.9.tar.gz-4b8a36705d544ed9950f2daac220185e)
+
+── R CMD check results ─────────────────────────────────────────────────────────────────────── biopixR 0.0.9 ────
+Duration: 26.1s
+
+0 errors ✔ | 0 warnings ✔ | 0 notes ✔
+
 # 0.0.9
 ── R CMD check results ─────────────────────────────────────────────────────────────────────── biopixR 0.0.9 ────
 Duration: 27.4s

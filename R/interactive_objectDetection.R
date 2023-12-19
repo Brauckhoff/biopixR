@@ -20,7 +20,11 @@ wait_time_long <- function()
 #' @import tcltk
 #' @references https://CRAN.R-project.org/package=magickGUI
 #' @examples
-#' interactive_objectDetection(beads)
+#' \donttest{
+#' if(interactive()) {
+#'   interactive_objectDetection(beads)
+#' }
+#' }
 #' @export
 interactive_objectDetection <-
   function(image,
