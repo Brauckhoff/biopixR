@@ -38,8 +38,7 @@ jobs:
       - name: Install virtual display for tk
         run: sudo apt-get install xvfb
 
-      - name: Build and Check Vignettes
-        run: R -e 'devtools::install(); devtools::build_vignettes(); devtools::check()'
+
 
       - name: Run R CMD check
         run: xvfb-run R CMD check --no-manual .
