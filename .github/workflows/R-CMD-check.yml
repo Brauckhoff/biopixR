@@ -32,6 +32,9 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Clean Check Directory
+        run: rm -rf ..Rcheck
+
       - name: Install virtual display for tk
         run: sudo apt-get install xvfb
 
