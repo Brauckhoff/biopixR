@@ -1,7 +1,7 @@
 # biopixR - Package for analysis of bioimage image data
 
   <!-- badges: start -->
-  [![R-CMD-check](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yaml)
+  [![R-CMD-check](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yml)
   <!-- badges: end -->
 
 ## Introduction
