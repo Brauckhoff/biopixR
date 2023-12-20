@@ -24,7 +24,7 @@ jobs:
           use-public-rspm: true
 
       - name: Clean Up Previous Check Directory
-        run: rm -rf ..Rcheck
+        run: sh -c 'rm -rf ..Rcheck'
 
       - name: Set up R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
