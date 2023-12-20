@@ -32,5 +32,8 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Install virtual display for tk
+        run: sudo apt-get install xvfb
+
       - name: Run R CMD check
-        run: R CMD check --no-manual .
+        run: xvfb-run R CMD check --no-manual .
