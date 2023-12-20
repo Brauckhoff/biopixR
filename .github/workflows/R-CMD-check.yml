@@ -24,7 +24,7 @@ jobs:
           use-public-rspm: true
 
       - name: Clean Up Previous Check Directory
-        run: rm -rf ./..Rcheck
+        run: rm -rf ../.Rcheck
         working-directory: ${{ github.workspace }}
 
       - name: Set up R dependencies
