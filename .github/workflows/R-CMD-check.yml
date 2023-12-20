@@ -26,19 +26,17 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Clean Up Previous Check Directory
+        run: rm -rf ..Rcheck
+
       - name: Set up R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Clean Check Directory # needs modification error persists
-        run: rm -rf ..Rcheck
-
       - name: Install virtual display for tk
         run: sudo apt-get install xvfb
-
-
 
       - name: Run R CMD check
         run: xvfb-run R CMD check --no-manual .
