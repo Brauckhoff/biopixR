@@ -23,9 +23,13 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Clean Up Previous Check Directory
-        run: find . -type d -name '.Rcheck' | grep -v 'biopixR.Rcheck' | xargs rm -rf
+      - name: Clean Up Previous Check Directories
+        run: |
+          find ${{ github.workspace }} -type d -name '.Rcheck' -exec rm -rf {} +
         working-directory: ${{ github.workspace }}
+
+      - name: Debug Workspace Content
+        run: ls -R ${{ github.workspace }}
 
       - name: Set up R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
