@@ -4,3 +4,5 @@
 ^CONTRIBUTING\.md$
 ^\.github$
 notebook*
+^doc$
+^Meta$
