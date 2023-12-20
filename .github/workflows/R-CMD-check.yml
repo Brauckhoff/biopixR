@@ -26,12 +26,17 @@ jobs:
       - name: Debug Cleanup
         run: |
           ls -a ..
-          rm -rf ..Rcheck
+          rm -rf .Rcheck
           ls -a
 
       - name: Clean Up Previous Check Directory
         run: rm -rf ..Rcheck
         working-directory: ${{ github.workspace }}
+
+      - name: Clean Up Previous Check Directory
+        run: find . -name ".Rcheck" -exec rm -rf {} \;
+        working-directory: ${{ github.workspace }}
+
 
       - name: Set up R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
