@@ -4,15 +4,15 @@
 \alias{interactive_objectDetection}
 \title{Interactive detecting of beads}
 \usage{
-interactive_objectDetection(image, resolution = 0.1, return_param = FALSE)
+interactive_objectDetection(img, resolution = 0.1, return_param = FALSE)
 }
 \arguments{
-\item{image}{image (preferred import: \code{\link[imager]{load.image}})}
+\item{img}{image (preferred import: \code{\link[imager]{load.image}})}
 
 \item{resolution}{resolution of slider}
 
-\item{return_param}{Used to define the final parameter values for alpha and sigma
-printed in the console (TRUE or FALSE).}
+\item{return_param}{used to define the final parameter values for alpha and
+sigma printed in the console (TRUE or FALSE).}
 }
 \value{
 values of alpha and sigma

@@ -4,7 +4,7 @@
 #' labeling, gathering the coordinates and centers of the identified objects.
 #' Detected objects are then highlighted with colored circles for easy
 #' recognition.
-#' @param image image (import by \code{\link[imager]{load.image}})
+#' @param img image (import by \code{\link[imager]{load.image}})
 #' @param alpha threshold adjustment factor
 #' @param sigma smoothing
 #' @returns list of 4 objects:
@@ -17,11 +17,11 @@
 #' @examples
 #' objectDetection(beads, alpha = 0.75, sigma = 0.1)
 #' @export
-objectDetection <- function(image,
+objectDetection <- function(img,
                             alpha = 0.75,
                             sigma = 0.1) {
   # assign import
-  img <- image
+  img <- img
 
   # check class of import
   if (class(img)[1] != "cimg") {
@@ -32,7 +32,7 @@ objectDetection <- function(image,
 
   # in case the image is from a luminescence channel transform to gray scale
   if (dim(img)[4] != 1) {
-    img <- grayscale(image)
+    img <- grayscale(img)
   }
 
   # edge detection with default: alpha = 0.75, sigma = 0.1

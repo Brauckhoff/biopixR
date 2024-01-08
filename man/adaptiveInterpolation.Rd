@@ -13,23 +13,23 @@ adaptiveInterpolation(
 )
 }
 \arguments{
-\item{end_points_df}{data frame with the coordinates of all line ends. Can
+\item{end_points_df}{data frame with the coordinates of all line ends. can
 be obtained with \code{\link[magick]{image_morphology}}.}
 
 \item{diagonal_edges_df}{data frame with coordinates of diagonal line ends.
-Can also be obtained by \code{\link[magick]{image_morphology}}.}
+can also be obtained by \code{\link[magick]{image_morphology}}.}
 
-\item{clean_lab_df}{Data of type 'data.frame', containing the x, y and value
-information of every labeled region in an image. (Only the edges should be
+\item{clean_lab_df}{data of type 'data.frame', containing the x, y and value
+information of every labeled region in an image. (only the edges should be
 labeled)}
 
-\item{lineends_cimg}{Image with dimensions of the image with discontinuous
-edges. Just for giving the dimensions of the output matrix.}
+\item{lineends_cimg}{image with dimensions of the image with discontinuous
+edges. just for giving the dimensions of the output matrix.}
 
 \item{radius}{maximal radius that should be scanned for another cluster}
 }
 \value{
-Binary matrix that can be applied as an overlay, for example with
+binary matrix that can be applied as an overlay, for example with
 \code{\link[imager]{imager.combine}} to fill the gaps between line ends.
 }
 \description{

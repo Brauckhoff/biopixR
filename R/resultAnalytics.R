@@ -9,6 +9,7 @@
 #' 1. summary of all the microbeads in the image
 #' 2. detailed information about every single bead
 #' @import data.table
+#' @importFrom stats na.omit
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
 #' res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
@@ -42,33 +43,65 @@ resultAnalytics <- function(res_sizeFilter) {
   by = cluster
   ]
 
-  # summary for every passing bead
-  res_df_long <- data.frame(
-    Beadnumber = intense$cluster,
-    Size = unlist(cluster_size),
-    Intensity = intense$intensity,
-    x = intense$x,
-    y = intense$y
-  )
-
   # approximate amount of discarded pixels
   # calculate amount of true coordinates
   amount_true <- length(which(threshold(pic)) == TRUE)
   dis_count <- round((amount_true / mean(unlist(cluster_size))) - nrow(intense))
 
-  # summary of res_df_long / whole image
-  result <- data.frame(
-    Number_of_Beads = nrow(intense),
-    Mean_Size = mean(unlist(cluster_size)),
-    Mean_intensity = mean(res_xy_clus$intensity),
-    Bead_density = (nrow(intense) *
-      mean(unlist(cluster_size))) /
-      length(pic),
-    Estimated_rejected = dis_count
+  # summary for every passing bead
+  res_df_long <- data.frame(
+    beadnumber = intense$cluster,
+    size = unlist(cluster_size),
+    intensity = intense$intensity,
+    x = intense$x,
+    y = intense$y
   )
 
+  # summary of res_df_long / whole image
+  result <- data.frame(
+    number_of_beads = nrow(intense),
+    mean_size = mean(unlist(cluster_size)),
+    mean_intensity = mean(res_xy_clus$intensity),
+    bead_density = (nrow(intense) *
+                      mean(unlist(cluster_size))) /
+      length(pic),
+    estimated_rejected = dis_count
+  )
+
+  # calculate the relative distance between all beadcenters based on Euclidean
+  # distance
+  DT <- data.table(res_sizeFilter$remaining.coordinates.s)
+  res_center <- DT[, list(x = mean(x), y = mean(y)), by = cluster]
+
+  # formula for the Euclidean distance
+  euclidean_distance <- function(point1, point2) {
+    sqrt((point2$x - point1$x)^2 + (point2$y - point1$y)^2)
+  }
+
+  num_points <- nrow(res_center)
+  relative_distances <- matrix(NA, nrow = num_points, ncol = num_points)
+
+  for (i in 1:num_points) {
+    for (j in 1:num_points) {
+      if (i == j) {
+        next
+      } else {
+        relative_distances[i, j] <- euclidean_distance(res_center[i, ], res_center[j, ])
+      }
+    }
+  }
+  as.matrix(relative_distances)
+
+  # add relative distance to the detailed result
+  for (a in 1:num_points) {
+    res_df_long$relative_distance[a] <- mean(na.omit(relative_distances[a, ]))
+  }
+
+  # add mean distance to the summarized result
+  result$mean_distance <- mean(res_df_long$relative_distance)
+
   out <- list(
-    Summary = result,
+    summary = result,
     detailed = res_df_long
   )
 }

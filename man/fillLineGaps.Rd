@@ -16,26 +16,26 @@ fillLineGaps(
 )
 }
 \arguments{
-\item{droplet.img}{Image that contains discontinuous lines like edges or
-contours.}
+\item{droplet.img}{image that contains discontinuous lines like edges or
+contours}
 
-\item{bead.img}{Image that contains objects that should be removed before
-before applying the fill algorithm.}
+\item{bead.img}{image that contains objects that should be removed before
+before applying the fill algorithm}
 
 \item{threshold}{"in \%" (from \code{\link[imager]{threshold}})}
 
-\item{alpha}{Threshold adjustment factor for edge detection
-(from \code{\link[imager]{cannyEdges}}).}
+\item{alpha}{threshold adjustment factor for edge detection
+(from \code{\link[imager]{cannyEdges}})}
 
-\item{sigma}{smoothing (from \code{\link[imager]{cannyEdges}}).}
+\item{sigma}{smoothing (from \code{\link[imager]{cannyEdges}})}
 
 \item{radius}{maximal radius that should be scanned for another cluster}
 
 \item{iterations}{how many times the algorithm should find line ends and
 reconnect them to their closest neighbor}
 
-\item{visualize}{If TRUE (default) a plot is displayed highlighting the
-added pixels in the original image.}
+\item{visualize}{if TRUE (default) a plot is displayed highlighting the
+added pixels in the original image}
 }
 \value{
 image with continuous edges (closed gaps)

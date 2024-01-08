@@ -2,38 +2,37 @@
 #'
 #' Can be used to change the color of specified pixels in an image. The coordinates
 #' of the pixels are needed to colorize them.
-#' @param image image (import by \code{\link[imager]{load.image}})
-#' @param coords Coordinates specifying which pixels to be colored (should
-#' be a X|Y Data frame (first column: X; second column: Y))
-#' @param color Color with which to replace specified pixels. Can be either a
+#' @param img image (import by \code{\link[imager]{load.image}})
+#' @param coords coordinates specifying which pixels to be colored (should
+#' be a X|Y Data frame (first column: X; second column: Y)).
+#' @param color color with which to replace specified pixels. can be either a
 #' an RGB triplet or one of the colors listed by \code{\link[grDevices]{colors}}.
 #' @returns
-#' Cimg with changed colors at desired positions and
-#' plot of the cimg
+#' cimg with changed colors at desired positions and plot of the cimg
 #' @importFrom grDevices col2rgb
 #' @examples
 #' coordinates <- objectDetection(beads)
 #' changePixelColor(beads, coordinates$coordinates)
 #' @references https://CRAN.R-project.org/package=countcolors
 #' @export
-changePixelColor <- function(image, coords, color = "green") {
-  # this code is partialy based on the changePixelColor function from the countcolors 
-  # package (v0.9.1)
+changePixelColor <- function(img, coords, color = "green") {
+  # this code is partialy based on the changePixelColor function from the
+  # countcolors package (v0.9.1)
   # check class of import
-  if (class(image)[1] != "cimg") {
+  if (class(img)[1] != "cimg") {
     stop(
       "image must be of class 'cimg'"
     )
   }
 
   # check if color channels are present and if not add them
-  img_dim <- dim(image)
+  img_dim <- dim(img)
   if (img_dim[4] != 3) {
-    image <- add.colour(image)
+    img <- add.colour(img)
   }
 
   # transform image to array so that transformation of pixels becomes available
-  img_array <- as.array(image)
+  img_array <- as.array(img)
 
   # make sure target color is or can be coerced to an RGB triplet
   if (is.character(color)) {

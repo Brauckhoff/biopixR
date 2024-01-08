@@ -84,9 +84,9 @@ In conclusion, obtaining meaningful information from the filtered dataset is ess
 
 ```{r}
 result <- resultAnalytics(res_sizeFilter)
-result$Summary
+result$summary
 ```
-Number_of_Beads | Mean_Size | Mean_intensity | Bead_density | Estimated_rejected | mean_distance 
+number_of_beads | mean_size | mean_intensity | bead_density | estimated_rejected | mean_distance 
 --- | --- | --- | --- | --- | ---
 8 | 94.8 | 0.59 | 0.0469 | 6 | 67.1
 

@@ -4,20 +4,19 @@
 \alias{changePixelColor}
 \title{Change the color of pixels}
 \usage{
-changePixelColor(image, coords, color = "green")
+changePixelColor(img, coords, color = "green")
 }
 \arguments{
-\item{image}{image (import by \code{\link[imager]{load.image}})}
+\item{img}{image (import by \code{\link[imager]{load.image}})}
 
-\item{coords}{Coordinates specifying which pixels to be colored (should
-be a X|Y Data frame (first column: X; second column: Y))}
+\item{coords}{coordinates specifying which pixels to be colored (should
+be a X|Y Data frame (first column: X; second column: Y)).}
 
-\item{color}{Color with which to replace specified pixels. Can be either a
+\item{color}{color with which to replace specified pixels. can be either a
 an RGB triplet or one of the colors listed by \code{\link[grDevices]{colors}}.}
 }
 \value{
-Cimg with changed colors at desired positions and
-plot of the cimg
+cimg with changed colors at desired positions and plot of the cimg
 }
 \description{
 Can be used to change the color of specified pixels in an image. The coordinates

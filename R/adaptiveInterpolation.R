@@ -2,17 +2,17 @@
 #'
 #' Function scans an increasing radius around a line end and connects it with
 #' the nearest labeled region.
-#' @param end_points_df data frame with the coordinates of all line ends. Can
+#' @param end_points_df data frame with the coordinates of all line ends. can
 #' be obtained with \code{\link[magick]{image_morphology}}.
 #' @param diagonal_edges_df data frame with coordinates of diagonal line ends.
-#' Can also be obtained by \code{\link[magick]{image_morphology}}.
-#' @param clean_lab_df Data of type 'data.frame', containing the x, y and value
-#' information of every labeled region in an image. (Only the edges should be
+#' can also be obtained by \code{\link[magick]{image_morphology}}.
+#' @param clean_lab_df data of type 'data.frame', containing the x, y and value
+#' information of every labeled region in an image. (only the edges should be
 #' labeled)
-#' @param lineends_cimg Image with dimensions of the image with discontinuous
-#' edges. Just for giving the dimensions of the output matrix.
+#' @param lineends_cimg image with dimensions of the image with discontinuous
+#' edges. just for giving the dimensions of the output matrix.
 #' @param radius maximal radius that should be scanned for another cluster
-#' @return Binary matrix that can be applied as an overlay, for example with
+#' @return binary matrix that can be applied as an overlay, for example with
 #' \code{\link[imager]{imager.combine}} to fill the gaps between line ends.
 #' @details
 #' This function is intended to be part of the fillLineGaps function, which

@@ -9,10 +9,10 @@ wait_time_long <- function()
 #'
 #' This function uses the objectDetection function to visualize the detected
 #' objects at varying threshold an smoothing parameters.
-#' @param image image (preferred import: \code{\link[imager]{load.image}})
-#' @param resolution 	resolution of slider
-#' @param return_param Used to define the final parameter values for alpha and sigma
-#' printed in the console (TRUE or FALSE).
+#' @param img image (preferred import: \code{\link[imager]{load.image}})
+#' @param resolution resolution of slider
+#' @param return_param used to define the final parameter values for alpha and
+#' sigma printed in the console (TRUE or FALSE).
 #' @returns values of alpha and sigma
 #' @import magick
 #' @import imager
@@ -27,12 +27,12 @@ wait_time_long <- function()
 #' }
 #' @export
 interactive_objectDetection <-
-  function(image,
+  function(img,
            resolution = 0.1,
            return_param = FALSE) {
     # assign imports
-    image_original <- cimg2magick(image)
-    beads <- image
+    image_original <- cimg2magick(img)
+    beads <- img
 
     # make initial input
     alpha <- 0.7

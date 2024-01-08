@@ -2,19 +2,19 @@
 #'
 #' The function attempts to fill in edge discontinuities in order to enable
 #' normal labeling and edge detection.
-#' @param droplet.img Image that contains discontinuous lines like edges or
-#' contours.
-#' @param bead.img Image that contains objects that should be removed before
-#' before applying the fill algorithm.
+#' @param droplet.img image that contains discontinuous lines like edges or
+#' contours
+#' @param bead.img image that contains objects that should be removed before
+#' before applying the fill algorithm
 #' @param threshold "in %" (from \code{\link[imager]{threshold}})
-#' @param alpha Threshold adjustment factor for edge detection
-#' (from \code{\link[imager]{cannyEdges}}).
-#' @param sigma smoothing (from \code{\link[imager]{cannyEdges}}).
+#' @param alpha threshold adjustment factor for edge detection
+#' (from \code{\link[imager]{cannyEdges}})
+#' @param sigma smoothing (from \code{\link[imager]{cannyEdges}})
 #' @param radius maximal radius that should be scanned for another cluster
 #' @param iterations how many times the algorithm should find line ends and
 #' reconnect them to their closest neighbor
-#' @param visualize If TRUE (default) a plot is displayed highlighting the
-#' added pixels in the original image.
+#' @param visualize if TRUE (default) a plot is displayed highlighting the
+#' added pixels in the original image
 #' @returns image with continuous edges (closed gaps)
 #' @import imager
 #' @import magick

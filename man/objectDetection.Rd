@@ -4,10 +4,10 @@
 \alias{objectDetection}
 \title{Object detection}
 \usage{
-objectDetection(image, alpha = 0.75, sigma = 0.1)
+objectDetection(img, alpha = 0.75, sigma = 0.1)
 }
 \arguments{
-\item{image}{image (import by \code{\link[imager]{load.image}})}
+\item{img}{image (import by \code{\link[imager]{load.image}})}
 
 \item{alpha}{threshold adjustment factor}
 

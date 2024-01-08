@@ -268,7 +268,7 @@ image results are summarized in a single row, emphasizing the key parameters
 described earlier.
 
 ```{r}
-result$Summary
+result$summary
 ```
 
 A final note regarding the estimated number of rejected objects: A careful
@@ -365,12 +365,14 @@ As mentioned previously, the detailed table results for a larger image would
 unavoidably become overly extensive. The same issue is applicable to the matrix.
 Therefore, to overcome this issue, instead of relying solely on the detailed
 table results, the mean relative distance is calculated and included in the
-summary table.
+summary table. 
 
 ```{r}
-result$Summary$mean_distance <- mean(result$detailed$relative_distance)
-result$Summary
+result$summary$mean_distance <- mean(result$detailed$relative_distance)
+result$summary
 ```
+
+*will be available in the `resultAnalytics` function as of version 0.1.1*
 
 # Case study: microbeads in droplets
 
