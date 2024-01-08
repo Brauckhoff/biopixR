@@ -1,8 +1,11 @@
-# biopixR - Package for analysis of bioimage image data
-
   <!-- badges: start -->
   [![R-CMD-check](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yml)
   <!-- badges: end -->
+
+![logo2 (another copy)](https://github.com/Brauckhoff/biopixR/assets/121032772/4a057464-1212-47d8-9af3-391f10179c4b)
+
+
+# biopixR - Package for analysis of bioimage image data
 
 ## Introduction
 In the rapidly evolving landscape of scientific research and technology, the field of image analysis and processing has become indispensable, providing unprecedented insight into complex phenomena. This project aims to utilize image processing techniques, using the R programming language, to analyze and characterize bead microparticles. Microparticles find extensive utility in various scientific domains, including medical diagnostics, environmental monitoring, and materials science.
