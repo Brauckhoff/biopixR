@@ -49,11 +49,47 @@ proximityFilter <- function(res_objectDetection, radius = 10) {
   grouped_lab_img <- res_objectDetection$centers
   df_lab_img <- res_objectDetection$coordinates
 
+  # transfer to sizeFilter and change of order
+  if (radius == 'auto') {
+    # automated detection of radius
+    # taking a part from the sizeFilter function to calculate the size
+    # knowing the size we can calculate the radius (requirement: circular shape)
+    cluster_size <- list()
+    for (c in grouped_lab_img$value) {
+      for (e in df_lab_img$value) {
+        if (c == e) {
+          clus_pxl <- which(df_lab_img$value == c)
+          size <- length(clus_pxl)
+          if (is.null(size) != TRUE) {
+            cluster_size[c] <- c(size)
+          }
+        }
+      }
+    }
+
+    data <- unlist(cluster_size)
+    sd_value <- sd(data)
+
+    q1 <- quantile(data, 0.25)
+    q3 <- quantile(data, 0.75)
+    iqr <- q3 - q1
+    lower_bound <- q1 - sd_value * iqr
+    upper_bound <- q3 + sd_value * iqr
+
+    tro <- which(abs(data) > lower_bound & abs(data) < upper_bound)
+
+    # calculate radius from given approximate size
+    #radius <- sqrt(mean_size$mean_size[app_size] / pi)
+
+    # at least half a bead space between beads
+    # radius <- round(radius) * 3
+  }
+
   # looking at every center of an labeled object
   distanced_excl_list <- list()
   for (i in seq_along(grouped_lab_img$value)) {
-    x <- grouped_lab_img[i, ]$mxx
-    y <- grouped_lab_img[i, ]$myy
+    x <- grouped_lab_img[i,]$mxx
+    y <- grouped_lab_img[i,]$myy
     for (d in grouped_lab_img$mxx) {
       if (x == d) {
         next
@@ -63,7 +99,7 @@ proximityFilter <- function(res_objectDetection, radius = 10) {
         # 2*radius
         if (x - radius < d & x + radius > d) {
           clus <- which(grouped_lab_img$mxx == d)
-          y_clus <- grouped_lab_img[clus, ]$myy
+          y_clus <- grouped_lab_img[clus,]$myy
 
           # second (if first true): check if the found x coordinates are in a
           # range of 'radius' pixels from the current center regarding the y
@@ -75,7 +111,7 @@ proximityFilter <- function(res_objectDetection, radius = 10) {
               # around the current center) it is viewed as too close and
               # therefore discarded
               too_close <- which(grouped_lab_img$myy == v &
-                grouped_lab_img$mxx == d)
+                                   grouped_lab_img$mxx == d)
               distanced_excl_list[too_close] <- c(too_close)
             }
           }
@@ -87,14 +123,12 @@ proximityFilter <- function(res_objectDetection, radius = 10) {
   clean_distanced_excl <- unlist(distanced_excl_list)
 
   # create data frame with the center coordinates of the discarded clusters
-  distance_discard_df <- data.frame(
-    mx = rep(NA, nrow(grouped_lab_img)),
-    my = rep(NA, nrow(grouped_lab_img))
-  )
+  distance_discard_df <- data.frame(mx = rep(NA, nrow(grouped_lab_img)),
+                                    my = rep(NA, nrow(grouped_lab_img)))
 
   for (a in clean_distanced_excl) {
-    x <- grouped_lab_img[a, ]$mxx
-    y <- grouped_lab_img[a, ]$myy
+    x <- grouped_lab_img[a,]$mxx
+    y <- grouped_lab_img[a,]$myy
     distance_discard_df[a, 1] <- x
     distance_discard_df[a, 2] <- y
   }
@@ -103,7 +137,7 @@ proximityFilter <- function(res_objectDetection, radius = 10) {
   # original data
   # then get position of remaining clusters in original labeled image
   remaining_cluster <- which(is.na(distance_discard_df$mx) == TRUE)
-  remaining_cluster_df <- grouped_lab_img[remaining_cluster, ]
+  remaining_cluster_df <- grouped_lab_img[remaining_cluster,]
 
   # extracting all coordinates from the original labeled image with cluster
   # that pass the criteria
@@ -113,7 +147,7 @@ proximityFilter <- function(res_objectDetection, radius = 10) {
     pos_clus_img[clus_pos] <- c(clus_pos)
   }
   clean_pos_clus <- unlist(pos_clus_img)
-  xy_cords_clus <- df_lab_img[clean_pos_clus, ]
+  xy_cords_clus <- df_lab_img[clean_pos_clus,]
 
   out <- list(
     discard = distance_discard_df,
