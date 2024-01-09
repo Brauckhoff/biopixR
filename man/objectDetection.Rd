@@ -18,7 +18,6 @@ list of 4 objects:
 \enumerate{
 \item data frame of labeled region with the central coordinates
 \item all coordinates that are in labeled regions
-\item original image
 \item image were beads are marked by a purple circle
 }
 }

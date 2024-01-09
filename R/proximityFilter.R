@@ -3,23 +3,19 @@
 #' To detect objects within a defined range of one another, it is necessary to
 #' calculate their centers to determine proximity. Pairs that are too close
 #' will be discarded. (Input can be obtained by objectDetection function)
-#' @param res_objectDetection list of objects:
-#' 1. named 'centers' - containing data frame with center coordinates of
-#' objects; three columns 'mxx' - x coordinates, 'myy' - y coordinates &
-#' 'value' - cluster number
-#' 2. named 'coordinates' - containing date frame with all labeled coordinates;
-#' three columns 'x' - x coordinates, 'y' - y coordinates & 'value' - cluster
-#' number (optional)
+#' @param centers center coordinates of objects (mx|my|value data frame)
+#' @param coordinates all coordinates of the objects (x|y|value data frame)
+#' @param size size of the objects (list with length equal to centers)
 #' @param radius distance from one center in which no other centers
 #' are allowed (in pixels)
-#' @returns list of 4 objects:
-#' 1. center coordinates of discarded objects
-#' 2. center coordinates of remaining objects
-#' 3. all coordinates of remaining objects
-#' 4. original image
+#' @returns list of 2 objects:
+#' 1. center coordinates of remaining objects
+#' 2. all coordinates of remaining objects
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-#' proximityFilter(res_objectDetection, radius = 10)
+#' res_sizeFilter <- sizeFilter(res_objectDetection$centers, res_objectDetection$coordinates, lowerlimit = 50, upperlimit = 150)
+#' proximityFilter(res_sizeFilter$centers, res_objectDetection$coordinates,
+#' size = res_sizeFilter$size, radius = 'auto')
 #'
 #' # without usage of objectDetection (only centers)
 #' mat <- matrix(0, 8, 8)
@@ -44,115 +40,103 @@
 #' res_m <- proximityFilter(objects, radius = 3)
 #' changePixelColor(sim_img, res_m$remaining.centers)
 #' @export
-proximityFilter <- function(res_objectDetection, radius = 10) {
+proximityFilter <- function(centers,
+                            coordinates,
+                            size = NULL,
+                            radius = 10) {
   # assign imports
-  grouped_lab_img <- res_objectDetection$centers
-  df_lab_img <- res_objectDetection$coordinates
+  center_df <- centers
+  xy_coords <- coordinates
 
   # transfer to sizeFilter and change of order
-  if (radius == 'auto') {
-    # automated detection of radius
-    # taking a part from the sizeFilter function to calculate the size
-    # knowing the size we can calculate the radius (requirement: circular shape)
-    cluster_size <- list()
-    for (c in grouped_lab_img$value) {
-      for (e in df_lab_img$value) {
-        if (c == e) {
-          clus_pxl <- which(df_lab_img$value == c)
-          size <- length(clus_pxl)
-          if (is.null(size) != TRUE) {
-            cluster_size[c] <- c(size)
+  if(radius == 'auto') {
+    if(is.null(size) == TRUE) {
+      stop(
+        "size is required for calculation of the radius"
+      )
+    }
+
+    if(radius == 'auto') {
+      mean_size <- mean(unlist(size))
+      # calculate radius from given size
+      radius <- sqrt(mean_size / pi)
+
+      # at least half a bead space between objects
+      radius <- round(radius) * 2
+
+      # making proximity filter more reliable
+      xy_edit <- xy_coords
+      for (j in 1:nrow(center_df)) {
+        x <- center_df$mx[j]
+        y <- center_df$my[j]
+        center_sur <- which(
+          xy_coords$x > (x - radius) &
+            xy_coords$x < (x + radius) &
+            xy_coords$y > (y - radius) &
+            xy_coords$y < (y + radius)
+        )
+
+        if (is.null(center_sur) == FALSE &
+            length(unique(xy_coords$value[center_sur])) > 1) {
+          too_close <- unique(xy_coords$value[center_sur])
+
+          for (k in too_close) {
+            xy_pos <- which(xy_coords$value == k)
+            xy_edit[xy_pos, ] <- NA
           }
+        } else {
+          next
         }
       }
     }
 
-    data <- unlist(cluster_size)
-    sd_value <- sd(data)
+    xy_cords_clus <- na.omit(xy_edit)
 
-    q1 <- quantile(data, 0.25)
-    q3 <- quantile(data, 0.75)
-    iqr <- q3 - q1
-    lower_bound <- q1 - sd_value * iqr
-    upper_bound <- q3 + sd_value * iqr
+    DT <- data.table(xy_cords_clus)
 
-    tro <- which(abs(data) > lower_bound & abs(data) < upper_bound)
-
-    # calculate radius from given approximate size
-    #radius <- sqrt(mean_size$mean_size[app_size] / pi)
-
-    # at least half a bead space between beads
-    # radius <- round(radius) * 3
+    # summarize by center and calculate center
+    remaining_center_df <-
+      DT[, list(mx = mean(x), my = mean(y)), by = value]
   }
 
-  # looking at every center of an labeled object
-  distanced_excl_list <- list()
-  for (i in seq_along(grouped_lab_img$value)) {
-    x <- grouped_lab_img[i,]$mxx
-    y <- grouped_lab_img[i,]$myy
-    for (d in grouped_lab_img$mxx) {
-      if (x == d) {
-        next
+  if (radius != 'auto') {
+    # making proximity filter more reliable
+    xy_edit <- xy_coords
+    for (j in 1:nrow(center_df)) {
+      x <- center_df$mx[j]
+      y <- center_df$my[j]
+      center_sur <- which(
+        xy_coords$x > (x - radius) &
+          xy_coords$x < (x + radius) &
+          xy_coords$y > (y - radius) &
+          xy_coords$y < (y + radius)
+      )
+
+      if (is.null(center_sur) == FALSE &
+          length(unique(xy_coords$value[center_sur])) > 1) {
+        too_close <- unique(xy_coords$value[center_sur])
+
+        for (k in too_close) {
+          xy_pos <- which(xy_coords$value == k)
+          xy_edit[xy_pos, ] <- NA
+        }
       } else {
-        # first: check the surrounding pixels from the current center, if there
-        # is another center -> rectangle over hole y axis, with width of
-        # 2*radius
-        if (x - radius < d & x + radius > d) {
-          clus <- which(grouped_lab_img$mxx == d)
-          y_clus <- grouped_lab_img[clus,]$myy
-
-          # second (if first true): check if the found x coordinates are in a
-          # range of 'radius' pixels from the current center regarding the y
-          # coordinates -> creates second rectangle over hole x axis, with
-          # width of 2*radius
-          for (v in y_clus) {
-            if (y - radius < v & y + radius > v) {
-              # third: only if a coordinate is in both rectangles (the radius^2
-              # around the current center) it is viewed as too close and
-              # therefore discarded
-              too_close <- which(grouped_lab_img$myy == v &
-                                   grouped_lab_img$mxx == d)
-              distanced_excl_list[too_close] <- c(too_close)
-            }
-          }
-        }
+        next
       }
     }
+
+    xy_cords_clus <- na.omit(xy_edit)
+
+    DT <- data.table(xy_cords_clus)
+
+    # summarize by center and calculate center
+    remaining_center_df <-
+      DT[, list(mx = mean(x), my = mean(y)), by = value]
+
   }
-
-  clean_distanced_excl <- unlist(distanced_excl_list)
-
-  # create data frame with the center coordinates of the discarded clusters
-  distance_discard_df <- data.frame(mx = rep(NA, nrow(grouped_lab_img)),
-                                    my = rep(NA, nrow(grouped_lab_img)))
-
-  for (a in clean_distanced_excl) {
-    x <- grouped_lab_img[a,]$mxx
-    y <- grouped_lab_img[a,]$myy
-    distance_discard_df[a, 1] <- x
-    distance_discard_df[a, 2] <- y
-  }
-
-  # discard data points that did not pass the proximityFilter from
-  # original data
-  # then get position of remaining clusters in original labeled image
-  remaining_cluster <- which(is.na(distance_discard_df$mx) == TRUE)
-  remaining_cluster_df <- grouped_lab_img[remaining_cluster,]
-
-  # extracting all coordinates from the original labeled image with cluster
-  # that pass the criteria
-  pos_clus_img <- list()
-  for (b in remaining_cluster_df$value) {
-    clus_pos <- which(df_lab_img$value == b)
-    pos_clus_img[clus_pos] <- c(clus_pos)
-  }
-  clean_pos_clus <- unlist(pos_clus_img)
-  xy_cords_clus <- df_lab_img[clean_pos_clus,]
 
   out <- list(
-    discard = distance_discard_df,
-    remaining.centers = remaining_cluster_df,
-    remaining.coordinates = xy_cords_clus,
-    image = res_objectDetection$image
+    centers = remaining_center_df,
+    coordinates = xy_cords_clus
   )
 }

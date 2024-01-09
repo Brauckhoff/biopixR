@@ -4,29 +4,23 @@
 \alias{proximityFilter}
 \title{Proximity-based exclusion}
 \usage{
-proximityFilter(res_objectDetection, radius = 10)
+proximityFilter(centers, coordinates, size = NULL, radius = 10)
 }
 \arguments{
-\item{res_objectDetection}{list of objects:
-\enumerate{
-\item named 'centers' - containing data frame with center coordinates of
-objects; three columns 'mxx' - x coordinates, 'myy' - y coordinates &
-'value' - cluster number
-\item named 'coordinates' - containing date frame with all labeled coordinates;
-three columns 'x' - x coordinates, 'y' - y coordinates & 'value' - cluster
-number (optional)
-}}
+\item{centers}{center coordinates of objects (mx|my|value data frame)}
+
+\item{coordinates}{all coordinates of the objects (x|y|value data frame)}
+
+\item{size}{size of the objects (list with length equal to centers)}
 
 \item{radius}{distance from one center in which no other centers
 are allowed (in pixels)}
 }
 \value{
-list of 4 objects:
+list of 2 objects:
 \enumerate{
-\item center coordinates of discarded objects
 \item center coordinates of remaining objects
 \item all coordinates of remaining objects
-\item original image
 }
 }
 \description{
@@ -36,7 +30,9 @@ will be discarded. (Input can be obtained by objectDetection function)
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-proximityFilter(res_objectDetection, radius = 10)
+res_sizeFilter <- sizeFilter(res_objectDetection$centers, res_objectDetection$coordinates, lowerlimit = 50, upperlimit = 150)
+proximityFilter(res_sizeFilter$centers, res_objectDetection$coordinates,
+size = res_sizeFilter$size, radius = 'auto')
 
 # without usage of objectDetection (only centers)
 mat <- matrix(0, 8, 8)

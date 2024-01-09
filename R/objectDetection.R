@@ -10,8 +10,7 @@
 #' @returns list of 4 objects:
 #' 1. data frame of labeled region with the central coordinates
 #' 2. all coordinates that are in labeled regions
-#' 3. original image
-#' 4. image were beads are marked by a purple circle
+#' 3. image were beads are marked by a purple circle
 #' @import data.table
 #' @import imager
 #' @examples
@@ -21,22 +20,22 @@ objectDetection <- function(img,
                             alpha = 0.75,
                             sigma = 0.1) {
   # assign import
-  img <- img
+  object_img <- img
 
   # check class of import
-  if (class(img)[1] != "cimg") {
+  if (class(object_img)[1] != "cimg") {
     stop(
       "image must be of class 'cimg'"
     )
   }
 
   # in case the image is from a luminescence channel transform to gray scale
-  if (dim(img)[4] != 1) {
-    img <- grayscale(img)
+  if (dim(object_img)[4] != 1) {
+    object_img <- grayscale(object_img)
   }
 
   # edge detection with default: alpha = 0.75, sigma = 0.1
-  edge_img <- edgeDetection(img, alpha = alpha, sigma = sigma)
+  edge_img <- edgeDetection(object_img, alpha = alpha, sigma = sigma)
 
   # fill detected edges and label areas
   first_lab <- label(edge_img)
@@ -52,23 +51,15 @@ objectDetection <- function(img,
 
   # summarize by cluster and calculate center
   grouped_lab_img <-
-    DT[, list(mxx = mean(x), myy = mean(y)), by = value]
+    DT[, list(mx = mean(x), my = mean(y)), by = value]
 
-  # visualization by drawing colored circles around the center of detected beads
-  img_rgb <- add.color(img, simple = TRUE)
-  circ_img <- draw_circle(
-    img_rgb,
-    grouped_lab_img$mxx,
-    grouped_lab_img$myy,
-    radius = 2,
-    filled = TRUE,
-    color = "purple"
-  )
+  # visualization by highlighting the edges of detected beads
+  edge_coords <- which(edge_img == TRUE, arr.ind = TRUE)
+  colored_edge <- changePixelColor(object_img, edge_coords, color = "purple")
 
   out <- list(
     centers = grouped_lab_img,
     coordinates = df_lab_img,
-    image = img,
-    marked_beads = circ_img
+    marked_beads = colored_edge
   )
 }
