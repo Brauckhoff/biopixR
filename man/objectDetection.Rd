@@ -4,7 +4,7 @@
 \alias{objectDetection}
 \title{Object detection}
 \usage{
-objectDetection(img, alpha = 0.75, sigma = 0.1)
+objectDetection(img, alpha = 1, sigma = 2)
 }
 \arguments{
 \item{img}{image (import by \code{\link[imager]{load.image}})}
@@ -14,18 +14,17 @@ objectDetection(img, alpha = 0.75, sigma = 0.1)
 \item{sigma}{smoothing}
 }
 \value{
-list of 4 objects:
+list of 3 objects:
 \enumerate{
 \item data frame of labeled region with the central coordinates
 \item all coordinates that are in labeled regions
-\item image were beads are marked by a purple circle
+\item image were object edges are colored
 }
 }
 \description{
 This function identifies objects in an image using edge detection and
 labeling, gathering the coordinates and centers of the identified objects.
-Detected objects are then highlighted with colored circles for easy
-recognition.
+The edges of detected objects are then highlighted for easy recognition.
 }
 \examples{
 objectDetection(beads, alpha = 0.75, sigma = 0.1)

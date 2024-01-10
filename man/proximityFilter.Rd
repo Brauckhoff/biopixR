@@ -4,23 +4,22 @@
 \alias{proximityFilter}
 \title{Proximity-based exclusion}
 \usage{
-proximityFilter(centers, coordinates, size = NULL, radius = 10)
+proximityFilter(centers, coordinates, radius = "auto")
 }
 \arguments{
 \item{centers}{center coordinates of objects (mx|my|value data frame)}
 
 \item{coordinates}{all coordinates of the objects (x|y|value data frame)}
 
-\item{size}{size of the objects (list with length equal to centers)}
-
 \item{radius}{distance from one center in which no other centers
 are allowed (in pixels)}
 }
 \value{
-list of 2 objects:
+list of 3 objects:
 \enumerate{
 \item center coordinates of remaining objects
 \item all coordinates of remaining objects
+\item size of remaining objects
 }
 }
 \description{
@@ -30,30 +29,5 @@ will be discarded. (Input can be obtained by objectDetection function)
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-res_sizeFilter <- sizeFilter(res_objectDetection$centers, res_objectDetection$coordinates, lowerlimit = 50, upperlimit = 150)
-proximityFilter(res_sizeFilter$centers, res_objectDetection$coordinates,
-size = res_sizeFilter$size, radius = 'auto')
-
-# without usage of objectDetection (only centers)
-mat <- matrix(0, 8, 8)
-mat[3, 5] <- 1
-mat[5, 2] <- 1
-mat[6, 7] <- 1
-mat[7, 3] <- 1
-sim_img <- as.cimg(mat)
-centers <- data.frame(
-  mxx = c(3, 5, 6, 7),
-  myy = c(5, 2, 7, 3),
-  value = c(1:4)
-)
-objects <- list(centers = centers)
-proximityFilter(objects, radius = 3)
-
-# Visualization
-res_l <- proximityFilter(res_objectDetection, radius = 10)
-changePixelColor(beads, res_l$remaining.coordinates)
-
-# without objectDetection
-res_m <- proximityFilter(objects, radius = 3)
-changePixelColor(sim_img, res_m$remaining.centers)
+proximityFilter(res_objectDetection$centers, res_objectDetection$coordinates, radius = 'auto')
 }

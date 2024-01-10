@@ -4,7 +4,7 @@
 \alias{changePixelColor}
 \title{Change the color of pixels}
 \usage{
-changePixelColor(img, coords, color = "green")
+changePixelColor(img, coords, color = "purple", visualize = FALSE)
 }
 \arguments{
 \item{img}{image (import by \code{\link[imager]{load.image}})}
@@ -14,6 +14,8 @@ be a X|Y Data frame (first column: X; second column: Y)).}
 
 \item{color}{color with which to replace specified pixels. can be either a
 an RGB triplet or one of the colors listed by \code{\link[grDevices]{colors}}.}
+
+\item{visualize}{if TRUE the resulting image gets plotted}
 }
 \value{
 cimg with changed colors at desired positions and plot of the cimg

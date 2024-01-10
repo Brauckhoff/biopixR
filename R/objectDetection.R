@@ -2,23 +2,22 @@
 #'
 #' This function identifies objects in an image using edge detection and
 #' labeling, gathering the coordinates and centers of the identified objects.
-#' Detected objects are then highlighted with colored circles for easy
-#' recognition.
+#' The edges of detected objects are then highlighted for easy recognition.
 #' @param img image (import by \code{\link[imager]{load.image}})
 #' @param alpha threshold adjustment factor
 #' @param sigma smoothing
-#' @returns list of 4 objects:
+#' @returns list of 3 objects:
 #' 1. data frame of labeled region with the central coordinates
 #' 2. all coordinates that are in labeled regions
-#' 3. image were beads are marked by a purple circle
+#' 3. image were object edges are colored
 #' @import data.table
 #' @import imager
 #' @examples
 #' objectDetection(beads, alpha = 0.75, sigma = 0.1)
 #' @export
 objectDetection <- function(img,
-                            alpha = 0.75,
-                            sigma = 0.1) {
+                            alpha = 1,
+                            sigma = 2) {
   # assign import
   object_img <- img
 
@@ -32,9 +31,10 @@ objectDetection <- function(img,
   # in case the image is from a luminescence channel transform to gray scale
   if (dim(object_img)[4] != 1) {
     object_img <- grayscale(object_img)
+    message("Note: image is from a luminescence channel and was converted into grayscale")
   }
 
-  # edge detection with default: alpha = 0.75, sigma = 0.1
+  # edge detection with default: alpha = 1, sigma = 2
   edge_img <- edgeDetection(object_img, alpha = alpha, sigma = sigma)
 
   # fill detected edges and label areas

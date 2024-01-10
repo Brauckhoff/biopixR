@@ -7,6 +7,7 @@
 #' be a X|Y Data frame (first column: X; second column: Y)).
 #' @param color color with which to replace specified pixels. can be either a
 #' an RGB triplet or one of the colors listed by \code{\link[grDevices]{colors}}.
+#' @param visualize if TRUE the resulting image gets plotted
 #' @returns
 #' cimg with changed colors at desired positions and plot of the cimg
 #' @importFrom grDevices col2rgb
@@ -15,7 +16,7 @@
 #' changePixelColor(beads, coordinates$coordinates)
 #' @references https://CRAN.R-project.org/package=countcolors
 #' @export
-changePixelColor <- function(img, coords, color = "green") {
+changePixelColor <- function(img, coords, color = "purple", visualize = FALSE) {
   # this code is partialy based on the changePixelColor function from the
   # countcolors package (v0.9.1)
   # check class of import
@@ -54,7 +55,10 @@ changePixelColor <- function(img, coords, color = "green") {
     img_array[coords[i, 1], coords[i, 2], 1, 1:3] <- color
   }
 
-  # display result
-  as.cimg(img_array) |> plot()
+  if (visualize == TRUE) {
+    # display result
+    as.cimg(img_array) |> plot()
+  }
+
   out <- as.cimg(img_array)
 }

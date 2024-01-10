@@ -4,7 +4,9 @@
 #' summarizes the data obtained by previous functions: objectDetection,
 #' proximityFilter and sizeFilter. Provides information like amount, intensity,
 #' size and density.
-#' @param res_sizeFilter list obtained by the sizeFilter function
+#' @param coordinates all coordinates of the objects (x|y|value data frame)
+#' @param size size of the objects
+#' @param img image (import by \code{\link[imager]{load.image}})
 #' @returns list of 2 objects:
 #' 1. summary of all the microbeads in the image
 #' 2. detailed information about every single bead
@@ -12,36 +14,45 @@
 #' @importFrom stats na.omit
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-#' res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
-#' res_sizeFilter <- sizeFilter(res_proximityFilter, lowerlimit = 50, upperlimit = 150)
-#' resultAnalytics(res_sizeFilter)
+#' res_sizeFilter <- sizeFilter(res_objectDetection$centers,
+#' res_objectDetection$coordinates, lowerlimit = 50, upperlimit = 150)
+#' res_proximityFilter <- proximityFilter(res_sizeFilter$centers,
+#' res_objectDetection$coordinates, radius = 'auto')
+#' resultAnalytics(res_proximityFilter$coordinates, res_proximityFilter$size, beads)
 #' @export
-resultAnalytics <- function(res_sizeFilter) {
+resultAnalytics <- function(coordinates,
+                            size,
+                            img) {
   # binding for global variables
   intensity <- cluster <- NULL
 
   # assign imports
-  res_xy_clus <- res_sizeFilter$remaining.coordinates.s
-  cluster_size <- res_sizeFilter$size
-  pic <- res_sizeFilter$image
+  xy_coords <- coordinates
+  cluster_size <- size
+  pic <- img
 
   # including intensity values of pixels from remaining clusters in a data frame
-  for (h in 1:nrow(res_xy_clus)) {
-    xx <- res_xy_clus$x[h]
-    yy <- res_xy_clus$y[h]
-    int <- as.array(pic)[xx, yy, , ]
-    res_xy_clus[h, 4] <- c(int)
+  for (h in 1:nrow(xy_coords)) {
+    x <- xy_coords$x[h]
+    y <- xy_coords$y[h]
+    int <- as.array(pic)[x, y, , ]
+    xy_coords$intensity[h] <- c(int)
   }
 
   # group data frame by cluster
-  DT_intense <- data.table(res_xy_clus)
+  DT_intense <- data.table(xy_coords)
   intense <- DT_intense[, list(
     x = mean(x),
     y = mean(y),
     intensity = mean(intensity)
   ),
-  by = cluster
+  by = value
   ]
+
+  if (length(cluster_size) != nrow(intense)) {
+    # adapting size according to remaining coordinates
+    cluster_size <- unlist(cluster_size[intense$value])
+  }
 
   # approximate amount of discarded pixels
   # calculate amount of true coordinates
@@ -50,7 +61,7 @@ resultAnalytics <- function(res_sizeFilter) {
 
   # summary for every passing bead
   res_df_long <- data.frame(
-    beadnumber = intense$cluster,
+    beadnumber = intense$value,
     size = unlist(cluster_size),
     intensity = intense$intensity,
     x = intense$x,
@@ -61,17 +72,15 @@ resultAnalytics <- function(res_sizeFilter) {
   result <- data.frame(
     number_of_beads = nrow(intense),
     mean_size = mean(unlist(cluster_size)),
-    mean_intensity = mean(res_xy_clus$intensity),
-    bead_density = (nrow(intense) *
-                      mean(unlist(cluster_size))) /
-      length(pic),
+    mean_intensity = mean(xy_coords$intensity),
+    bead_density = amount_true / length(pic),
     estimated_rejected = dis_count
   )
 
   # calculate the relative distance between all beadcenters based on Euclidean
   # distance
-  DT <- data.table(res_sizeFilter$remaining.coordinates.s)
-  res_center <- DT[, list(x = mean(x), y = mean(y)), by = cluster]
+  DT <- data.table(coordinates)
+  res_center <- DT[, list(x = mean(x), y = mean(y)), by = value]
 
   # formula for the Euclidean distance
   euclidean_distance <- function(point1, point2) {

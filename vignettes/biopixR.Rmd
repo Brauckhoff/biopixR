@@ -74,8 +74,8 @@ of the microbeads:
 plot(beads)
 with(
   res_objectDetection$centers,
-  points(res_objectDetection$centers$mxx,
-    res_objectDetection$centers$myy,
+  points(res_objectDetection$centers$mx,
+    res_objectDetection$centers$my,
     col = factor(res_objectDetection$centers$value),
     pch = 19
   )
@@ -107,7 +107,10 @@ Thus, we can apply this function to tint all the extracted coordinates in the
 microbead image and assess whether the outcome aligns with our expectations.
 
 ```{r visualization_2}
-changePixelColor(beads, res_objectDetection$coordinates, color = "purple")
+changePixelColor(beads, 
+                 res_objectDetection$coordinates, 
+                 color = "purple", 
+                 visualize = TRUE)
 ```
 
 As expected, all individual microbeads (singlets) and the doublet are fully
@@ -139,17 +142,49 @@ function within the biopixR package.
 
 As stated previously, it is crucial to remove doublets and multiplets prior to
 analysis. This objective will be addressed in the next section, where we will
-use the `proximityFilter` to achieve this goal. The function works by examining
-each collected center and scanning a specific radius for additional centers. If
-another center is detected within this range, both are discarded due to their
-proximity. This method is especially efficient in dealing with multiplets as the
-identified centers along the contours are frequently found in proximity.
-Furthermore, even microbeads that were at first identified as singles are tested
-to ensure that there are no neighboring centers within the defined range. Users
-can customize the radius for this examination as required.
+use the `sizeFilter` to achieve this goal.
 
 ```{r}
-res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
+res_sizeFilter <- sizeFilter(
+  centers = res_objectDetection$centers,
+  coordinates = res_objectDetection$coordinates,
+  lowerlimit = 50,
+  upperlimit = 150
+)
+```
+
+**visualization sizeFilter**:
+
+```{r}
+DT <- data.table(res_sizeFilter$coordinates)
+res_center <- DT[, .(x = mean(x), y = mean(y)), by = value]
+
+changePixelColor(beads,
+                 res_sizeFilter$coordinates,
+                 color = "darkgreen",
+                 visualize = TRUE)
+text(res_center$x,
+     res_center$y,
+     res_center$value,
+     col = "grey")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+res_proximityFilter <- proximityFilter(centers = res_sizeFilter$centers,
+                                       coordinates = res_objectDetection$coordinates,
+                                       radius = 'auto')
 ```
 
 **visualization proximityFilter**:
@@ -157,49 +192,34 @@ res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
 ```{r}
 plot(beads)
 with(
-  res_proximityFilter$remaining.centers,
-  points(res_proximityFilter$remaining.centers$mxx,
-    res_proximityFilter$remaining.centers$myy,
+  res_proximityFilter$centers,
+  points(res_proximityFilter$centers$mx,
+    res_proximityFilter$centers$my,
     col = "darkgreen",
     pch = 19
   )
 )
-with(
-  res_proximityFilter$discard,
-  points(res_proximityFilter$discard$mx,
-    res_proximityFilter$discard$my,
-    col = "darkred",
-    pch = 19
-  )
-)
 ```
+
+
+
+
+
+`proximityFilter`: The function works by examining
+each collected center and scanning a specific radius for positive pixels. If
+another positive pixel of a different microbead is detected within this range, 
+both are discarded due to their proximity. 
+
+This method is especially efficient in dealing with multiplets as the
+identified centers along the contours are frequently found in proximity.
+Furthermore, even microbeads that were at first identified as singles are tested
+to ensure that there are no neighboring centers within the defined range. Users
+can customize the radius for this examination as required.
 
 As expected, the centers that were found along the contours of the multiplet are
 now eliminated due to their proximity. To conduct a small experiment, I will
 increase the radius for the subsequent plot, intending to discard not only the
 multiplet but also the two microbeads in the upper-middle section.
-
-```{r}
-small_experiment <- proximityFilter(res_objectDetection, radius = 13)
-
-plot(beads)
-with(
-  small_experiment$remaining.centers,
-  points(small_experiment$remaining.centers$mxx,
-    small_experiment$remaining.centers$myy,
-    col = "darkgreen",
-    pch = 19
-  )
-)
-with(
-  small_experiment$discard,
-  points(small_experiment$discard$mx,
-    small_experiment$discard$my,
-    col = "darkred",
-    pch = 19
-  )
-)
-```
 
 After the successful completion of the small experiment, our attention now
 returns to the main objective of removing the doublets. To achieve this, the
@@ -210,28 +230,6 @@ discard doublets. In scenarios where the contour of the multiplet might be
 perceived as a single region, removal based on distance alone may not be
 effective. Therefore, the `sizeFilter` provides an additional option by allowing
 the establishment of a lower limit.
-
-```{r}
-res_sizeFilter <- sizeFilter(res_proximityFilter,
-  lowerlimit = 0,
-  upperlimit = 150
-)
-```
-
-**visualization sizeFilter**:
-
-```{r}
-DT <- data.table(res_sizeFilter$remaining.coordinates.s)
-res_center <- DT[, .(x = mean(x), y = mean(y)), by = cluster]
-
-changePixelColor(beads,
-                 res_sizeFilter$remaining.coordinates.s,
-                 color = "darkgreen")
-text(res_center$x,
-     res_center$y,
-     res_center$cluster,
-     col = "grey")
-```
 
 The objective of this chapter has been accomplished, as demonstrated by the most
 recent graph. After eliminating the multiplet with the `proximityFilter`, the
@@ -245,18 +243,19 @@ dark green, indicating their successful passage through the filtering process.
 To conclude this chapter, we need to extract meaningful information from the
 filtered data set. One of the most fundamental results to be displayed after
 applying a filter is undoubtedly the number of remaining and discarded objects.
-As the size of the objects has already been analyzed through the `sizeFilter`,
-this information should also be included in the display. Moreover, the intensity
-of the signal is a crucial parameter for both microbeads and any fluorescent
-image. Finally, it may be of interest to calculate the area density, which
-represents the number of microbeads relative to the pixel area of the entire
-image. To extract this information, the `resultAnalytics` function from the
-biopixR package is utilized. This function requires the data frame of the
-remaining coordinates, the cluster size, and the original image obtained from
-the `sizeFilter` function as inputs.
+As the size of the objects has already been calculated in both algorithms, this
+information should also be included in the display. Moreover, the intensity of
+the signal is a crucial parameter for both microbeads and any fluorescent image.
+Finally, it may be of interest to calculate the area density, which represents
+the percentage of positive pixels (microbeads) relative to the pixel area of the
+entire image. To extract this information, the `resultAnalytics` function from
+the biopixR package is utilized. This function requires the data frame of the
+remaining coordinates, the individual size, and the original image as inputs.
 
 ```{r}
-result <- resultAnalytics(res_sizeFilter)
+result <- resultAnalytics(coordinates = res_proximityFilter$coordinates, 
+                          size = res_proximityFilter$size, 
+                          img = beads)
 result$detailed
 ```
 
@@ -284,6 +283,42 @@ issue arises from overlapping. This is because when microbeads overlap, their
 shared area is counted only once in the image, leading to a lower discarded
 microbead count. It is crucial to consider this when relying on this parameter.
 
+### Individual usage of the filter functions
+
+```{r}
+ind_sizeFilter <- sizeFilter(centers = res_objectDetection$centers,
+                             coordinates = res_objectDetection$coordinates,
+                             lowerlimit = 50,
+                             upperlimit = 150)
+
+result_sizeFilter <- resultAnalytics(coordinates = ind_sizeFilter$coordinates,
+                size = ind_sizeFilter$size,
+                img = beads)
+```
+
+```{r}
+result_sizeFilter$detailed
+```
+
+```{r}
+ind_proximityFilter <- proximityFilter(centers = res_objectDetection$centers,
+                                       coordinates = res_objectDetection$coordinates,
+                                       radius = 'auto')
+
+result_proximityFilter <- resultAnalytics(coordinates = ind_proximityFilter$coordinates,
+                                          size = ind_proximityFilter$size,
+                                          img = beads)
+```
+
+```{r}
+result_proximityFilter$detailed
+```
+
+```{r}
+
+```
+
+
 ### Relative distance between microparticles
 
 Another important aspect to consider in bioimaging is the relative distance
@@ -302,8 +337,8 @@ calculated centers then serve as the initial reference points for measuring the
 distances between objects.
 
 ```{r}
-DT <- data.table(res_sizeFilter$remaining.coordinates.s)
-res_center <- DT[, .(x = mean(x), y = mean(y)), by = cluster]
+DT <- data.table(res_proximityFilter$coordinates)
+res_center <- DT[, .(x = mean(x), y = mean(y)), by = value]
 ```
 
 The relative distance between multiple objects typically refers to the distances
@@ -372,7 +407,7 @@ result$summary$mean_distance <- mean(result$detailed$relative_distance)
 result$summary
 ```
 
-*will be available in the `resultAnalytics` function as of version 0.1.1*
+*will be part of the `resultAnalytics` function as of version 0.1.1*
 
 # Case study: microbeads in droplets
 

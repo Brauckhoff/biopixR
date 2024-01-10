@@ -8,7 +8,7 @@ sizeFilter(centers, coordinates, lowerlimit = "auto", upperlimit = "auto")
 }
 \arguments{
 \item{centers}{center coordinates of objects (needs to include 'value'
-representing the cluster number)}
+representing the center number)}
 
 \item{coordinates}{all coordinates of the objects (x|y|value data frame)}
 
@@ -18,10 +18,11 @@ calculated by using the IQR)}
 \item{upperlimit}{highest accepted object size}
 }
 \value{
-list of 2 objects:
+list of 3 objects:
 \enumerate{
+\item remaining centers after discarding according to size
 \item remaining coordinates after discarding according to size
-\item size of a labeled region
+\item size of remaining objects
 }
 }
 \description{

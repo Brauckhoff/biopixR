@@ -3,19 +3,17 @@ library(biopixR)
 
 test_that("resultAnalytics", {
   img <- beads
-  res_sizeFilter <- img |>
-    objectDetection() |>
-    proximityFilter() |>
-    sizeFilter()
-  res_resultAnalytics <- resultAnalytics(res_sizeFilter)
+  res_objectDetection <- objectDetection(img, alpha = 0.75, sigma = 0.1)
+  res_sizeFilter <- sizeFilter(res_objectDetection$centers, res_objectDetection$coordinates, lowerlimit = 50, upperlimit = 150)
+  res_resultAnalytics <- resultAnalytics(res_sizeFilter$coordinates, res_sizeFilter$size, beads)
 
   expect_equal(
     sum(res_resultAnalytics$detailed$size),
-    nrow(res_sizeFilter$remaining.coordinates.s)
+    nrow(res_sizeFilter$coordinates)
   )
   expect_equal(
     length(res_resultAnalytics$detailed$beadnumber),
-    length(unique(res_sizeFilter$remaining.coordinates.s$cluster))
+    length(unique(res_sizeFilter$coordinates$value))
   )
 
   expect_type(res_resultAnalytics, "list")
@@ -34,4 +32,9 @@ test_that("resultAnalytics", {
     mean(res_resultAnalytics$detailed$size),
     res_resultAnalytics$summary$mean_size
   )
+
+  res_proximityFilter <- proximityFilter(res_sizeFilter$centers, res_objectDetection$coordinates, radius = 'auto')
+  res_resultAnalytics <- resultAnalytics(res_proximityFilter$coordinates, res_proximityFilter$size, img)
+
+
 })

@@ -4,10 +4,14 @@
 \alias{resultAnalytics}
 \title{Bead Image Summary}
 \usage{
-resultAnalytics(res_sizeFilter)
+resultAnalytics(coordinates, size, img)
 }
 \arguments{
-\item{res_sizeFilter}{list obtained by the sizeFilter function}
+\item{coordinates}{all coordinates of the objects (x|y|value data frame)}
+
+\item{size}{size of the objects}
+
+\item{img}{image (import by \code{\link[imager]{load.image}})}
 }
 \value{
 list of 2 objects:
@@ -24,7 +28,9 @@ size and density.
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
-res_sizeFilter <- sizeFilter(res_proximityFilter, lowerlimit = 50, upperlimit = 150)
-resultAnalytics(res_sizeFilter)
+res_sizeFilter <- sizeFilter(res_objectDetection$centers,
+res_objectDetection$coordinates, lowerlimit = 50, upperlimit = 150)
+res_proximityFilter <- proximityFilter(res_sizeFilter$centers,
+res_objectDetection$coordinates, radius = 'auto')
+resultAnalytics(res_proximityFilter$coordinates, res_proximityFilter$size, beads)
 }
