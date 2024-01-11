@@ -58,47 +58,63 @@ changePixelColor(
 ![2 1](https://github.com/Brauckhoff/biopixR/assets/121032772/be945b1d-527b-4d0e-8453-315e3c7a7ebd)
 
 
-For precise analysis, the next step entails eliminating doublets and multiplets using the `proximityFilter`. This process reviews each center, scanning within a specified radius for additional centers. In the event of another center within this range, both are discarded owing to proximity. Notably, this technique proves particularly effective in managing multiplets, with users granted the ability to modify the radius for examination.
+For precise analysis, the next step entails eliminating doublets and multiplets using the `sizeFilter`. The filter is applied using the previously obtained coordinates and centers, as well as predetermined upper and lower limits. This algorithm calculates the number of pixels in each labeled object, allowing users to establish limits for rejecting doublets and multiplets. If the number of detected objects is higher, the algorithm can automatically calculate limits using the interquartile range (IQR).
 
 ```{r}
-res_proximityFilter <- proximityFilter(res_objectDetection, radius = 10)
+res_sizeFilter <- sizeFilter(
+  centers = res_objectDetection$centers,
+  coordinates = res_objectDetection$coordinates,
+  lowerlimit = 50,
+  upperlimit = 150
+)
 
-plot(beads)
-with(res_proximityFilter$remaining.centers, 
-     points(res_proximityFilter$remaining.centers$mxx,
-            res_proximityFilter$remaining.centers$myy,
-            col = "darkgreen",
-            pch = 19))
-with(res_proximityFilter$discard,
-     points(res_proximityFilter$discard$mx,
-            res_proximityFilter$discard$my,
-            col = "darkred",
-            pch = 19))
+changePixelColor(
+  beads,
+  res_sizeFilter$coordinates,
+  color = "darkgreen",
+  visualize = TRUE
+)
 ```
-![3 1](https://github.com/Brauckhoff/biopixR/assets/121032772/4b3e91c9-ea07-4ebd-9709-b71d72e133d0)
+![3](https://github.com/Brauckhoff/biopixR/assets/121032772/a2d816ad-4f68-42ea-9e68-1623f118650e)
 
 
-When the size filter is applied to the remainder of the beads, both centers and coordinates are taken into account. This algorithm calculates the number of pixels in each labeled object, allowing users to establish limits for rejecting duplicates. It also provides an option for establishing a lower limit.
+
+This function examines each collected center and scans a specified radius for positive pixels. If another positive pixel from a different object is detected within this range, both are rejected due to their proximity. The radius can be manually selected or determined automatically.
 
 ```{r}
-res_sizeFilter <- sizeFilter(res_proximityFilter,
-                             lowerlimit = 0,
-                             upperlimit = 150)
+res_proximityFilter <-
+  proximityFilter(
+    centers = res_sizeFilter$centers,
+    coordinates = res_objectDetection$coordinates,
+    radius = 'auto'
+  )
 
-changePixelColor(beads, res_sizeFilter$remaining.coordinates.s, color = "darkgreen")
+changePixelColor(
+  beads,
+  res_proximityFilter$coordinates,
+  color = "darkgreen",
+  visualize = TRUE
+)
 ```
-![4 1](https://github.com/Brauckhoff/biopixR/assets/121032772/e4c93b06-dbf4-4924-94be-fafd311b3918)
+![4](https://github.com/Brauckhoff/biopixR/assets/121032772/9b6e84b2-8d98-455a-8848-5b2daea88083)
 
 
-In conclusion, obtaining meaningful information from the filtered dataset is essential. The main findings encompass the number of objects that remained and were discarded, object sizes analyzed via the `sizeFilter`, signal intensity, and area density. The `resultAnalytics` function of biopixR extracts and calculates the described parameters. It requires input of the data frame with remaining coordinates, cluster size, and the original image obtained through the `sizeFilter` function.
+
+In conclusion, obtaining meaningful information from the filtered dataset is essential. The main findings encompass the number of objects that remained and were discarded, object size, signal intensity, and area density. The `resultAnalytics` function of biopixR extracts and calculates the described parameters. The function requires input parameters in the form of coordinates, object size, and the original image. The coordinates can be obtained through any of the three previously mentioned functions, allowing for flexibility in selectively applying or omitting specific filters.
 
 ```{r}
-result <- resultAnalytics(res_sizeFilter)
+result <-
+  resultAnalytics(
+    coordinates = res_proximityFilter$coordinates,
+    size = res_proximityFilter$size,
+    img = beads
+  )
+
 result$summary
 ```
 number_of_beads | mean_size | mean_intensity | bead_density | estimated_rejected | mean_distance 
 --- | --- | --- | --- | --- | ---
-8 | 94.8 | 0.59 | 0.0469 | 6 | 67.1
+5 | 95 | 0.59 | 0.08 | 9 | 65.8
 
 
 For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://github.com/Brauckhoff/biopixR/blob/main/vignettes/biopixR.Rmd).
@@ -139,7 +155,10 @@ end_points_df <- as.data.frame(end_points)
 colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
 
 # highlighted line ends
-changePixelColor(neg_thresh_m, end_points_df, color = "green")
+changePixelColor(neg_thresh_m,
+                 end_points_df,
+                 color = "green",
+                 visualize = TRUE)
 ```
 ![6 2](https://github.com/Brauckhoff/biopixR/assets/121032772/7e8be967-7ada-4f1e-a59d-6139623bc16b)
 
