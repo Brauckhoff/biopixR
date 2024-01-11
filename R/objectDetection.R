@@ -6,10 +6,11 @@
 #' @param img image (import by \code{\link[imager]{load.image}})
 #' @param alpha threshold adjustment factor
 #' @param sigma smoothing
-#' @returns list of 3 objects:
+#' @returns list of 4 objects:
 #' 1. data frame of labeled region with the central coordinates
 #' 2. all coordinates that are in labeled regions
-#' 3. image were object edges are colored
+#' 3. size of labeled objects
+#' 4. image were object edges are colored
 #' @import data.table
 #' @import imager
 #' @examples
@@ -53,6 +54,20 @@ objectDetection <- function(img,
   grouped_lab_img <-
     DT[, list(mx = mean(x), my = mean(y)), by = value]
 
+  # size calculation, which is needed to calculate the radius
+  cluster_size <- list()
+  for (c in grouped_lab_img$value) {
+    for (e in df_lab_img$value) {
+      if (c == e) {
+        clus_pxl <- which(df_lab_img$value == c)
+        size <- length(clus_pxl)
+        if (is.null(size) != TRUE) {
+          cluster_size[c] <- c(size)
+        }
+      }
+    }
+  }
+
   # visualization by highlighting the edges of detected beads
   edge_coords <- which(edge_img == TRUE, arr.ind = TRUE)
   colored_edge <- changePixelColor(object_img, edge_coords, color = "purple")
@@ -60,6 +75,7 @@ objectDetection <- function(img,
   out <- list(
     centers = grouped_lab_img,
     coordinates = df_lab_img,
+    size = unlist(cluster_size),
     marked_beads = colored_edge
   )
 }

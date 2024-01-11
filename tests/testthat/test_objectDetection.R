@@ -19,9 +19,11 @@ test_that("objectDetection", {
   expect_equal(class(img)[1], "cimg")
   expect_equal(length(dim(img)), 4)
   expect_equal(dim(add.color(img))[4], 3)
+  expect_equal(length(res_objectDetection$centers$value),
+               length(res_objectDetection$size))
 
   expect_type(res_objectDetection, "list")
-  expect_length(res_objectDetection, 3)
+  expect_length(res_objectDetection, 4)
   expect_equal(
     length(unique(res_objectDetection$coordinates)),
     length(res_objectDetection$centers)

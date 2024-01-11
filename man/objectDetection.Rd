@@ -14,10 +14,11 @@ objectDetection(img, alpha = 1, sigma = 2)
 \item{sigma}{smoothing}
 }
 \value{
-list of 3 objects:
+list of 4 objects:
 \enumerate{
 \item data frame of labeled region with the central coordinates
 \item all coordinates that are in labeled regions
+\item size of labeled objects
 \item image were object edges are colored
 }
 }

@@ -28,14 +28,19 @@ The objective of this task is to extract important data from an image of beads. 
 ```{r}
 library(biopixR)
 
-res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
+res_objectDetection <-
+  objectDetection(beads, alpha = 0.75, sigma = 0.1)
 
 plot(beads)
-with(res_objectDetection$centers, 
-     points(res_objectDetection$centers$mxx,
-            res_objectDetection$centers$myy,
-            col = factor(res_objectDetection$centers$value),
-            pch = 19))
+with(
+  res_objectDetection$centers,
+  points(
+    res_objectDetection$centers$mx,
+    res_objectDetection$centers$my,
+    col = factor(res_objectDetection$centers$value),
+    pch = 19
+  )
+)
 ```
 ![1 1](https://github.com/Brauckhoff/biopixR/assets/121032772/ce106352-af73-47ba-836b-911b96a937fa)
 
@@ -43,7 +48,12 @@ with(res_objectDetection$centers,
 During examination, precise identification and marking of each individual bead were achieved, aligning with our intended objective. The `objectDetection` functionality successfully detects each bead using a singular center point and varying colors for differentiation. (Any issues with clotted beads, referred to as doublets or multiplets, are currently disregarded.) Using an alternative visualization method that utilizes the internal `changePixelColor` function can provide a more comprehensive view of the results (based on https://CRAN.R-project.org/package=countcolors).
 
 ```{r}
-changePixelColor(beads, res_objectDetection$coordinates, color = "purple")
+changePixelColor(
+  beads,
+  res_objectDetection$coordinates,
+  color = "purple",
+  visualize = TRUE
+)
 ```
 ![2 1](https://github.com/Brauckhoff/biopixR/assets/121032772/be945b1d-527b-4d0e-8453-315e3c7a7ebd)
 
