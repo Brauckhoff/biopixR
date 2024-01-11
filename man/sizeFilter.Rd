@@ -31,7 +31,9 @@ on a lower and an upper size limit. (Input can be obtained by objectDetection fu
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-sizeFilter(centers = res_objectDetection$centers,
-coordinates = res_objectDetection$coordinates,
-lowerlimit = 50, upperlimit = 150)
+sizeFilter(
+  centers = res_objectDetection$centers,
+  coordinates = res_objectDetection$coordinates,
+  lowerlimit = 50, upperlimit = 150
+)
 }

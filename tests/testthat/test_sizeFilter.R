@@ -4,10 +4,12 @@ library(biopixR)
 test_that("sizeFilter", {
   img <- beads
   res_objectDetection <- objectDetection(img, alpha = 0.75, sigma = 0.1)
-  res_sizeFilter <- sizeFilter(centers = res_objectDetection$centers,
-                               coordinates = res_objectDetection$coordinates,
-                               lowerlimit = 50,
-                               upperlimit = 100)
+  res_sizeFilter <- sizeFilter(
+    centers = res_objectDetection$centers,
+    coordinates = res_objectDetection$coordinates,
+    lowerlimit = 50,
+    upperlimit = 100
+  )
 
   expect_equal(
     class(res_sizeFilter$coordinates),
@@ -40,19 +42,28 @@ test_that("sizeFilter", {
   )
 
   expect_error(sizeFilter(img))
-  expect_error(sizeFilter(res_objectDetection$centers,
-                            res_objectDetection$coordinates,
-                            lowerlimit = 'auto',
-                            upperlimit = 150),
-               regexp = "both limits must be set to 'auto' or selected individually")
-  expect_error(sizeFilter(res_objectDetection$centers,
-                          res_objectDetection$coordinates,
-                          lowerlimit = 50,
-                          upperlimit = 'auto'),
-               regexp = "both limits must be set to 'auto' or selected individually")
-  expect_error(sizeFilter(res_objectDetection$centers,
-                            res_objectDetection$coordinates,
-                            lowerlimit = 'auto',
-                            upperlimit = 'auto'),
-                 regexp = "detected number of objects is to small for automated detection")
+  expect_error(
+    sizeFilter(res_objectDetection$centers,
+      res_objectDetection$coordinates,
+      lowerlimit = "auto",
+      upperlimit = 150
+    ),
+    regexp = "both limits must be set to 'auto' or selected individually"
+  )
+  expect_error(
+    sizeFilter(res_objectDetection$centers,
+      res_objectDetection$coordinates,
+      lowerlimit = 50,
+      upperlimit = "auto"
+    ),
+    regexp = "both limits must be set to 'auto' or selected individually"
+  )
+  expect_error(
+    sizeFilter(res_objectDetection$centers,
+      res_objectDetection$coordinates,
+      lowerlimit = "auto",
+      upperlimit = "auto"
+    ),
+    regexp = "detected number of objects is to small for automated detection"
+  )
 })

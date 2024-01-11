@@ -29,5 +29,5 @@ will be discarded. (Input can be obtained by objectDetection function)
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-proximityFilter(res_objectDetection$centers, res_objectDetection$coordinates, radius = 'auto')
+proximityFilter(res_objectDetection$centers, res_objectDetection$coordinates, radius = "auto")
 }

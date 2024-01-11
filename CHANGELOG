@@ -1,8 +1,15 @@
 # Next version
 
+# 0.2.0
+- filter functions can be applied individualy (sizeFilter & proximityFilter)
+- objectDetection, sizeFilter and proximityFilter can all be evaluated by resultAnalytics
+- automated calculation of the radius in proximityFilter
+- automated calculation of the limits in sizeFilter
+- CI R-CMD-check for ubuntu
+- changed input format
+
 # 0.1.0
 - passing rhub check on multiple OS 
-(https://builder.r-hub.io/status/biopixR_0.0.9.tar.gz-4b8a36705d544ed9950f2daac220185e)
 
 ── R CMD check results ─────────────────────────────────────────────────────────────────────── biopixR 0.0.9 ────
 Duration: 26.1s

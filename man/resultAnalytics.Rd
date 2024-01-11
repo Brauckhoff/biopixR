@@ -29,8 +29,12 @@ size and density.
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
 res_sizeFilter <- sizeFilter(res_objectDetection$centers,
-res_objectDetection$coordinates, lowerlimit = 50, upperlimit = 150)
+  res_objectDetection$coordinates,
+  lowerlimit = 50, upperlimit = 150
+)
 res_proximityFilter <- proximityFilter(res_sizeFilter$centers,
-res_objectDetection$coordinates, radius = 'auto')
+  res_objectDetection$coordinates,
+  radius = "auto"
+)
 resultAnalytics(res_proximityFilter$coordinates, res_proximityFilter$size, beads)
 }

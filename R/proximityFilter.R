@@ -13,11 +13,11 @@
 #' 3. size of remaining objects
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-#' proximityFilter(res_objectDetection$centers, res_objectDetection$coordinates, radius = 'auto')
+#' proximityFilter(res_objectDetection$centers, res_objectDetection$coordinates, radius = "auto")
 #' @export
 proximityFilter <- function(centers,
                             coordinates,
-                            radius = 'auto') {
+                            radius = "auto") {
   # assign imports
   center_df <- centers
   xy_coords <- coordinates
@@ -38,7 +38,7 @@ proximityFilter <- function(centers,
 
   size <- unlist(cluster_size)
 
-  if (radius != 'auto') {
+  if (radius != "auto") {
     # proximity calculation starting from every center and scanning for any TRUE
     # pixel in the given radius
     xy_edit <- xy_coords
@@ -54,7 +54,7 @@ proximityFilter <- function(centers,
 
       # checking that the detected pixels are not part of their own object
       if (is.null(center_sur) == FALSE &
-          length(unique(xy_coords$value[center_sur])) > 1) {
+        length(unique(xy_coords$value[center_sur])) > 1) {
         too_close <- unique(xy_coords$value[center_sur])
 
         # removing them from the xy coordinate data set
@@ -75,7 +75,7 @@ proximityFilter <- function(centers,
     update <- list()
     for (l in center_df$value) {
       to_keep <- which(pre_coords$value == l)
-      if(length(to_keep) != 0) {
+      if (length(to_keep) != 0) {
         update[to_keep] <- to_keep
       }
     }
@@ -89,13 +89,11 @@ proximityFilter <- function(centers,
     # summarize by center and calculate center
     remaining_center_df <-
       DT[, list(mx = mean(x), my = mean(y)), by = value]
-
   }
 
   # error
   # automated radius calculation
-  if (radius == 'auto') {
-
+  if (radius == "auto") {
     # calculate radius from given size (for circular shaped objects)
     mean_size <- mean(size)
     radius <- sqrt(mean_size / pi)
@@ -119,13 +117,13 @@ proximityFilter <- function(centers,
 
       # checking that the detected pixels are not part of their own object
       if (is.null(center_sur) == FALSE &
-          length(unique(xy_coords$value[center_sur])) > 1) {
+        length(unique(xy_coords$value[center_sur])) > 1) {
         too_close <- unique(xy_coords$value[center_sur])
 
         # removing them from the xy coordinate data set
         for (k in too_close) {
           xy_pos <- which(xy_coords$value == k)
-          xy_edit[xy_pos,] <- NA
+          xy_edit[xy_pos, ] <- NA
         }
       } else {
         next
@@ -140,7 +138,7 @@ proximityFilter <- function(centers,
     update <- list()
     for (l in center_df$value) {
       to_keep <- which(pre_coords$value == l)
-      if(length(to_keep) != 0) {
+      if (length(to_keep) != 0) {
         update[to_keep] <- to_keep
       }
     }

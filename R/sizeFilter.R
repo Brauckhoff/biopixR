@@ -15,25 +15,27 @@
 #' @importFrom stats quantile sd
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-#' sizeFilter(centers = res_objectDetection$centers,
-#' coordinates = res_objectDetection$coordinates,
-#' lowerlimit = 50, upperlimit = 150)
+#' sizeFilter(
+#'   centers = res_objectDetection$centers,
+#'   coordinates = res_objectDetection$coordinates,
+#'   lowerlimit = 50, upperlimit = 150
+#' )
 #' @export
 sizeFilter <- function(centers,
                        coordinates,
-                       lowerlimit = 'auto',
-                       upperlimit = 'auto') {
+                       lowerlimit = "auto",
+                       upperlimit = "auto") {
   # assign imports
   center_df <- centers
   xy_coords <- coordinates
 
   # errors
-  if (lowerlimit == 'auto' & upperlimit != 'auto') {
+  if (lowerlimit == "auto" & upperlimit != "auto") {
     stop(
       "both limits must be set to 'auto' or selected individually"
     )
   }
-  if (lowerlimit != 'auto' & upperlimit == 'auto') {
+  if (lowerlimit != "auto" & upperlimit == "auto") {
     stop(
       "both limits must be set to 'auto' or selected individually"
     )
@@ -41,7 +43,7 @@ sizeFilter <- function(centers,
 
   # automated limit calculation
   # calculating the size of the detected objects
-  if(lowerlimit == 'auto' & upperlimit == 'auto') {
+  if (lowerlimit == "auto" & upperlimit == "auto") {
     cluster_size <- list()
     for (c in center_df$value) {
       for (e in xy_coords$value) {
@@ -65,7 +67,7 @@ sizeFilter <- function(centers,
 
     # error with small n
     # plots distribution of size in order to simplify manual selection of limits
-    if(length(center_df) < 100) {
+    if (length(center_df) < 100) {
       data |> plot()
       stop(
         "detected number of objects is to small for automated detection"
@@ -97,8 +99,8 @@ sizeFilter <- function(centers,
     )
   }
 
-  if(lowerlimit != 'auto' &
-     upperlimit != 'auto') {
+  if (lowerlimit != "auto" &
+    upperlimit != "auto") {
     # aim: extract all coordinates (pixels) of the clusters
     # how many coordinates per cluster & cluster number that is in the list of
     # the remaining clusters (center_df) -> count = size of cluster
@@ -110,7 +112,7 @@ sizeFilter <- function(centers,
           clus_pxl <- which(xy_coords$value == c)
           size <- length(clus_pxl)
           if (is.null(size) != TRUE &
-              size < upperlimit & size > lowerlimit) {
+            size < upperlimit & size > lowerlimit) {
             cluster_size[c] <- c(size)
           }
         }

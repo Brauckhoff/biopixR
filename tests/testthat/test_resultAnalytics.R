@@ -33,8 +33,6 @@ test_that("resultAnalytics", {
     res_resultAnalytics$summary$mean_size
   )
 
-  res_proximityFilter <- proximityFilter(res_sizeFilter$centers, res_objectDetection$coordinates, radius = 'auto')
+  res_proximityFilter <- proximityFilter(res_sizeFilter$centers, res_objectDetection$coordinates, radius = "auto")
   res_resultAnalytics <- resultAnalytics(res_proximityFilter$coordinates, res_proximityFilter$size, img)
-
-
 })

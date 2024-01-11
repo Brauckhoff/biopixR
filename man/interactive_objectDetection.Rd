@@ -23,7 +23,7 @@ objects at varying threshold an smoothing parameters.
 }
 \examples{
 \donttest{
-if(interactive()) {
+if (interactive()) {
   interactive_objectDetection(beads)
 }
 }

@@ -161,7 +161,7 @@ performing the analysis. This objective will be addressed in this section using
 the `sizeFilter`. The filter is applied to the image using previously obtained
 coordinates and centers, with specified lower and upper limits. If more objects
 are identified, automated limit calculation becomes available based on the
-interquartile range (IQR).To simplify the selection of limits in cases where the
+interquartile range (IQR). To simplify the selection of limits in cases where the
 number of detected objects is insufficient, the function will terminate and
 produce a size distribution.
 
@@ -169,8 +169,8 @@ produce a size distribution.
 res_sizeFilter <- sizeFilter(
   centers = res_objectDetection$centers,
   coordinates = res_objectDetection$coordinates,
-  lowerlimit = 'auto',
-  upperlimit = 'auto'
+  lowerlimit = "auto",
+  upperlimit = "auto"
 )
 ```
 
@@ -227,7 +227,7 @@ res_proximityFilter <-
   proximityFilter(
     centers = res_sizeFilter$centers,
     coordinates = res_objectDetection$coordinates,
-    radius = 'auto'
+    radius = "auto"
   )
 ```
 
@@ -357,7 +357,7 @@ ind_proximityFilter <-
   proximityFilter(
     centers = res_objectDetection$centers,
     coordinates = res_objectDetection$coordinates,
-    radius = 'auto'
+    radius = "auto"
   )
 
 changePixelColor(
@@ -427,7 +427,7 @@ each pair of points. The formula for Euclidean distance between two points
 
 ```{r}
 euclidean_distance <- function(point1, point2) {
-  sqrt((point2$mx - point1$mx) ^ 2 + (point2$my - point1$my) ^ 2)
+  sqrt((point2$mx - point1$mx)^2 + (point2$my - point1$my)^2)
 }
 ```
 
@@ -449,8 +449,10 @@ for (i in 1:num_points) {
       next
     } else {
       relative_distances[i, j] <-
-        euclidean_distance(res_proximityFilter$centers[i, ],
-                           res_proximityFilter$centers[j, ])
+        euclidean_distance(
+          res_proximityFilter$centers[i, ],
+          res_proximityFilter$centers[j, ]
+        )
     }
   }
 }
@@ -467,7 +469,7 @@ distinct properties of each microbead.
 ```{r}
 for (a in 1:num_points) {
   result$detailed$relative_distance[a] <-
-    mean(na.omit(relative_distances[a,]))
+    mean(na.omit(relative_distances[a, ]))
 }
 
 result$detailed
@@ -548,8 +550,10 @@ bead_coords <-
 # transform binary image to array to modify individual values
 thresh_array <- as.array(neg_thresh_m)
 for (i in 1:nrow(bead_coords$coordinates)) {
-  thresh_array[bead_coords$coordinates[i, 1],
-               bead_coords$coordinates[i, 2], 1, 1] <- 0
+  thresh_array[
+    bead_coords$coordinates[i, 1],
+    bead_coords$coordinates[i, 2], 1, 1
+  ] <- 0
 }
 # removed microbeads from droplets and retransformation to cimg
 thresh_clean_cimg <- as.cimg(thresh_array)
@@ -566,8 +570,10 @@ thresh_clean_m <- mirror(thresh_clean_cimg, axis = "x")
 thresh_clean_magick <- cimg2magick(thresh_clean_m)
 
 # getting coordinates of all line ends
-mo1_lineends <- image_morphology(thresh_clean_magick,
-                                 "HitAndMiss", "LineEnds")
+mo1_lineends <- image_morphology(
+  thresh_clean_magick,
+  "HitAndMiss", "LineEnds"
+)
 
 # transform extracted coordinates into data frame
 lineends_cimg <- magick2cimg(mo1_lineends)
@@ -580,9 +586,10 @@ colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
 # highlighted line ends
 vis_lineend <-
   changePixelColor(thresh_clean_cimg,
-                   end_points_df,
-                   color = "green",
-                   visualize = TRUE)
+    end_points_df,
+    color = "green",
+    visualize = TRUE
+  )
 ```
 
 After reviewing part of the `fillLineGaps` function, let us apply it to the
@@ -641,8 +648,9 @@ second_magick <- cimg2magick(second_m)
 img <- c(first_magick, second_magick)
 
 image_animate(image_scale(img, "500x635"),
-              fps = 1,
-              dispose = "previous")
+  fps = 1,
+  dispose = "previous"
+)
 ```
 
 
@@ -685,14 +693,17 @@ for (g in 1:nrow(df_lab_part)) {
 }
 
 # data frame of labeled partitions (without contours)
-clean_lab_df <- data.frame(x = unlist(x),
-                           y = unlist(y),
-                           value = unlist(value))
+clean_lab_df <- data.frame(
+  x = unlist(x),
+  y = unlist(y),
+  value = unlist(value)
+)
 
 changePixelColor(closed_gaps,
-                 clean_lab_df,
-                 color = "purple",
-                 visualize = TRUE)
+  clean_lab_df,
+  color = "purple",
+  visualize = TRUE
+)
 ```
 
 Let's summarize the clusters to validate their recognition as distinct
@@ -757,8 +768,10 @@ for (d in unique(clean_lab_df$value)) {
   size_list[d] <- size
 }
 
-size_df <- data.frame(partition = unique(clean_lab_df$value),
-                      size = unlist(size_list))
+size_df <- data.frame(
+  partition = unique(clean_lab_df$value),
+  size = unlist(size_list)
+)
 
 hist(
   size_df$size,

@@ -8,14 +8,16 @@ test_that("proximityFilter", {
   res_proximityFilter <- proximityFilter(
     res_objectDetection$centers,
     res_objectDetection$coordinates,
-    radius = 'auto'
+    radius = "auto"
   )
 
-  expect_lte(length(res_proximityFilter$centers$value),
-             length(res_objectDetection$centers$value)
-             )
-  expect_lte(length(res_proximityFilter$coordinates$value),
-             length(res_objectDetection$coordinates$value)
+  expect_lte(
+    length(res_proximityFilter$centers$value),
+    length(res_objectDetection$centers$value)
+  )
+  expect_lte(
+    length(res_proximityFilter$coordinates$value),
+    length(res_objectDetection$coordinates$value)
   )
   expect_error(proximityFilter(img))
 
@@ -23,8 +25,12 @@ test_that("proximityFilter", {
   expect_length(res_proximityFilter, 3)
   expect_equal(class(res_proximityFilter$coordinates), "data.frame")
 
-  expect_equal(length(res_proximityFilter$centers$value),
-               length(res_proximityFilter$size))
-  expect_equal(unique(res_proximityFilter$coordinates$value),
-               res_proximityFilter$centers$value)
+  expect_equal(
+    length(res_proximityFilter$centers$value),
+    length(res_proximityFilter$size)
+  )
+  expect_equal(
+    unique(res_proximityFilter$coordinates$value),
+    res_proximityFilter$centers$value
+  )
 })

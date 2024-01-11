@@ -1,5 +1,4 @@
-wait_time_long <- function()
-{
+wait_time_long <- function() {
   wait_start <- proc.time()[3]
   wait_time <- 1.0 # sec
   while (proc.time()[3] - wait_start < wait_time) {}
@@ -21,7 +20,7 @@ wait_time_long <- function()
 #' @references https://CRAN.R-project.org/package=magickGUI
 #' @examples
 #' \donttest{
-#' if(interactive()) {
+#' if (interactive()) {
 #'   interactive_objectDetection(beads)
 #' }
 #' }
