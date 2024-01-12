@@ -1,5 +1,8 @@
 # Next version
 
+# 0.2.1
+- hotfix in resulAnalytics & sizeFilter
+
 # 0.2.0
 - filter functions can be applied individualy (sizeFilter & proximityFilter)
 - objectDetection, sizeFilter and proximityFilter can all be evaluated by resultAnalytics

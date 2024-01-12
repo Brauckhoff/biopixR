@@ -1,6 +1,6 @@
 Package: biopixR
 Title: Tools for Bioimage Analysis
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: 
     c(person("Tim", "Brauckhoff", 
     email = "Tim.Brauckhoff@b-tu.de", 
