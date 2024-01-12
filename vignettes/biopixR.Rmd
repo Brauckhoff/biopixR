@@ -160,10 +160,10 @@ As previously stated, it is crucial to remove doublets and multiplets before
 performing the analysis. This objective will be addressed in this section using
 the `sizeFilter`. The filter is applied to the image using previously obtained
 coordinates and centers, with specified lower and upper limits. If more objects
-are identified, automated limit calculation becomes available based on the
-interquartile range (IQR). To simplify the selection of limits in cases where the
-number of detected objects is insufficient, the function will terminate and
-produce a size distribution.
+are identified, automated limit calculation becomes available based on the mean
+and standard deviation of the size distribution. To simplify the selection of
+limits in cases where the number of detected objects is insufficient, the
+function will terminate and produce a size distribution.
 
 ```{r, error=TRUE}
 res_sizeFilter <- sizeFilter(
@@ -274,9 +274,9 @@ remaining coordinates, the individual size, and the original image as inputs.
 ```{r}
 result <-
   resultAnalytics(
+    unfiltered = res_objectDetection$coordinates,
     coordinates = res_proximityFilter$coordinates,
-    size = res_proximityFilter$size,
-    img = beads
+    size = res_proximityFilter$size
   )
 result$detailed
 ```
@@ -338,9 +338,9 @@ text(
 ```{r}
 result_sizeFilter <-
   resultAnalytics(
+    unfiltered = res_objectDetection$coordinates,
     coordinates = ind_sizeFilter$coordinates,
-    size = ind_sizeFilter$size,
-    img = beads
+    size = ind_sizeFilter$size
   )
 
 result_sizeFilter$detailed
@@ -390,9 +390,9 @@ exclusion of the multiplet.
 ```{r}
 result_proximityFilter <-
   resultAnalytics(
+    unfiltered = res_objectDetection$coordinates,
     coordinates = ind_proximityFilter$coordinates,
-    size = ind_proximityFilter$size,
-    img = beads
+    size = ind_proximityFilter$size
   )
 
 result_proximityFilter$detailed

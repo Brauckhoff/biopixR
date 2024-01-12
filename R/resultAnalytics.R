@@ -4,9 +4,9 @@
 #' summarizes the data obtained by previous functions: objectDetection,
 #' proximityFilter and sizeFilter. Provides information like amount, intensity,
 #' size and density.
-#' @param coordinates all coordinates of the objects (x|y|value data frame)
+#' @param unfiltered all coordinates from every object before applying filter functions
+#' @param coordinates all filtered coordinates of the objects (x|y|value data frame)
 #' @param size size of the objects
-#' @param img image (import by \code{\link[imager]{load.image}})
 #' @returns list of 2 objects:
 #' 1. summary of all the microbeads in the image
 #' 2. detailed information about every single bead
@@ -22,18 +22,20 @@
 #'   res_objectDetection$coordinates,
 #'   radius = "auto"
 #' )
-#' resultAnalytics(res_proximityFilter$coordinates, res_proximityFilter$size, beads)
+#' resultAnalytics(unfiltered = res_objectDetection$coordinates,
+#' coordinates = res_proximityFilter$coordinates, size = res_proximityFilter$size)
 #' @export
-resultAnalytics <- function(coordinates,
-                            size,
-                            img) {
+resultAnalytics <- function(unfiltered,
+                            coordinates,
+                            size) {
+
   # binding for global variables
   intensity <- cluster <- NULL
 
   # assign imports
+  all_coords <- unfiltered
   xy_coords <- coordinates
   cluster_size <- size
-  pic <- img
 
   # including intensity values of pixels from remaining clusters in a data frame
   for (h in 1:nrow(xy_coords)) {
@@ -60,7 +62,7 @@ resultAnalytics <- function(coordinates,
 
   # approximate amount of discarded pixels
   # calculate amount of true coordinates
-  amount_true <- length(which(threshold(pic)) == TRUE)
+  amount_true <- nrow(all_coords)
   dis_count <- round((amount_true / mean(unlist(cluster_size))) - nrow(intense))
 
   # summary for every passing bead

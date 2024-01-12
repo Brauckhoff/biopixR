@@ -6,13 +6,13 @@
 #' representing the center number)
 #' @param coordinates all coordinates of the objects (x|y|value data frame)
 #' @param lowerlimit smallest accepted object size (when 'auto' both limits are
-#' calculated by using the IQR)
+#' calculated by using the mean and the standard deviation)
 #' @param upperlimit highest accepted object size
 #' @returns list of 3 objects:
 #' 1. remaining centers after discarding according to size
 #' 2. remaining coordinates after discarding according to size
 #' 3. size of remaining objects
-#' @importFrom stats quantile sd
+#' @importFrom stats sd
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
 #' sizeFilter(
@@ -59,24 +59,22 @@ sizeFilter <- function(centers,
 
     data <- unlist(cluster_size)
 
-    # calculating standard deviation and IQR
+    # calculating standard deviation and mean
     sd_value <- sd(data)
-    q1 <- quantile(data, 0.25)
-    q3 <- quantile(data, 0.75)
-    iqr <- q3 - q1
+    mean_value <- mean(data)
 
     # error with small n
     # plots distribution of size in order to simplify manual selection of limits
     if (nrow(center_df) < 150) {
-      data |> plot()
+      data |> plot(ylab = "size")
       stop(
         "detected number of objects is to small for automated detection"
       )
     }
 
-    # calculating limits with sd instead of the fixed usual factor 1.5
-    lower_bound <- q1 - sd_value * iqr
-    upper_bound <- q3 + sd_value * iqr
+    # calculating limits with mean and standard deviation
+    lower_bound <- mean_value - sd_value
+    upper_bound <- mean_value + sd_value
 
     # discarding according to the calculated limits
     tro <- which(abs(data) > lower_bound & abs(data) < upper_bound)
@@ -86,6 +84,9 @@ sizeFilter <- function(centers,
     res_centers <- center_df[tro]
 
     # result: remaining coordinates
+    cluster <- list()
+    x_coord <- list()
+    y_coord <- list()
     for (f in seq_along(res_centers$value)) {
       remaining_pos <- which(xy_coords$value == f)
       cluster[remaining_pos] <- c(f)
@@ -95,7 +96,7 @@ sizeFilter <- function(centers,
     res_xy_coords <- data.frame(
       x = unlist(x_coord),
       y = unlist(y_coord),
-      value = unlist(cluster),
+      value = unlist(cluster)
     )
   }
 

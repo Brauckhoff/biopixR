@@ -58,7 +58,7 @@ changePixelColor(
 ![2 1](https://github.com/Brauckhoff/biopixR/assets/121032772/be945b1d-527b-4d0e-8453-315e3c7a7ebd)
 
 
-For precise analysis, the next step entails eliminating doublets and multiplets using the `sizeFilter`. The filter is applied using the previously obtained coordinates and centers, as well as predetermined upper and lower limits. This algorithm calculates the number of pixels in each labeled object, allowing users to establish limits for rejecting doublets and multiplets. If the number of detected objects is higher, the algorithm can automatically calculate limits using the interquartile range (IQR).
+For precise analysis, the next step entails eliminating doublets and multiplets using the `sizeFilter`. The filter is applied using the previously obtained coordinates and centers, as well as predetermined upper and lower limits. This algorithm calculates the number of pixels in each labeled object, allowing users to establish limits for rejecting doublets and multiplets. If the number of detected objects is higher, the algorithm can automatically calculate limits using the mean and the standard deviation of the size distribution.
 
 ```{r}
 res_sizeFilter <- sizeFilter(
@@ -105,9 +105,9 @@ In conclusion, obtaining meaningful information from the filtered dataset is ess
 ```{r}
 result <-
   resultAnalytics(
+    unfiltered = res_objectDetection$coordinates,
     coordinates = res_proximityFilter$coordinates,
-    size = res_proximityFilter$size,
-    img = beads
+    size = res_proximityFilter$size
   )
 
 result$summary
