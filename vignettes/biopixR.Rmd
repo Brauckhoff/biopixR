@@ -276,7 +276,8 @@ result <-
   resultAnalytics(
     unfiltered = res_objectDetection$coordinates,
     coordinates = res_proximityFilter$coordinates,
-    size = res_proximityFilter$size
+    size = res_proximityFilter$size,
+    img = beads
   )
 result$detailed
 ```
@@ -340,7 +341,8 @@ result_sizeFilter <-
   resultAnalytics(
     unfiltered = res_objectDetection$coordinates,
     coordinates = ind_sizeFilter$coordinates,
-    size = ind_sizeFilter$size
+    size = ind_sizeFilter$size,
+    img = beads
   )
 
 result_sizeFilter$detailed
@@ -392,7 +394,8 @@ result_proximityFilter <-
   resultAnalytics(
     unfiltered = res_objectDetection$coordinates,
     coordinates = ind_proximityFilter$coordinates,
-    size = ind_proximityFilter$size
+    size = ind_proximityFilter$size,
+    img = beads
   )
 
 result_proximityFilter$detailed

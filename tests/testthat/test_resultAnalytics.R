@@ -16,7 +16,8 @@ test_that("resultAnalytics", {
     resultAnalytics(
       unfiltered = res_objectDetection$coordinates,
       coordinates = res_sizeFilter$coordinates,
-      res_sizeFilter$size
+      res_sizeFilter$size,
+      img = beads
     )
 
   expect_equal(

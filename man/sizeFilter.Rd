@@ -13,7 +13,7 @@ representing the center number)}
 \item{coordinates}{all coordinates of the objects (x|y|value data frame)}
 
 \item{lowerlimit}{smallest accepted object size (when 'auto' both limits are
-calculated by using the IQR)}
+calculated by using the mean and the standard deviation)}
 
 \item{upperlimit}{highest accepted object size}
 }

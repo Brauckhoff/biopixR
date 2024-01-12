@@ -4,10 +4,12 @@
 \alias{resultAnalytics}
 \title{Bead Image Summary}
 \usage{
-resultAnalytics(coordinates, size, img)
+resultAnalytics(unfiltered, coordinates, size, img)
 }
 \arguments{
-\item{coordinates}{all coordinates of the objects (x|y|value data frame)}
+\item{unfiltered}{all coordinates from every object before applying filter functions}
+
+\item{coordinates}{all filtered coordinates of the objects (x|y|value data frame)}
 
 \item{size}{size of the objects}
 
@@ -36,5 +38,7 @@ res_proximityFilter <- proximityFilter(res_sizeFilter$centers,
   res_objectDetection$coordinates,
   radius = "auto"
 )
-resultAnalytics(res_proximityFilter$coordinates, res_proximityFilter$size, beads)
+resultAnalytics(unfiltered = res_objectDetection$coordinates,
+coordinates = res_proximityFilter$coordinates, size = res_proximityFilter$size,
+img = beads)
 }

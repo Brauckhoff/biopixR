@@ -7,6 +7,7 @@
 #' @param unfiltered all coordinates from every object before applying filter functions
 #' @param coordinates all filtered coordinates of the objects (x|y|value data frame)
 #' @param size size of the objects
+#' @param img image (import by \code{\link[imager]{load.image}})
 #' @returns list of 2 objects:
 #' 1. summary of all the microbeads in the image
 #' 2. detailed information about every single bead
@@ -23,11 +24,13 @@
 #'   radius = "auto"
 #' )
 #' resultAnalytics(unfiltered = res_objectDetection$coordinates,
-#' coordinates = res_proximityFilter$coordinates, size = res_proximityFilter$size)
+#' coordinates = res_proximityFilter$coordinates, size = res_proximityFilter$size,
+#' img = beads)
 #' @export
 resultAnalytics <- function(unfiltered,
                             coordinates,
-                            size) {
+                            size,
+                            img) {
 
   # binding for global variables
   intensity <- cluster <- NULL
@@ -36,6 +39,7 @@ resultAnalytics <- function(unfiltered,
   all_coords <- unfiltered
   xy_coords <- coordinates
   cluster_size <- size
+  pic <- img
 
   # including intensity values of pixels from remaining clusters in a data frame
   for (h in 1:nrow(xy_coords)) {
