@@ -23,71 +23,77 @@ imgPipe <- function(img1 = img,
     col3_detect <- objectDetection(img3, alpha = alpha, sigma = sigma)
   }
 
-  # combine collected images
-  if (is.null(img2) != TRUE | is.null(img3) != TRUE) {
-    col1_mat <- matrix(0, nrow = nrow(img1), ncol = ncol(img1))
-
-    # create first layer
-    for (i in 1:nrow(col1_detect$coordinates)) {
-      col1_mat[col1_detect$coordinates$x[i], col1_detect$coordinates$y[i]] <- 1
-    }
+  # object detection of the combined image
+  if(is.null(img2) == TRUE & is.null(img3) == TRUE) {
+    centers <- col1_detect$centers
+    coordinates <- col1_detect$coordinates
   }
 
-
+  # combine results obtained from differnet images
   if (is.null(img2) != TRUE) {
-    col2_mat <- matrix(0, nrow = nrow(img2), ncol = ncol(img2))
+    col2_detect$centers$value <-
+      col2_detect$centers$value + max(col1_detect$centers$value)
+    col2_detect$coordinates$value <-
+      col2_detect$coordinates$value + max(col1_detect$centers$value)
 
-    # create second
-    for (i in 1:nrow(col2_detect$coordinates)) {
-      col2_mat[col2_detect$coordinates$x[i], col2_detect$coordinates$y[i]] <- 1
+    centers <- rbind(col1_detect$centers, col2_detect$centers)
+    coordinates <-
+      rbind(col1_detect$coordinates, col2_detect$coordinates)
+
+    # adaptation for objects of different sizes
+    if (lowerlimit == 'auto' &
+        upperlimit == 'auto') {
+      upperlimit <-
+        max(mean(col1_detect$size), mean(col2_detect$size)) + max(sd(col1_detect$size), sd(col2_detect$size))
+      lowerlimit <-
+        min(mean(col1_detect$size), mean(col2_detect$size)) - max(sd(col1_detect$size), sd(col2_detect$size))
     }
   }
-
 
   if (is.null(img3) != TRUE) {
-    col3_mat <- matrix(0, nrow = nrow(img3), ncol = ncol(img3))
+    col2_detect$centers$value <-
+      col2_detect$centers$value + max(col1_detect$centers$value)
+    col2_detect$coordinates$value <-
+      col2_detect$coordinates$value + max(col1_detect$centers$value)
 
-    # third layer
-    for (i in 1:nrow(col3_detect$coordinates)) {
-      col3_mat[col3_detect$coordinates$x[i], col3_detect$coordinates$y[i]] <- 1
+    centers <- rbind(col1_detect$centers, col2_detect$centers)
+    coordinates <-
+      rbind(col1_detect$coordinates, col2_detect$coordinates)
+
+    # adaptation for objects of different sizes
+    if (lowerlimit == 'auto' &
+        upperlimit == 'auto')
+      {
+        upperlimit <-
+          max(mean(col1_detect$size),
+              mean(col2_detect$size),
+              mean(col3_detect$size)) + max(sd(col1_detect$size),
+                                            sd(col2_detect$size),
+                                            sd(col3_detect$size))
+      lowerlimit <-
+        min(mean(col1_detect$size),
+            mean(col2_detect$size),
+            mean(col3_detect$size)) - max(sd(col1_detect$size),
+                                          sd(col2_detect$size),
+                                          sd(col3_detect$size))
     }
-  }
-
-
-  # combine layers and delete overlapping objects
-  if (is.null(img2) != TRUE) {
-    combine <- add(list(as.cimg(col1_mat), as.cimg(col2_mat)))
-    overlap <- which(combine == 2)
-    combine[overlap] <- 0
-  }
-
-  if (is.null(img2) != TRUE & is.null(img3) != TRUE) {
-    combine <- add(list(as.cimg(col1_mat), as.cimg(col2_mat), as.cimg(col3_mat)))
-    overlap <- which(combine >= 2)
-    combine[overlap] <- 0
-  }
-
-  # object detection of the combined image
-  if(length(which(combine == 1)) == 0) {
-    res_objectDetection <- col1_detect
-  } else {
-    res_objectDetection <- objectDetection(combine, alpha = alpha, sigma = sigma)
   }
 
   # size filtering
   if (sizeFilter == TRUE) {
-    res_sizeFilter <- sizeFilter(centers = res_objectDetection$centers,
-                                 coordinates = res_objectDetection$coordinates,
+    res_sizeFilter <- sizeFilter(centers = centers,
+                                 coordinates = coordinates,
                                  upperlimit = upperlimit,
                                  lowerlimit = lowerlimit)
   } else {
-    res_sizeFilter <- res_objectDetection
+    res_sizeFilter <- list(centers = centers,
+                           coordinates = coordinates)
   }
 
   # proximity filtering
   if (proximityFilter == TRUE) {
     res_proximityFilter <- proximityFilter(centers = res_sizeFilter$centers,
-                                           coordinates = res_objectDetection$coordinates,
+                                           coordinates = coordinates,
                                            radius = radius)
   } else {
     res_proximityFilter <- res_sizeFilter
@@ -100,7 +106,9 @@ imgPipe <- function(img1 = img,
     if (dim(img2)[4] != 1) {
       img2 <- grayscale(img2)
     }
-    dual_color <- add(list(img1, img2))
+    combine <- add(list(img1, img2))
+  } else {
+    combine <- img1
   }
 
   if (is.null(img2) != TRUE & is.null(img3) != TRUE) {
@@ -113,14 +121,14 @@ imgPipe <- function(img1 = img,
     if (dim(img3)[4] != 1) {
       img3 <- grayscale(img3)
     }
-    multi_color <- add(list(img1, img2, img3))
+    combine <- add(list(img1, img2, img3))
   }
 
   # as img input is just for dimensions no further adaptation is needed
-  res <- resultAnalytics(unfiltered = res_objectDetection$coordinates,
+  res <- resultAnalytics(unfiltered = coordinates,
                          coordinates = res_proximityFilter$coordinates,
                          size = res_proximityFilter$size,
-                         img = dual_color)
+                         img = combine)
 
   # add multi-color info to result
   if (is.null(img2) != TRUE | is.null(img3) != TRUE) {
@@ -147,18 +155,18 @@ imgPipe <- function(img1 = img,
 
     # how many objects have color one
     col1_witch <- witch(col1_detect, res_proximityFilter)
-    res$summary$davon_col1 <- length(unlist(green_witch))
+    res$summary$of_col1 <- length(unlist(col1_witch))
 
     # how many objects have color two
     if(is.null(img2) != TRUE) {
       col2_witch <- witch(col2_detect, res_proximityFilter)
-      res$summary$davon_col2 <- length(unlist(col2_witch))
+      res$summary$of_col2 <- length(unlist(col2_witch))
     }
 
     # how many objects have color three
     if(is.null(img3) != TRUE) {
       col3_witch <- witch(col3_detect, res_proximityFilter)
-      res$summary$davon_col3 <- length(unlist(col3_witch))
+      res$summary$of_col3 <- length(unlist(col3_witch))
     }
 
 
@@ -181,7 +189,21 @@ imgPipe <- function(img1 = img,
     if(is.null(img3) != TRUE) {
       res <- detailed(col3_witch, res, color3)
     }
+
+    DT <- data.table(res$detailed)
+    res_detailed <-
+      DT[, list(
+        number = length(beadnumber),
+        mean_size = mean(size),
+        mean_intensity = mean(intensity)
+      ), by = color]
+
+    if(is.null(img2) != TRUE) {
+      res$dual <- res_detailed
+    } else {
+      res$multi <- res_detailed
+    }
+
   }
   out <- res
-  out
 }

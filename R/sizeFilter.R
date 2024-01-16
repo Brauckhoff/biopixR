@@ -106,7 +106,7 @@ sizeFilter <- function(centers,
     # how many coordinates per cluster & cluster number that is in the list of
     # the remaining clusters (center_df) -> count = size of cluster
     # size has an upper and lower limit
-    cluster_size <- list()
+    cluster_size <- vector("list", length = nrow(center_df))
     for (c in center_df$value) {
       for (e in xy_coords$value) {
         if (c == e) {
