@@ -1,4 +1,4 @@
-#' Bead Image Summary
+#' Image Summary
 #'
 #' Extracts all important information of the remaining microbeads. This function
 #' summarizes the data obtained by previous functions: objectDetection,
@@ -67,7 +67,7 @@ resultAnalytics <- function(unfiltered,
   # approximate amount of discarded pixels
   # calculate amount of true coordinates
   amount_true <- nrow(all_coords)
-  dis_count <- round((amount_true / mean(unlist(cluster_size))) - nrow(intense))
+  dis_count <- round(max(all_coords$value) - nrow(intense))
 
   # summary for every passing bead
   res_df_long <- data.frame(

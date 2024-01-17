@@ -2,7 +2,7 @@
 % Please edit documentation in R/resultAnalytics.R
 \name{resultAnalytics}
 \alias{resultAnalytics}
-\title{Bead Image Summary}
+\title{Image Summary}
 \usage{
 resultAnalytics(unfiltered, coordinates, size, img)
 }

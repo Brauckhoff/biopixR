@@ -1,3 +1,35 @@
+#' Image analysis pipeline
+#'
+#' This function serves as a pipeline that integrates tools for complete
+#' start-to-finish image analysis. It enables the handling of images from
+#' different channels, including the analysis of dual-color microbeads. This
+#' approach simplifies the workflow, providing a straightforward method to
+#' analyze complex image data.
+#' @param img1 image (import by \code{\link[imager]{load.image}})
+#' @param color1 name of color in img1
+#' @param img2 image (import by \code{\link[imager]{load.image}})
+#' @param color2 name of color in img2
+#' @param img3 image (import by \code{\link[imager]{load.image}})
+#' @param color3 name of color in img3
+#' @param alpha threshold adjustment factor
+#' @param sigma smoothing
+#' @param sizeFilter applying sizeFilter function (default - TRUE)
+#' @param upperlimit highest accepted object size (only needed if
+#' sizeFilter = TRUE)
+#' @param lowerlimit smallest accepted object size (when 'auto' both limits are
+#' calculated by using the mean and the standard deviation)
+#' @param proximityFilter applying proximityFilter function (default - TRUE)
+#' @param radius distance from one center in which no other centers
+#' are allowed (in pixels)
+#' @returns list of 2 objects:
+#' 1. summary of all the microbeads in the image
+#' 2. detailed information about every single bead
+#' 3. result for every individual color
+#' @import data.table
+#' @examples
+#' result <- imgPipe(beads, alpha = 0.7, sigma = 0.1, upperlimit = 150,
+#' lowerlimit = 50)
+#' @export
 imgPipe <- function(img1 = img,
                        color1 = 'color1',
                        img2 = NULL,
@@ -12,24 +44,39 @@ imgPipe <- function(img1 = img,
                        proximityFilter = TRUE,
                        radius = 'auto') {
 
+  # binding for global variables
+  img <- beadnumber <- intensity <- color <- NULL
+
   # object detection of every individual channel
   col1_detect <- objectDetection(img1, alpha = alpha, sigma = sigma)
 
   if (is.null(img2) != TRUE) {
     col2_detect <- objectDetection(img2, alpha = alpha, sigma = sigma)
+
+    # error
+    if (unique(dim(img1)[1:2] != dim(img2)[1:2])) {
+      stop("image1 and image2 must have the same dimensions (width & height)")
+    }
   }
 
   if (is.null(img3) != TRUE) {
     col3_detect <- objectDetection(img3, alpha = alpha, sigma = sigma)
+
+    # error
+    if (unique(dim(img1)[1:2] != dim(img2)[1:2]) & unique(dim(img1)[1:2] != dim(img3)[1:2])) {
+      stop("all images must have the same dimensions (width & height)")
+    }
   }
 
-  # object detection of the combined image
+  # assign input for next function when only one image is used
   if(is.null(img2) == TRUE & is.null(img3) == TRUE) {
     centers <- col1_detect$centers
     coordinates <- col1_detect$coordinates
+    size <- col1_detect$size
   }
 
-  # combine results obtained from differnet images
+  # combine results obtained from different images in one data frame, therefore
+  # all values from img2/3 are increased
   if (is.null(img2) != TRUE) {
     col2_detect$centers$value <-
       col2_detect$centers$value + max(col1_detect$centers$value)
@@ -39,6 +86,7 @@ imgPipe <- function(img1 = img,
     centers <- rbind(col1_detect$centers, col2_detect$centers)
     coordinates <-
       rbind(col1_detect$coordinates, col2_detect$coordinates)
+    size <- unlist(c(col1_detect$size, col2_detect$size))
 
     # adaptation for objects of different sizes
     if (lowerlimit == 'auto' &
@@ -56,9 +104,15 @@ imgPipe <- function(img1 = img,
     col2_detect$coordinates$value <-
       col2_detect$coordinates$value + max(col1_detect$centers$value)
 
-    centers <- rbind(col1_detect$centers, col2_detect$centers)
+    col3_detect$centers$value <-
+      col3_detect$centers$value + max(col2_detect$centers$value)
+    col3_detect$coordinates$value <-
+      col3_detect$coordinates$value + max(col2_detect$centers$value)
+
+    centers <- rbind(col1_detect$centers, col2_detect$centers, col3_detect$centers)
     coordinates <-
-      rbind(col1_detect$coordinates, col2_detect$coordinates)
+      rbind(col1_detect$coordinates, col2_detect$coordinates, col3_detect$coordinates)
+    size <- unlist(c(col1_detect$size, col2_detect$size, col3_detect$size))
 
     # adaptation for objects of different sizes
     if (lowerlimit == 'auto' &
@@ -87,7 +141,8 @@ imgPipe <- function(img1 = img,
                                  lowerlimit = lowerlimit)
   } else {
     res_sizeFilter <- list(centers = centers,
-                           coordinates = coordinates)
+                           coordinates = coordinates,
+                           size = size)
   }
 
   # proximity filtering
@@ -108,7 +163,12 @@ imgPipe <- function(img1 = img,
     }
     combine <- add(list(img1, img2))
   } else {
-    combine <- img1
+    if (dim(img1)[4] != 1) {
+      combine <- grayscale(img1)
+    } else {
+      combine <- img1
+    }
+
   }
 
   if (is.null(img2) != TRUE & is.null(img3) != TRUE) {
@@ -124,7 +184,7 @@ imgPipe <- function(img1 = img,
     combine <- add(list(img1, img2, img3))
   }
 
-  # as img input is just for dimensions no further adaptation is needed
+  # extract quantitative information from the images
   res <- resultAnalytics(unfiltered = coordinates,
                          coordinates = res_proximityFilter$coordinates,
                          size = res_proximityFilter$size,
@@ -136,15 +196,21 @@ imgPipe <- function(img1 = img,
     witch <- function(detect,
                       res_proximityFilter) {
       col_witch <- list()
-      for (a in 1:nrow(detect$coordinates)) {
+      for (a in 1:nrow(detect$centers)) {
         pos <-
           which(
-            res_proximityFilter$coordinates$x == detect$coordinates$x[a]
+            res_proximityFilter$centers$mx == detect$centers$mx[a]
             &
-              res_proximityFilter$coordinates$y == detect$coordinates$y[a]
+              res_proximityFilter$centers$my == detect$centers$my[a]
           )
 
-        value <- res_proximityFilter$coordinates$value[pos]
+        value <- res_proximityFilter$centers$value[pos]
+        # error
+        if (length(value) > 1) {
+          stop(
+            "The threshold 'alpha' needs to be adjusted, as the same object was detected in both images"
+          )
+        }
         if(length(which(unlist(col_witch) == value)) != 0 | length(value) == 0) {next} else {
           col_witch[a] <- value
         }
@@ -173,8 +239,9 @@ imgPipe <- function(img1 = img,
     res$detailed$color <- rep(NA, nrow(res$detailed))
 
     # which objects have which color
-    detailed <- function(green_witch, res, color) {
-      for (a in unlist(green_witch)) {
+    # assign color to res$detailed
+    detailed <- function(witch, res, color) {
+      for (a in unlist(witch)) {
         b <- which(res$detailed$beadnumber == a)
         res$detailed$color[b] <- color
       }
@@ -190,6 +257,8 @@ imgPipe <- function(img1 = img,
       res <- detailed(col3_witch, res, color3)
     }
 
+    # creating separate result for every color regarding amount, intensity and
+    # size
     DT <- data.table(res$detailed)
     res_detailed <-
       DT[, list(

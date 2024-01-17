@@ -122,38 +122,33 @@ interactive_objectDetection <-
     tkpack(win1.frame2.slider, side = "left", anchor = "c")
     tkpack(win1.frame2, side = "top", anchor = "c")
     tkpack(win1.button,
-      side = "top",
-      anchor = "c",
-      pady = 20
-    )
+           side = "top",
+           anchor = "c",
+           pady = 20)
     pre_slider_values <-
       c(as.numeric(tclvalue(slider_value_alpha)), as.numeric(tclvalue(slider_value_sigma)))
     if (quit_waiting) {
       wait_test <- TRUE
       while (wait_test) {
         wait_test <- FALSE
-        tryCatch(
-          {
-            tkwm.state(win1)
-          },
-          error = function(e) {
-            assign("wait_test", TRUE, inherits = TRUE)
-          }
-        )
+        tryCatch({
+          tkwm.state(win1)
+        },
+        error = function(e) {
+          assign("wait_test", TRUE, inherits = TRUE)
+        })
       }
       wait_time_long()
       tkdestroy(win1.button)
     }
     tkwm.state(win1, "normal")
     while (TRUE) {
-      tryCatch(
-        {
-          tkwm.state(win1)
-        },
-        error = function(e) {
-          assign("quit_waiting", TRUE, inherits = TRUE)
-        }
-      )
+      tryCatch({
+        tkwm.state(win1)
+      },
+      error = function(e) {
+        assign("quit_waiting", TRUE, inherits = TRUE)
+      })
       if (quit_waiting) {
         break
       }
@@ -161,17 +156,13 @@ interactive_objectDetection <-
         c(as.numeric(tclvalue(slider_value_alpha)), as.numeric(tclvalue(slider_value_sigma)))
       if (any(temp_val != pre_slider_values)) {
         temp_label_alpha <-
-          sprintf(
-            "%s%s",
-            text_label_alpha,
-            sprintf(label_template, temp_val[1])
-          )
+          sprintf("%s%s",
+                  text_label_alpha,
+                  sprintf(label_template, temp_val[1]))
         temp_label_sigma <-
-          sprintf(
-            "%s%s",
-            text_label_sigma,
-            sprintf(label_template, temp_val[2])
-          )
+          sprintf("%s%s",
+                  text_label_sigma,
+                  sprintf(label_template, temp_val[2]))
         tkconfigure(win1.frame1.label, text = temp_label_alpha)
         tkconfigure(win1.frame2.label, text = temp_label_sigma)
         update_image()
