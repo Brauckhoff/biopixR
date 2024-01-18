@@ -66,6 +66,8 @@ approach simplifies the workflow, providing a straightforward method to
 analyze complex image data.
 }
 \examples{
-result <- imgPipe(beads, alpha = 0.7, sigma = 0.1, upperlimit = 150,
-lowerlimit = 50)
+result <- imgPipe(beads,
+  alpha = 0.7, sigma = 0.1, upperlimit = 150,
+  lowerlimit = 50
+)
 }

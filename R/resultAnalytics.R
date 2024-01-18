@@ -23,15 +23,16 @@
 #'   res_objectDetection$coordinates,
 #'   radius = "auto"
 #' )
-#' resultAnalytics(unfiltered = res_objectDetection$coordinates,
-#' coordinates = res_proximityFilter$coordinates, size = res_proximityFilter$size,
-#' img = beads)
+#' resultAnalytics(
+#'   unfiltered = res_objectDetection$coordinates,
+#'   coordinates = res_proximityFilter$coordinates, size = res_proximityFilter$size,
+#'   img = beads
+#' )
 #' @export
 resultAnalytics <- function(unfiltered,
                             coordinates,
                             size,
                             img) {
-
   # binding for global variables
   intensity <- cluster <- NULL
 

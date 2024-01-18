@@ -17,6 +17,12 @@ rescueFill <- function(strong, weak) {
     y = loc$y
   )
   out <- v
+
+  # error
+  if (nrow(df) == 0) {
+    stop("alpha needs to be decreased, as no edges could be detected")
+  }
+
   for (r in 1:nrow(df)) {
     out <-
       bucketfill(

@@ -38,7 +38,9 @@ res_proximityFilter <- proximityFilter(res_sizeFilter$centers,
   res_objectDetection$coordinates,
   radius = "auto"
 )
-resultAnalytics(unfiltered = res_objectDetection$coordinates,
-coordinates = res_proximityFilter$coordinates, size = res_proximityFilter$size,
-img = beads)
+resultAnalytics(
+  unfiltered = res_objectDetection$coordinates,
+  coordinates = res_proximityFilter$coordinates, size = res_proximityFilter$size,
+  img = beads
+)
 }

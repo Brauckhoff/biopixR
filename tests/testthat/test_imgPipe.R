@@ -52,10 +52,12 @@ test_that("imgPipe", {
 
   res_objectDetection <-
     objectDetection(droplet_beads, alpha = 1, sigma = 0.1)
-  res_resultAnalytics <- resultAnalytics(unfiltered = res_objectDetection$coordinates,
-                                         coordinates = res_objectDetection$coordinates,
-                                         size = res_objectDetection$size,
-                                         img = grayscale(droplet_beads))
+  res_resultAnalytics <- resultAnalytics(
+    unfiltered = res_objectDetection$coordinates,
+    coordinates = res_objectDetection$coordinates,
+    size = res_objectDetection$size,
+    img = grayscale(droplet_beads)
+  )
   res <-
     imgPipe(
       droplet_beads,
@@ -66,6 +68,4 @@ test_that("imgPipe", {
     )
 
   expect_equal(res, res_resultAnalytics)
-
-
 })

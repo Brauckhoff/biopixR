@@ -2,7 +2,7 @@
 % Please edit documentation in R/interactive_objectDetection.R
 \name{interactive_objectDetection}
 \alias{interactive_objectDetection}
-\title{Interactive detecting of beads}
+\title{Interactive object detection}
 \usage{
 interactive_objectDetection(img, resolution = 0.1, return_param = FALSE)
 }

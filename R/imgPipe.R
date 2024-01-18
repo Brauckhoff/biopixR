@@ -1,3 +1,9 @@
+# Function to print a message with a timestamp
+print_with_timestamp <- function(msg) {
+  timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+  message(paste(timestamp, msg))
+}
+
 #' Image analysis pipeline
 #'
 #' This function serves as a pipeline that integrates tools for complete
@@ -27,22 +33,26 @@
 #' 3. result for every individual color
 #' @import data.table
 #' @examples
-#' result <- imgPipe(beads, alpha = 0.7, sigma = 0.1, upperlimit = 150,
-#' lowerlimit = 50)
+#' result <- imgPipe(beads,
+#'   alpha = 0.7, sigma = 0.1, upperlimit = 150,
+#'   lowerlimit = 50
+#' )
 #' @export
 imgPipe <- function(img1 = img,
-                       color1 = 'color1',
-                       img2 = NULL,
-                       color2 = 'color2',
-                       img3 = NULL,
-                       color3 = 'color3',
-                       alpha = 1,
-                       sigma = 2,
-                       sizeFilter = TRUE,
-                       upperlimit = 'auto',
-                       lowerlimit = 'auto',
-                       proximityFilter = TRUE,
-                       radius = 'auto') {
+                    color1 = "color1",
+                    img2 = NULL,
+                    color2 = "color2",
+                    img3 = NULL,
+                    color3 = "color3",
+                    alpha = 1,
+                    sigma = 2,
+                    sizeFilter = TRUE,
+                    upperlimit = "auto",
+                    lowerlimit = "auto",
+                    proximityFilter = TRUE,
+                    radius = "auto") {
+
+  print_with_timestamp("Starting object detection")
 
   # binding for global variables
   img <- beadnumber <- intensity <- color <- NULL
@@ -51,25 +61,33 @@ imgPipe <- function(img1 = img,
   col1_detect <- objectDetection(img1, alpha = alpha, sigma = sigma)
 
   if (is.null(img2) != TRUE) {
+    print_with_timestamp("Starting object detection II & checking dimensions")
     col2_detect <- objectDetection(img2, alpha = alpha, sigma = sigma)
 
     # error
     if (unique(dim(img1)[1:2] != dim(img2)[1:2])) {
-      stop("image1 and image2 must have the same dimensions (width & height)")
+      stop(
+        format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+        " image1 and image2 must have the same dimensions (width & height)"
+      )
     }
   }
 
   if (is.null(img3) != TRUE) {
+    print_with_timestamp("Starting object detection III & checking dimensions")
     col3_detect <- objectDetection(img3, alpha = alpha, sigma = sigma)
 
     # error
     if (unique(dim(img1)[1:2] != dim(img2)[1:2]) & unique(dim(img1)[1:2] != dim(img3)[1:2])) {
-      stop("all images must have the same dimensions (width & height)")
+      stop(
+        format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+        " all images must have the same dimensions (width & height)"
+      )
     }
   }
 
   # assign input for next function when only one image is used
-  if(is.null(img2) == TRUE & is.null(img3) == TRUE) {
+  if (is.null(img2) == TRUE & is.null(img3) == TRUE) {
     centers <- col1_detect$centers
     coordinates <- col1_detect$coordinates
     size <- col1_detect$size
@@ -78,6 +96,7 @@ imgPipe <- function(img1 = img,
   # combine results obtained from different images in one data frame, therefore
   # all values from img2/3 are increased
   if (is.null(img2) != TRUE) {
+    print_with_timestamp("Creating new dataframe for all objects")
     col2_detect$centers$value <-
       col2_detect$centers$value + max(col1_detect$centers$value)
     col2_detect$coordinates$value <-
@@ -89,8 +108,8 @@ imgPipe <- function(img1 = img,
     size <- unlist(c(col1_detect$size, col2_detect$size))
 
     # adaptation for objects of different sizes
-    if (lowerlimit == 'auto' &
-        upperlimit == 'auto') {
+    if (lowerlimit == "auto" &
+      upperlimit == "auto") {
       upperlimit <-
         max(mean(col1_detect$size), mean(col2_detect$size)) + max(sd(col1_detect$size), sd(col2_detect$size))
       lowerlimit <-
@@ -99,6 +118,7 @@ imgPipe <- function(img1 = img,
   }
 
   if (is.null(img3) != TRUE) {
+    print_with_timestamp("Creating new dataframe for all objects")
     col2_detect$centers$value <-
       col2_detect$centers$value + max(col1_detect$centers$value)
     col2_detect$coordinates$value <-
@@ -115,46 +135,63 @@ imgPipe <- function(img1 = img,
     size <- unlist(c(col1_detect$size, col2_detect$size, col3_detect$size))
 
     # adaptation for objects of different sizes
-    if (lowerlimit == 'auto' &
-        upperlimit == 'auto')
-      {
-        upperlimit <-
-          max(mean(col1_detect$size),
-              mean(col2_detect$size),
-              mean(col3_detect$size)) + max(sd(col1_detect$size),
-                                            sd(col2_detect$size),
-                                            sd(col3_detect$size))
+    if (lowerlimit == "auto" &
+      upperlimit == "auto") {
+      upperlimit <-
+        max(
+          mean(col1_detect$size),
+          mean(col2_detect$size),
+          mean(col3_detect$size)
+        ) + max(
+          sd(col1_detect$size),
+          sd(col2_detect$size),
+          sd(col3_detect$size)
+        )
       lowerlimit <-
-        min(mean(col1_detect$size),
-            mean(col2_detect$size),
-            mean(col3_detect$size)) - max(sd(col1_detect$size),
-                                          sd(col2_detect$size),
-                                          sd(col3_detect$size))
+        min(
+          mean(col1_detect$size),
+          mean(col2_detect$size),
+          mean(col3_detect$size)
+        ) - max(
+          sd(col1_detect$size),
+          sd(col2_detect$size),
+          sd(col3_detect$size)
+        )
     }
   }
 
+
   # size filtering
   if (sizeFilter == TRUE) {
-    res_sizeFilter <- sizeFilter(centers = centers,
-                                 coordinates = coordinates,
-                                 upperlimit = upperlimit,
-                                 lowerlimit = lowerlimit)
+    print_with_timestamp("Starting size filtering")
+    res_sizeFilter <- sizeFilter(
+      centers = centers,
+      coordinates = coordinates,
+      upperlimit = upperlimit,
+      lowerlimit = lowerlimit
+    )
   } else {
-    res_sizeFilter <- list(centers = centers,
-                           coordinates = coordinates,
-                           size = size)
+    res_sizeFilter <- list(
+      centers = centers,
+      coordinates = coordinates,
+      size = size
+    )
   }
 
   # proximity filtering
   if (proximityFilter == TRUE) {
-    res_proximityFilter <- proximityFilter(centers = res_sizeFilter$centers,
-                                           coordinates = coordinates,
-                                           radius = radius)
+    print_with_timestamp("Starting proximity filtering")
+    res_proximityFilter <- proximityFilter(
+      centers = res_sizeFilter$centers,
+      coordinates = coordinates,
+      radius = radius
+    )
   } else {
     res_proximityFilter <- res_sizeFilter
   }
 
   if (is.null(img2) != TRUE) {
+    print_with_timestamp("Combining images")
     if (dim(img1)[4] != 1) {
       img1 <- grayscale(img1)
     }
@@ -168,10 +205,10 @@ imgPipe <- function(img1 = img,
     } else {
       combine <- img1
     }
-
   }
 
   if (is.null(img2) != TRUE & is.null(img3) != TRUE) {
+    print_with_timestamp("Combining images")
     if (dim(img1)[4] != 1) {
       img1 <- grayscale(img1)
     }
@@ -184,37 +221,40 @@ imgPipe <- function(img1 = img,
     combine <- add(list(img1, img2, img3))
   }
 
+  print_with_timestamp("Starting feature extraction")
   # extract quantitative information from the images
-  res <- resultAnalytics(unfiltered = coordinates,
-                         coordinates = res_proximityFilter$coordinates,
-                         size = res_proximityFilter$size,
-                         img = combine)
+  res <- resultAnalytics(
+    unfiltered = coordinates,
+    coordinates = res_proximityFilter$coordinates,
+    size = res_proximityFilter$size,
+    img = combine
+  )
 
   # add multi-color info to result
   if (is.null(img2) != TRUE | is.null(img3) != TRUE) {
-
+    print_with_timestamp("Adding color information to results")
     witch <- function(detect,
                       res_proximityFilter) {
       col_witch <- list()
       for (a in 1:nrow(detect$centers)) {
         pos <-
           which(
-            res_proximityFilter$centers$mx == detect$centers$mx[a]
-            &
+            res_proximityFilter$centers$mx == detect$centers$mx[a] &
               res_proximityFilter$centers$my == detect$centers$my[a]
           )
 
         value <- res_proximityFilter$centers$value[pos]
         # error
         if (length(value) > 1) {
-          stop(
-            "The threshold 'alpha' needs to be adjusted, as the same object was detected in both images"
+          warning(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+            " The threshold 'alpha' needs to be adjusted, as the same object was detected in both images"
           )
         }
-        if(length(which(unlist(col_witch) == value)) != 0 | length(value) == 0) {next} else {
+        if (length(which(unlist(col_witch) == value)) != 0 | length(value) == 0) {
+          next
+        } else {
           col_witch[a] <- value
         }
-
       }
       out <- col_witch
     }
@@ -224,13 +264,13 @@ imgPipe <- function(img1 = img,
     res$summary$of_col1 <- length(unlist(col1_witch))
 
     # how many objects have color two
-    if(is.null(img2) != TRUE) {
+    if (is.null(img2) != TRUE) {
       col2_witch <- witch(col2_detect, res_proximityFilter)
       res$summary$of_col2 <- length(unlist(col2_witch))
     }
 
     # how many objects have color three
-    if(is.null(img3) != TRUE) {
+    if (is.null(img3) != TRUE) {
       col3_witch <- witch(col3_detect, res_proximityFilter)
       res$summary$of_col3 <- length(unlist(col3_witch))
     }
@@ -250,10 +290,10 @@ imgPipe <- function(img1 = img,
 
     res <- detailed(col1_witch, res, color1)
 
-    if(is.null(img2) != TRUE) {
+    if (is.null(img2) != TRUE) {
       res <- detailed(col2_witch, res, color2)
     }
-    if(is.null(img3) != TRUE) {
+    if (is.null(img3) != TRUE) {
       res <- detailed(col3_witch, res, color3)
     }
 
@@ -267,12 +307,14 @@ imgPipe <- function(img1 = img,
         mean_intensity = mean(intensity)
       ), by = color]
 
-    if(is.null(img2) != TRUE) {
+    if (is.null(img2) != TRUE) {
       res$dual <- res_detailed
     } else {
       res$multi <- res_detailed
     }
-
   }
+  message(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), " Analysis was successfully completed (warnings: ",
+                       length(warnings),
+                       ") \n")
   out <- res
 }

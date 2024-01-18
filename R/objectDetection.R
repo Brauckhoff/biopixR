@@ -32,7 +32,10 @@ objectDetection <- function(img,
   # in case the image is from a luminescence channel transform to gray scale
   if (dim(object_img)[4] != 1) {
     object_img <- grayscale(object_img)
-    message("Note: image is from a luminescence channel and was converted into grayscale")
+    warning(
+      format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+      " Image is from a luminescence channel and was converted into grayscale"
+    )
   }
 
   # edge detection with default: alpha = 1, sigma = 2

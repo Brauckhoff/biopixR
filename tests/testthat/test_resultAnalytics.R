@@ -45,5 +45,4 @@ test_that("resultAnalytics", {
     mean(res_resultAnalytics$detailed$size),
     res_resultAnalytics$summary$mean_size
   )
-
 })
