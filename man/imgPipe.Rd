@@ -17,7 +17,8 @@ imgPipe(
   upperlimit = "auto",
   lowerlimit = "auto",
   proximityFilter = TRUE,
-  radius = "auto"
+  radius = "auto",
+  parallel = FALSE
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ calculated by using the mean and the standard deviation)}
 
 \item{radius}{distance from one center in which no other centers
 are allowed (in pixels)}
+
+\item{parallel}{if TRUE uses multiple cores (75 \%) to process results}
 }
 \value{
 list of 2 objects:

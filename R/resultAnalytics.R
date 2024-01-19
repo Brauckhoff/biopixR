@@ -8,11 +8,14 @@
 #' @param coordinates all filtered coordinates of the objects (x|y|value data frame)
 #' @param size size of the objects
 #' @param img image (import by \code{\link[imager]{load.image}})
+#' @param parallel if TRUE uses multiple cores (75 %) to process results
 #' @returns list of 2 objects:
 #' 1. summary of all the microbeads in the image
 #' 2. detailed information about every single bead
 #' @import data.table
+#' @import parallel
 #' @importFrom stats na.omit
+#' @import foreach
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
 #' res_sizeFilter <- sizeFilter(res_objectDetection$centers,
@@ -32,7 +35,8 @@
 resultAnalytics <- function(unfiltered,
                             coordinates,
                             size,
-                            img) {
+                            img,
+                            parallel = FALSE) {
   # binding for global variables
   intensity <- cluster <- NULL
 
@@ -88,8 +92,8 @@ resultAnalytics <- function(unfiltered,
     estimated_rejected = dis_count
   )
 
-  # calculate the relative distance between all beadcenters based on Euclidean
-  # distance
+  # calculate the relative distance between all object centers based on
+  # Euclidean distance
   DT <- data.table(coordinates)
   res_center <- DT[, list(x = mean(x), y = mean(y)), by = value]
 
@@ -101,16 +105,49 @@ resultAnalytics <- function(unfiltered,
   num_points <- nrow(res_center)
   relative_distances <- matrix(NA, nrow = num_points, ncol = num_points)
 
-  for (i in 1:num_points) {
-    for (j in 1:num_points) {
-      if (i == j) {
-        next
-      } else {
-        relative_distances[i, j] <- euclidean_distance(res_center[i, ], res_center[j, ])
-      }
+  # using parallel processing to compare the distance between all objects
+  if (parallel == TRUE) {
+    if (requireNamespace("doParallel", quietly = TRUE)) {
+      # Code that uses functions from the suggested packages
+
+      n_cores <- round(detectCores() * 0.75)
+      my_cluster <- makeCluster(n_cores,
+                                type = "PSOCK")
+      doParallel::registerDoParallel(cl = my_cluster)
+
+      relative_distances <-
+        foreach(i = 1:num_points, .combine = 'cbind') %dopar% {
+          distances <- rep(NA, num_points)
+          for (j in 1:num_points) {
+            if (i != j) {
+              distances[j] <- euclidean_distance(res_center[i, ], res_center[j, ])
+            }
+          }
+          distances
+        }
+
+      stopCluster(cl = my_cluster)
+    } else {
+      # Handle the case when any of the suggested packages is not available
+      cat("Please install the Package 'doParallel' for parallel processing \n (install.package('doparallel')")
     }
   }
-  as.matrix(relative_distances)
+
+
+  # calculating distance without parallel processing
+  if (parallel == FALSE) {
+    for (i in 1:num_points) {
+      for (j in 1:num_points) {
+        if (i == j) {
+          next
+        } else {
+          relative_distances[i, j] <-
+            euclidean_distance(res_center[i,], res_center[j,])
+        }
+      }
+    }
+    as.matrix(relative_distances)
+  }
 
   # add relative distance to the detailed result
   for (a in 1:num_points) {

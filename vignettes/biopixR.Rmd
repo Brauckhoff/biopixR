@@ -270,6 +270,9 @@ the percentage of positive pixels (microbeads) relative to the pixel area of the
 entire image. To extract this information, the `resultAnalytics` function from
 the biopixR package is utilized. This function requires the data frame of the
 remaining coordinates, the individual size, and the original image as inputs.
+Starting from version 0.2.2, the `resultAnalytics` function can utilize parallel
+processing with foreach and doParallel, reducing the required time by
+approximately two-thirds.
 
 ```{r}
 result <-
@@ -277,7 +280,8 @@ result <-
     unfiltered = res_objectDetection$coordinates,
     coordinates = res_proximityFilter$coordinates,
     size = res_proximityFilter$size,
-    img = beads
+    img = beads,
+    parallel = FALSE
   )
 result$detailed
 ```
@@ -294,17 +298,33 @@ result$summary
 ```
 
 A final note regarding the estimated number of rejected objects: A careful
-observer may have noticed that the actual count of discarded microbeads is 10.
+observer may have noticed that the actual count of discarded microbeads differs
+from the displayed result.
 Explaining this discrepancy requires investigating the algorithm, which is prone
 to an inevitable deviation. Since the microbeads are not easily distinguished
 through straightforward labeling, simple counting, which would offer the most
-accurate result, is not feasible. Instead, the algorithm uses an automatic
-`threshold` to collect all TRUE coordinates and count them. This count is then
-divided by the mean size of the microbeads, and after subtracting the count of
-passing microbeads, it yields the number of discarded objects. The potential
-issue arises from overlapping. This is because when microbeads overlap, their
-shared area is counted only once in the image, leading to a lower discarded
-microbead count. It is crucial to consider this when relying on this parameter.
+accurate result, is not feasible. The initial approach was to use an automatic
+threshold to identify all coordinates marked as TRUE, followed by a count of
+those coordinates. This count was then divided by the average size of the
+microbeads, and after subtracting the number of passing microbeads, the
+resulting value represented the number of discarded objects. A potential
+limitation arose from the occurrence of overlapping microbeads, as their common
+area was only counted once in the image, resulting in an underestimated number
+of discarded microbeads. In addition, the method relied heavily on accurate size
+information, raising concerns about its robustness in cases of varying object
+sizes.
+
+To address these challenges and provide a more reliable estimate, a simplified
+approach was adopted. The estimated number of rejected objects was calculated by
+examining the number of detected centers and the number of centers that
+successfully passed the filtering procedure. However, this approach also
+inevitably introduced errors associated with multiplets where numerous centers
+were detected, leading to inaccuracies in the final estimate. However, in this
+scenario, rejected objects are overestimated rather than underestimated.
+Additionally, non-uniform object sizes have resulted in negative values when
+using the aforementioned approach. Therefore, since multiplets are expected to
+be infrequent and significantly outnumbered by singlets, we have chosen an
+approach that focuses on analyzing individual centers.
 
 ## Individual usage of the filter functions
 
@@ -342,7 +362,8 @@ result_sizeFilter <-
     unfiltered = res_objectDetection$coordinates,
     coordinates = ind_sizeFilter$coordinates,
     size = ind_sizeFilter$size,
-    img = beads
+    img = beads,
+    parallel = FALSE
   )
 
 result_sizeFilter$detailed
@@ -395,7 +416,8 @@ result_proximityFilter <-
     unfiltered = res_objectDetection$coordinates,
     coordinates = ind_proximityFilter$coordinates,
     size = ind_proximityFilter$size,
-    img = beads
+    img = beads,
+    parallel = FALSE
   )
 
 result_proximityFilter$detailed

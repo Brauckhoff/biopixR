@@ -27,6 +27,7 @@ print_with_timestamp <- function(msg) {
 #' @param proximityFilter applying proximityFilter function (default - TRUE)
 #' @param radius distance from one center in which no other centers
 #' are allowed (in pixels)
+#' @param parallel if TRUE uses multiple cores (75 %) to process results
 #' @returns list of 2 objects:
 #' 1. summary of all the microbeads in the image
 #' 2. detailed information about every single bead
@@ -50,7 +51,8 @@ imgPipe <- function(img1 = img,
                     upperlimit = "auto",
                     lowerlimit = "auto",
                     proximityFilter = TRUE,
-                    radius = "auto") {
+                    radius = "auto",
+                    parallel = FALSE) {
 
   print_with_timestamp("Starting object detection")
 
@@ -227,7 +229,8 @@ imgPipe <- function(img1 = img,
     unfiltered = coordinates,
     coordinates = res_proximityFilter$coordinates,
     size = res_proximityFilter$size,
-    img = combine
+    img = combine,
+    parallel = parallel
   )
 
   # add multi-color info to result
@@ -313,8 +316,7 @@ imgPipe <- function(img1 = img,
       res$multi <- res_detailed
     }
   }
-  message(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), " Analysis was successfully completed (warnings: ",
-                       length(warnings),
-                       ") \n")
+  print_with_timestamp("Analysis was successfully completed")
+
   out <- res
 }

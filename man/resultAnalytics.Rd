@@ -4,7 +4,7 @@
 \alias{resultAnalytics}
 \title{Image Summary}
 \usage{
-resultAnalytics(unfiltered, coordinates, size, img)
+resultAnalytics(unfiltered, coordinates, size, img, parallel = FALSE)
 }
 \arguments{
 \item{unfiltered}{all coordinates from every object before applying filter functions}
@@ -14,6 +14,8 @@ resultAnalytics(unfiltered, coordinates, size, img)
 \item{size}{size of the objects}
 
 \item{img}{image (import by \code{\link[imager]{load.image}})}
+
+\item{parallel}{if TRUE uses multiple cores (75 \%) to process results}
 }
 \value{
 list of 2 objects:

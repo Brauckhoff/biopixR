@@ -26,10 +26,12 @@ Depends:
     data.table,
     imager,
     magick,
-    tcltk
+    tcltk,
+    foreach
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    doParallel
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
