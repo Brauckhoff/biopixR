@@ -1,5 +1,16 @@
 # Next version
 
+# 0.2.2
+- new function - imgPipe:
+	- pipe combining objectDetection, sizeFilter, proximityFilter and resultAnalytics
+	- filter functions individually selectable
+	- option to analyze multiple color channels
+	- includes time stamp log
+- unit test for imgPipe
+- added parallel processing option to resultAnalytics
+- added a zoom/scale tool to interactive_objectDetection
+- change in calculation of estimated_rejected objects in resultAnalytics
+
 # 0.2.1
 - hotfix in resulAnalytics & sizeFilter
 
