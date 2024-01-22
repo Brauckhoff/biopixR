@@ -1,0 +1,8 @@
+---
+title: 'scanDir log file'
+output:
+  pdf_document:
+    latex_engine: xelatex
+--- 
+
+# Analysis of directory notebook/Images 
