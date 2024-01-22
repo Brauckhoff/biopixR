@@ -10,14 +10,6 @@ logIt <- function(msg) {
       append = TRUE)
 }
 
-# to do: creating final visualization in log file
-# format = jpg/png/bmp/tiff
-# backend = 'PSOCK' or 'FORK'
-# cores auto using 75% of present cores or number of cores to be used
-# Function to print a message with a timestamp
-
-
-
 dirScan <- function(path,
                     format = 'jpg',
                     parallel = TRUE,
@@ -32,6 +24,13 @@ dirScan <- function(path,
                     radius = 'auto',
                     logIt = TRUE
                     ) {
+
+  # notes:
+  # to do: creating final visualization in log file
+  # format = jpg/png/bmp/tiff
+  # backend = 'PSOCK' or 'FORK'
+  # cores auto using 75% of present cores or number of cores to be used
+  # Function to print a message with a timestamp
 
   # creating log
   if (logIt == TRUE) {
