@@ -20,7 +20,7 @@ rescueFill <- function(strong, weak) {
 
   # error
   if (nrow(df) == 0) {
-    stop("alpha needs to be decreased, as no edges could be detected")
+    stop("The parameters cannot be increased any further since no edges could be detected.")
   }
 
   for (r in 1:nrow(df)) {

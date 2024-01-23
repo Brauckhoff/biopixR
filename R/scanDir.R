@@ -71,7 +71,7 @@ append = TRUE)
   }
 
   # import via magick for other formats
-  if (format = 'tif') {
+  if (format == 'tif') {
     image_files <- list.files(path = path, pattern = "\\.tif$", full.names = TRUE)
     image_list <- lapply(image_files, image_read)
     cimg_list <- lapply(image_list, magick2cimg)

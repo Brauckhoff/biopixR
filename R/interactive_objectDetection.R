@@ -205,12 +205,26 @@ interactive_objectDetection <-
       if (quit_waiting) {
         break
       }
+
       temp_val <-
-        c(
-          as.numeric(tclvalue(slider_value_alpha)),
+        c(as.numeric(tclvalue(slider_value_alpha)),
           as.numeric(tclvalue(slider_value_sigma)),
-          as.numeric(tclvalue(slider_value_scale))
-        )
+          as.numeric(tclvalue(slider_value_scale)))
+
+      # warn if parameter would cause an error and reset values
+      if (class(try(edgeDetection(beads, alpha = temp_val[1], sigma = temp_val[2]))
+      )[1] == 'try-error') {
+
+        temp_val <-
+          c(
+            pre_slider_values[1],
+            pre_slider_values[2],
+            pre_slider_values[3]
+          )
+        tkset(win1.frame1.slider, temp_val[1])
+        tkset(win1.frame2.slider, temp_val[2])
+      }
+
       if (any(temp_val != pre_slider_values)) {
         temp_label_alpha <-
           sprintf(
