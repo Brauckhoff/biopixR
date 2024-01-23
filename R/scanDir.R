@@ -151,9 +151,14 @@ append = TRUE)
 
 
       if (logIt == TRUE) {
-        logIt("Parallel backend successfully created.",
-              getDoParWorkers(),
-              "workers recruted.  ")
+        cat(
+          format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+          "Parallel backend successfully created.",
+          getDoParWorkers(),
+          "workers recruted.  \n",
+          file = new_script_path,
+          append = TRUE
+        )
       }
       message(
         paste(
@@ -169,13 +174,15 @@ append = TRUE)
       }
       print_with_timestamp("Starting image analysis...")
       # actual function to be processed
-      md5_result <- foreach(i = 1:length(cimg_list[1:3]), .combine = rbind, .verbose = TRUE) %dopar% {
+      md5_result <- foreach(i = 1:length(cimg_list), .combine = rbind, .verbose = TRUE) %dopar% {
         img <- cimg_list[[i]]
 
+        if (logIt == TRUE) {
         cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "Currently analyzing:",
             md5_result$file[i], "  \n",
             file = new_script_path,
             append = TRUE)
+        }
 
         message(
           paste(
@@ -196,6 +203,17 @@ append = TRUE)
           radius = radius,
           parallel = FALSE
         )
+
+        if (logIt == TRUE) {
+          cat(
+            "```{r}
+plot(cimg_list[i])
+with(res$unfiltered_centers, points(res$unfiltered_centers$mx, res$unfiltered_centers$my, col = 'darkred'))
+with(res$detailed, points(res$detailed$x, res$detailed$y, col = 'darkgreen'))
+```",
+            file = new_script_path,
+            append = TRUE)
+        }
 
         # Assuming md5_result is a pre-allocated matrix
         md5_result_row <- cbind(md5_result[i, ], res$summary)
@@ -219,8 +237,16 @@ append = TRUE)
   # withou parallel processing
   if (parallel == FALSE) {
 
-    for (i in seq_along(cimg_list[1:3])) {
-      #
+    for (i in seq_along(cimg_list)) {
+
+      if (logIt == TRUE) {
+        cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+            "Currently analyzing:",
+            md5_result$file[i], "  \n",
+            file = new_script_path,
+            append = TRUE)
+      }
+
       message(
         paste(
           format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
@@ -240,19 +266,23 @@ append = TRUE)
                      radius = radius,
                      parallel = FALSE)
 
+      if (logIt == TRUE) {
+        cat(
+"```{r}
+plot(cimg_list[i])
+with(res$unfiltered_centers, points(res$unfiltered_centers$mx, res$unfiltered_centers$my, col = 'darkred'))
+with(res$detailed, points(res$detailed$x, res$detailed$y, col = 'darkgreen'))
+```",
+            file = new_script_path,
+            append = TRUE)
+      }
+
       md5_result[i, c(colnames(res$summary))] <- res$summary
     }
 
   }
 
   if (logIt == TRUE) {
-    cat(
-"```{r}
-
-```
-",
-      file = new_script_path,
-      append = TRUE)
     rmarkdown::render(new_script_path)
   }
 

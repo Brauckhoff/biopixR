@@ -54,11 +54,12 @@ are allowed (in pixels)}
 \item{parallel}{if TRUE uses multiple cores (75 \%) to process results}
 }
 \value{
-list of 2 objects:
+list of 3 to 4 objects:
 \enumerate{
 \item summary of all the microbeads in the image
 \item detailed information about every single bead
-\item result for every individual color
+\item (optional) result for every individual color
+\item unfiltered coordinates of img1
 }
 }
 \description{

@@ -28,10 +28,11 @@ print_with_timestamp <- function(msg) {
 #' @param radius distance from one center in which no other centers
 #' are allowed (in pixels)
 #' @param parallel if TRUE uses multiple cores (75 %) to process results
-#' @returns list of 2 objects:
+#' @returns list of 3 to 4 objects:
 #' 1. summary of all the microbeads in the image
 #' 2. detailed information about every single bead
-#' 3. result for every individual color
+#' 3. (optional) result for every individual color
+#' 4. unfiltered coordinates of img1
 #' @import data.table
 #' @examples
 #' result <- imgPipe(beads,
@@ -318,5 +319,7 @@ imgPipe <- function(img1 = img,
   }
   print_with_timestamp("Analysis was successfully completed")
 
+  unfiltered_centers <- col1_detect$centers
+  res <- c(res, list(unfiltered_centers = unfiltered_centers))
   out <- res
 }

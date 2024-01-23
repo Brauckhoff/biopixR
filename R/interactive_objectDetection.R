@@ -41,7 +41,7 @@ interactive_objectDetection <-
 
     # make initial input
     alpha <- 1
-    sigma <- 0.1
+    sigma <- 2
     scale <- 1
     initial_cimg <- objectDetection(beads, alpha, sigma)
     initial_cimg <- mirror(initial_cimg$marked_beads, axis = "x")
