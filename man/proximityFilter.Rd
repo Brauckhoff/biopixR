@@ -28,6 +28,16 @@ calculate their centers to determine proximity. Pairs that are too close
 will be discarded. (Input can be obtained by objectDetection function)
 }
 \examples{
-res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-proximityFilter(res_objectDetection$centers, res_objectDetection$coordinates, radius = "auto")
+res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
+res_proximityFilter <- proximityFilter(
+  res_objectDetection$centers,
+  res_objectDetection$coordinates,
+  radius = "auto"
+  )
+changePixelColor(
+  beads,
+  res_proximityFilter$coordinates,
+  color = "darkgreen",
+  visualize = TRUE
+  )
 }

@@ -13,13 +13,20 @@
 #' 2. remaining coordinates after discarding according to size
 #' 3. size of remaining objects
 #' @importFrom stats sd
+#' @importFrom stats quantile
 #' @examples
-#' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-#' sizeFilter(
+#' res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
+#' res_sizeFilter <- sizeFilter(
 #'   centers = res_objectDetection$centers,
 #'   coordinates = res_objectDetection$coordinates,
 #'   lowerlimit = 50, upperlimit = 150
-#' )
+#'   )
+#' changePixelColor(
+#'   beads,
+#'   res_sizeFilter$coordinates,
+#'   color = "darkgreen",
+#'   visualize = TRUE
+#'   )
 #' @export
 sizeFilter <- function(centers,
                        coordinates,
@@ -31,13 +38,13 @@ sizeFilter <- function(centers,
 
   # errors
   if (lowerlimit == "auto" & upperlimit != "auto") {
-    stop(
-      "both limits must be set to 'auto' or selected individually"
+    stop(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+      " Both limits must be set to 'auto' or selected individually"
     )
   }
   if (lowerlimit != "auto" & upperlimit == "auto") {
-    stop(
-      "both limits must be set to 'auto' or selected individually"
+    stop(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+      " Both limits must be set to 'auto' or selected individually"
     )
   }
 
@@ -59,29 +66,28 @@ sizeFilter <- function(centers,
 
     data <- unlist(cluster_size)
 
-    # calculating standard deviation and mean
-    sd_value <- sd(data)
-    mean_value <- mean(data)
+    # calculating quartiles
+    q1 <- quantile(data, 0.25)
+    q3 <- quantile(data, 0.75)
 
     # error with small n
     # plots distribution of size in order to simplify manual selection of limits
-    if (nrow(center_df) < 150) {
+    if (nrow(center_df) < 50) {
       data |> plot(ylab = "size")
       warning(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-        " Number of detected objects is to small for automated detection"
+        " Number of detected objects should be >50 for automated detection"
       )
     }
 
-    # calculating limits with mean and standard deviation
-    lower_bound <- mean_value - sd_value
-    upper_bound <- mean_value + sd_value
+    # Calculate IQR
+    iqr <- q3 - q1
 
-    # discarding according to the calculated limits
-    tro <- which(abs(data) > lower_bound & abs(data) < upper_bound)
+    # Identify non outliers
+    no_outliers <- which(data > (q1 - 1.5 * iqr) & data < (q3 + 1.5 * iqr))
 
     # results: size & remaining centers
-    cluster_size <- cluster_size[tro]
-    res_centers <- center_df[tro]
+    cluster_size <- cluster_size[no_outliers]
+    res_centers <- center_df[no_outliers]
 
     # result: remaining coordinates
     cluster <- list()

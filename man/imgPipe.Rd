@@ -71,7 +71,17 @@ analyze complex image data.
 }
 \examples{
 result <- imgPipe(beads,
-  alpha = 0.7, sigma = 0.1, upperlimit = 150,
+  alpha = 1, sigma = 2, upperlimit = 150,
   lowerlimit = 50
-)
+  )
+plot(beads)
+with(
+  result$detailed,
+  points(
+    result$detailed$x,
+    result$detailed$y,
+    col = "darkgreen",
+    pch = 19
+    )
+  )
 }

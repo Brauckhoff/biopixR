@@ -30,10 +30,16 @@ Calculates the size of the objects in an image and discards objects based
 on a lower and an upper size limit. (Input can be obtained by objectDetection function)
 }
 \examples{
-res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-sizeFilter(
+res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
+res_sizeFilter <- sizeFilter(
   centers = res_objectDetection$centers,
   coordinates = res_objectDetection$coordinates,
   lowerlimit = 50, upperlimit = 150
-)
+  )
+changePixelColor(
+  beads,
+  res_sizeFilter$coordinates,
+  color = "darkgreen",
+  visualize = TRUE
+  )
 }

@@ -36,9 +36,19 @@ print_with_timestamp <- function(msg) {
 #' @import data.table
 #' @examples
 #' result <- imgPipe(beads,
-#'   alpha = 0.7, sigma = 0.1, upperlimit = 150,
+#'   alpha = 1, sigma = 2, upperlimit = 150,
 #'   lowerlimit = 50
-#' )
+#'   )
+#' plot(beads)
+#' with(
+#'   result$detailed,
+#'   points(
+#'     result$detailed$x,
+#'     result$detailed$y,
+#'     col = "darkgreen",
+#'     pch = 19
+#'     )
+#'   )
 #' @export
 imgPipe <- function(img1 = img,
                     color1 = "color1",
@@ -113,10 +123,31 @@ imgPipe <- function(img1 = img,
     # adaptation for objects of different sizes
     if (lowerlimit == "auto" &
       upperlimit == "auto") {
+
+      # calculating quartiles
+      q1_col1 <- quantile(col1_detect$size, 0.25)
+      q3_col1 <- quantile(col1_detect$size, 0.75)
+
+      # Calculate IQR
+      iqr_col1 <- q3_col1 - q1_col1
+
+      lower_col1 <- q1_col1 - 1.5 * iqr_col1
+      upper_col1 <- q3_col1 + 1.5 * iqr_col1
+
+      # calculating quartiles
+      q1_col2 <- quantile(col2_detect$size, 0.25)
+      q3_col2 <- quantile(col2_detect$size, 0.75)
+
+      # Calculate IQR
+      iqr_col2 <- q3_col2 - q1_col2
+
+      lower_col2 <- q1_col2 - 1.5 * iqr_col2
+      upper_col2 <- q3_col2 + 1.5 * iqr_col2
+
       upperlimit <-
-        max(mean(col1_detect$size), mean(col2_detect$size)) + max(sd(col1_detect$size), sd(col2_detect$size))
+        max(upper_col1, upper_col2)
       lowerlimit <-
-        min(mean(col1_detect$size), mean(col2_detect$size)) - max(sd(col1_detect$size), sd(col2_detect$size))
+        min(lower_col1, lower_col2)
     }
   }
 
@@ -139,27 +170,41 @@ imgPipe <- function(img1 = img,
 
     # adaptation for objects of different sizes
     if (lowerlimit == "auto" &
-      upperlimit == "auto") {
+        upperlimit == "auto") {
+      # calculating quartiles
+      q1_col1 <- quantile(col1_detect$size, 0.25)
+      q3_col1 <- quantile(col1_detect$size, 0.75)
+
+      # Calculate IQR
+      iqr_col1 <- q3_col1 - q1_col1
+
+      lower_col1 <- q1_col1 - 1.5 * iqr_col1
+      upper_col1 <- q3_col1 + 1.5 * iqr_col1
+
+      # calculating quartiles
+      q1_col2 <- quantile(col2_detect$size, 0.25)
+      q3_col2 <- quantile(col2_detect$size, 0.75)
+
+      # Calculate IQR
+      iqr_col2 <- q3_col2 - q1_col2
+
+      lower_col2 <- q1_col2 - 1.5 * iqr_col2
+      upper_col2 <- q3_col2 + 1.5 * iqr_col2
+
+      # calculating quartiles
+      q1_col3 <- quantile(col3_detect$size, 0.25)
+      q3_col3 <- quantile(col3_detect$size, 0.75)
+
+      # Calculate IQR
+      iqr_col3 <- q3_col3 - q1_col3
+
+      lower_col3 <- q1_col3 - 1.5 * iqr_col3
+      upper_col3 <- q3_col3 + 1.5 * iqr_col3
+
       upperlimit <-
-        max(
-          mean(col1_detect$size),
-          mean(col2_detect$size),
-          mean(col3_detect$size)
-        ) + max(
-          sd(col1_detect$size),
-          sd(col2_detect$size),
-          sd(col3_detect$size)
-        )
+        max(upper_col1, upper_col2, upper_col3)
       lowerlimit <-
-        min(
-          mean(col1_detect$size),
-          mean(col2_detect$size),
-          mean(col3_detect$size)
-        ) - max(
-          sd(col1_detect$size),
-          sd(col2_detect$size),
-          sd(col3_detect$size)
-        )
+        min(lower_col1, lower_col2, lower_col3)
     }
   }
 
@@ -319,7 +364,11 @@ imgPipe <- function(img1 = img,
   }
   print_with_timestamp("Analysis was successfully completed")
 
-  unfiltered_centers <- col1_detect$centers
+  # adding unfiltered for visualization in scanDir
+  if(exists("path") == TRUE){
+      unfiltered_centers <- col1_detect$centers
   res <- c(res, list(unfiltered_centers = unfiltered_centers))
+  }
+
   out <- res
 }

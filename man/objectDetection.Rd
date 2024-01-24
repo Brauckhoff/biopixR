@@ -19,7 +19,7 @@ list of 4 objects:
 \item data frame of labeled region with the central coordinates
 \item all coordinates that are in labeled regions
 \item size of labeled objects
-\item image were object edges are colored
+\item image were object edges (purple) and detected centers (green) are colored
 }
 }
 \description{
@@ -28,5 +28,6 @@ labeling, gathering the coordinates and centers of the identified objects.
 The edges of detected objects are then highlighted for easy recognition.
 }
 \examples{
-objectDetection(beads, alpha = 0.75, sigma = 0.1)
+res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
+res_objectDetection$marked_beads |> plot()
 }

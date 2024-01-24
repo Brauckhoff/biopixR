@@ -17,20 +17,42 @@
 #' @importFrom stats na.omit
 #' @import foreach
 #' @examples
-#' res_objectDetection <- objectDetection(beads, alpha = 0.75, sigma = 0.1)
-#' res_sizeFilter <- sizeFilter(res_objectDetection$centers,
+#' res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
+#' res_sizeFilter <- sizeFilter(
+#'   res_objectDetection$centers,
 #'   res_objectDetection$coordinates,
 #'   lowerlimit = 50, upperlimit = 150
-#' )
-#' res_proximityFilter <- proximityFilter(res_sizeFilter$centers,
+#'   )
+#' res_proximityFilter <- proximityFilter(
+#'   res_sizeFilter$centers,
 #'   res_objectDetection$coordinates,
 #'   radius = "auto"
-#' )
-#' resultAnalytics(
+#'   )
+#' res_resultAnalytics <- resultAnalytics(
 #'   unfiltered = res_objectDetection$coordinates,
-#'   coordinates = res_proximityFilter$coordinates, size = res_proximityFilter$size,
+#'   coordinates = res_proximityFilter$coordinates,
+#'   size = res_proximityFilter$size,
 #'   img = beads
-#' )
+#'   )
+#' plot(beads)
+#' with(
+#'   res_objectDetection$centers,
+#'   points(
+#'     res_objectDetection$centers$mx,
+#'     res_objectDetection$centers$my,
+#'     col = "red",
+#'     pch = 19
+#'     )
+#'   )
+#' with(
+#'   res_resultAnalytics$detailed,
+#'   points(
+#'     res_resultAnalytics$detailed$x,
+#'     res_resultAnalytics$detailed$y,
+#'     col = "darkgreen",
+#'     pch = 19
+#'     )
+#'   )
 #' @export
 resultAnalytics <- function(unfiltered,
                             coordinates,
@@ -72,7 +94,7 @@ resultAnalytics <- function(unfiltered,
   # approximate amount of discarded pixels
   # calculate amount of true coordinates
   amount_true <- nrow(all_coords)
-  dis_count <- round(max(all_coords$value) - nrow(intense))
+  dis_count <- round(amount_true / mean(unlist(size)) - nrow(intense))
 
   # summary for every passing bead
   res_df_long <- data.frame(

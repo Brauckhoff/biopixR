@@ -10,11 +10,12 @@
 #' 1. data frame of labeled region with the central coordinates
 #' 2. all coordinates that are in labeled regions
 #' 3. size of labeled objects
-#' 4. image were object edges are colored
+#' 4. image were object edges (purple) and detected centers (green) are colored
 #' @import data.table
 #' @import imager
 #' @examples
-#' objectDetection(beads, alpha = 0.75, sigma = 0.1)
+#' res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
+#' res_objectDetection$marked_beads |> plot()
 #' @export
 objectDetection <- function(img,
                             alpha = 1,
@@ -74,6 +75,11 @@ objectDetection <- function(img,
   # visualization by highlighting the edges of detected beads
   edge_coords <- which(edge_img == TRUE, arr.ind = TRUE)
   colored_edge <- changePixelColor(object_img, edge_coords, color = "purple")
+  colored_edge <- draw_circle(colored_edge,
+                              grouped_lab_img$mx,
+                              grouped_lab_img$my,
+                              radius = (sqrt(mean(unlist(cluster_size)) / pi) / 2),
+                              color = "darkgreen")
 
   out <- list(
     centers = grouped_lab_img,
