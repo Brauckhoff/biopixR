@@ -72,7 +72,7 @@ and characterization of the microbeads within the biopixR package.
 
 ```{r objectDetection}
 res_objectDetection <-
-  objectDetection(beads, alpha = 0.75, sigma = 0.1)
+  objectDetection(beads, alpha = 1, sigma = 2)
 ```
 
 This function generates a list of objects. Let's examine the specific outcomes
@@ -182,7 +182,7 @@ As shown by the size distribution, there is a larger object (doublet - size:
 res_sizeFilter <- sizeFilter(
   centers = res_objectDetection$centers,
   coordinates = res_objectDetection$coordinates,
-  lowerlimit = 50,
+  lowerlimit = 0,
   upperlimit = 150
 )
 ```
