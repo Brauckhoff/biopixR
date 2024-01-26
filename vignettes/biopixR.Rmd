@@ -92,22 +92,16 @@ with(
 )
 ```
 
-Upon observation, it is apparent that each individual microbead is correctly
-identified with a singular point at its center and differentiated by varying
-colors to indicate their distinctiveness, which meets our intended objective.
-Nevertheless, the markings of clotted microbeads, which are later referred to as
-doublets or multiplets, do not adhere to the expected pattern. Doublets being
-identified as a single entity is a logical consequence of their edges vanishing
-along the contact surface, resulting in the observed behavior. The multiplets
-make this matter more complex. The challenge of accurately identifying the edges
-between microbeads is similar to that of doublets. On the other hand, the
-`objectDetection` function utilizes labeling post edge detection, employing a
-filling process similar to the EBImage `fillHull` function. In this step, the
-function does not recognize the space within the multiplet as a single area to
-be filled, resulting in an unfilled space. Then, during the subsequent labeling,
-multiple 'centers' are assigned to the still-present edges, generating several
-detected points along the edges of the multiplet. The next visualization
-displays the latter phenomenon.
+Upon closer examination, it is evident that each individual microbead is
+identified accurately by a singular point at its center, and their
+distinctiveness is conveyed through varying colors, aligning with our intended
+objective. However, the identification of clotted microbeads, referred to as
+doublets or multiplets, deviates from the expected pattern. Notably, not every
+visually distinguishable microbead is marked with a distinct color. The behavior
+observed, where doublets are identified as a single entity, is due to their
+edges disappearing along the contact surface. The same principle applies to
+multiplets, where the consecutive edges of clotted beads cause them to be
+treated as a unified, larger object.
 
 Let's examine the next output from `objectDetection`. This function captures the
 coordinates of labeled regions, providing precise details about the position of
@@ -125,22 +119,23 @@ changePixelColor(
 )
 ```
 
-As expected, all individual microbeads (singlets) and the doublet are fully
-colored, indicating the successful collection of all related coordinates. As
-previously mentioned, the collection procedure solely evaluates the contours of
-the multiplet. Although unintentional, this result offers an advantage, as it is
-crucial to exclude multiplets and doublets from subsequent analysis. The
-captured contours of multiplets result in a recorded size considerably smaller
-than that of a singlet. Conversely, fully recorded doublets are approximately
-twice as large as singlets. Therefore, the selected parameter to address these
-microbeads will be their size. The following section will provide a detailed
-explanation of the filter application procedure.
+The visual depiction shows that all relevant coordinates were successfully
+retrieved, with each variant (single microbeads, doublets, and multiplets)
+colored accordingly. As previously stated, these clotted microbeads should be
+excluded from further consideration. The clear difference in size serves as a
+critical factor for efficient sorting and subsequent analysis. Therefore, the
+selected parameter for addressing these microbeads will be their size. The next
+section will provide a detailed explanation of the `sizeFilter` application
+process.
 
 Before delving into the available filter functions in the package, let us first
 examine the internal visualization feature of the `objectDetection` function.
 The edges identified by the `edgeDetection` function are visually emphasized with
-color, simplifying the adjustment of the threshold and smoothing parameter in
-the `objectDetection` function.
+color, simplifying the adjustment of the threshold parameter (alpha) in the
+`objectDetection` function. In addition, the identified centers are represented
+as green circles. This visualization is particularly useful in determining the
+smoothing factor (sigma). Sometimes, smoothing is necessary to improve the
+recognition of complete objects and prevent the marking of fragmented edges.
 
 ```{r visualization_3}
 res_objectDetection$marked_beads |> plot()
