@@ -21,9 +21,17 @@ The rise of high-resolution imaging technologies has led to an exponential incre
 This project aims to meet the immediate need for effective bead microparticle analysis and contribute to the broader field of image processing methodologies in the R programming environment. By providing a comprehensive and adaptable framework, the work empowers researchers and practitioners to extract meaningful insights from image data, thus enhancing our understanding of bead microparticles and their diverse applications.
 
 
+## Installation
+
+```{r}
+install.package("devtools")
+devtools::install_github("Brauckhoff/biopixR")
+```
+
+
 ## Example I
 
-The objective of this task is to extract important data from an image of beads. The first step involves identifying individual beads and acquiring their coordinates using the `objectDetection` function, utilizing edge detection and labeling for thorough analysis and identification of distinct edges. This will enable precise coordinate extraction and provide a basis for further analysis using the biopixR package.
+The objective of this task is to extract important data from an image of microbeads. The first step involves identifying individual microbeads and acquiring their coordinates using the `objectDetection` function, utilizing edge detection and labeling for thorough analysis and identification of distinct edges. This will enable precise coordinate extraction and provide a basis for further analysis using the biopixR package.
 
 ```{r}
 library(biopixR)
@@ -42,10 +50,10 @@ with(
   )
 )
 ```
-![1 1](https://github.com/Brauckhoff/biopixR/assets/121032772/ce106352-af73-47ba-836b-911b96a937fa)
+![1](https://github.com/Brauckhoff/biopixR/assets/121032772/ecfe2f87-9463-4384-a111-99779146d054)
 
 
-During examination, precise identification and marking of each individual bead were achieved, aligning with our intended objective. The `objectDetection` functionality successfully detects each bead using a singular center point and varying colors for differentiation. (Any issues with clotted beads, referred to as doublets or multiplets, are currently disregarded.) Using an alternative visualization method that utilizes the internal `changePixelColor` function can provide a more comprehensive view of the results (based on https://CRAN.R-project.org/package=countcolors).
+During examination, precise identification and marking of each individual bead were achieved, aligning with our intended objective. The `objectDetection` functionality successfully detects each bead using a singular center point and varying colors for differentiation. Using an alternative visualization method that utilizes the internal `changePixelColor` function can provide a more comprehensive view of the results (based on https://CRAN.R-project.org/package=countcolors).
 
 ```{r}
 changePixelColor(
@@ -55,10 +63,10 @@ changePixelColor(
   visualize = TRUE
 )
 ```
-![2 1](https://github.com/Brauckhoff/biopixR/assets/121032772/be945b1d-527b-4d0e-8453-315e3c7a7ebd)
+![2](https://github.com/Brauckhoff/biopixR/assets/121032772/0464421a-e4f7-410e-a3c0-3fae860527db)
 
 
-For precise analysis, the next step entails eliminating doublets and multiplets using the `sizeFilter`. The filter is applied using the previously obtained coordinates and centers, as well as predetermined upper and lower limits. This algorithm calculates the number of pixels in each labeled object, allowing users to establish limits for rejecting doublets and multiplets. If the number of detected objects is higher, the algorithm can automatically calculate limits using the mean and the standard deviation of the size distribution.
+For precise analysis, the next step entails eliminating doublets and multiplets using the `sizeFilter`. The filter is applied using the previously obtained coordinates and centers, as well as predetermined upper and lower limits. This algorithm calculates the number of pixels in each labeled object, allowing users to establish limits for rejecting doublets and multiplets. If the number of detected objects is higher, the algorithm can automatically calculate limits using the IQR of the size distribution.
 
 ```{r}
 res_sizeFilter <- sizeFilter(
@@ -75,8 +83,7 @@ changePixelColor(
   visualize = TRUE
 )
 ```
-![3](https://github.com/Brauckhoff/biopixR/assets/121032772/a2d816ad-4f68-42ea-9e68-1623f118650e)
-
+![3](https://github.com/Brauckhoff/biopixR/assets/121032772/5cf5c5a3-a8cf-47fc-b3f8-6ae367fb7abb)
 
 
 This function examines each collected center and scans a specified radius for positive pixels. If another positive pixel from a different object is detected within this range, both are rejected due to their proximity. The radius can be manually selected or determined automatically.
@@ -95,9 +102,14 @@ changePixelColor(
   color = "darkgreen",
   visualize = TRUE
 )
+text(
+  res_proximityFilter$centers$mx,
+  res_proximityFilter$centers$my,
+  res_proximityFilter$centers$value,
+  col = "grey"
+)
 ```
-![4](https://github.com/Brauckhoff/biopixR/assets/121032772/9b6e84b2-8d98-455a-8848-5b2daea88083)
-
+![4](https://github.com/Brauckhoff/biopixR/assets/121032772/9ff1a69e-acf2-4e27-88de-8004aa2ef6fa)
 
 
 In conclusion, obtaining meaningful information from the filtered dataset is essential. The main findings encompass the number of objects that remained and were discarded, object size, signal intensity, and area density. The `resultAnalytics` function of biopixR extracts and calculates the described parameters. The function requires input parameters in the form of coordinates, object size, and the original image. The coordinates can be obtained through any of the three previously mentioned functions, allowing for flexibility in selectively applying or omitting specific filters.
@@ -111,6 +123,17 @@ result <-
     img = beads
   )
 
+result$detailed
+```
+beadnumber | size | intensity | x | y | relative_distance 
+--- | --- | --- | --- | --- | ---
+3 | 83 | 0.644 | 9.18 | 37.8 | 72.2
+4 | 84 | 0.670 | 53.11 | 39.4 | 55.6 
+5 | 84 | 0.637 | 108.50 | 43.7 | 80.6 
+7 | 73 | 0.647 | 35.05 | 97.8 | 60.3 
+8 | 85 | 0.576 | 58.36 | 101.1 | 60.4 
+
+```{r}
 result$summary
 ```
 number_of_beads | mean_size | mean_intensity | bead_density | estimated_rejected | mean_distance 
@@ -194,14 +217,6 @@ partitions | empty_partitions | bead_partitions | single_bead | multiple_beads
 
 
 For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://github.com/Brauckhoff/biopixR/blob/main/vignettes/biopixR.Rmd).
-
-
-## Installation
-
-```{r}
-install.package("devtools")
-devtools::install_github("Brauckhoff/biopixR")
-```
 
 
 ## Code citation
