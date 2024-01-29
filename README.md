@@ -138,7 +138,7 @@ result$summary
 ```
 number_of_beads | mean_size | mean_intensity | bead_density | estimated_rejected | mean_distance 
 --- | --- | --- | --- | --- | ---
-5 | 95 | 0.59 | 0.08 | 9 | 65.8
+5 | 82 | 0.63 | 0.08 | 5 | 65.8
 
 
 For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://github.com/Brauckhoff/biopixR/blob/main/vignettes/biopixR.Rmd).
