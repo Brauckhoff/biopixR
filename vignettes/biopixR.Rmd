@@ -149,16 +149,16 @@ various variables and observe the corresponding shifts in detected microbeads.
 The interactive interface is presented through the `interactive_objectDetection`
 function within the biopixR package.
 
-## Filter microbeads according to size and proximity {#filter}
+## Filter microbeads according to size and proximity
 
 As previously stated, it is crucial to remove doublets and multiplets before
 performing the analysis. This objective will be addressed in this section using
 the `sizeFilter`. The filter is applied to the image using previously obtained
 coordinates and centers, with specified lower and upper limits. If more objects
-are identified, automated limit calculation becomes available based on the mean
-and standard deviation of the size distribution. To simplify the selection of
-limits in cases where the number of detected objects is insufficient, the
-function will terminate and produce a size distribution.
+are identified, automated limit calculation becomes available based on the
+interquartile range (IQR) of the size distribution. To simplify limit selection
+in cases of insufficient detected objects, the function will issue a warning and
+generate a size distribution.
 
 ```{r, error=TRUE}
 res_sizeFilter <- sizeFilter(
@@ -169,9 +169,13 @@ res_sizeFilter <- sizeFilter(
 )
 ```
 
-As shown by the size distribution, there is a larger object (doublet - size:
-\>150) and several smaller objects representing the edges of the multiplet
-(multiplet edge - size: \<50). Therefore, the limits will be set accordingly.
+As shown by the size distribution, there two larger objects (doublet - size:
+\>150 px; multiplet - size: \>400 px). Therefore, the limits will be set
+accordingly. In some cases, it can be difficult to achieve continuous edges
+around multiplets, which can lead to the detection of multiple small objects
+that correspond to the edges of the multiplet. To address this issue, it is
+possible to set a lower limit to exclude results that may be affected by this
+phenomenon.
 
 ```{r}
 res_sizeFilter <- sizeFilter(
@@ -246,7 +250,7 @@ text(
 The chapter's objective has been accomplished, as demonstrated by the most
 recent plot. The `sizeFilter` successfully eliminated the doublet and multiplet
 from the dataset. Furthermore, microbeads that lacked at least half the size of
-a bead between them were removed with the aid of the `proximityFilter`. To
+a microbead between them were removed with the aid of the `proximityFilter`. To
 demonstrate this result, the `changePixelColor` function was once again
 utilized, coloring every remaining pixel. Consequently, the microbeads that
 remain are highlighted in dark green, indicating their successful passage
@@ -261,7 +265,7 @@ As the size of the objects has already been calculated in both algorithms, this
 information should also be included in the display. Moreover, the intensity of
 the signal is a crucial parameter for both microbeads and any fluorescent image.
 Finally, it may be of interest to calculate the area density, which represents
-the percentage of positive pixels (microbeads) relative to the pixel area of the
+the percentage of detected pixels (microbeads) relative to the pixel area of the
 entire image. To extract this information, the `resultAnalytics` function from
 the biopixR package is utilized. This function requires the data frame of the
 remaining coordinates, the individual size, and the original image as inputs.
@@ -292,36 +296,32 @@ described earlier.
 result$summary
 ```
 
-A final note regarding the estimated number of rejected objects: A careful
-observer may have noticed that the actual count of discarded microbeads differs
-from the displayed result.
-Explaining this discrepancy requires investigating the algorithm, which is prone
-to an inevitable deviation. Since the microbeads are not easily distinguished
-through straightforward labeling, simple counting, which would offer the most
-accurate result, is not feasible. The initial approach was to use an automatic
-threshold to identify all coordinates marked as TRUE, followed by a count of
-those coordinates. This count was then divided by the average size of the
-microbeads, and after subtracting the number of passing microbeads, the
-resulting value represented the number of discarded objects. A potential
-limitation arose from the occurrence of overlapping microbeads, as their common
-area was only counted once in the image, resulting in an underestimated number
-of discarded microbeads. In addition, the method relied heavily on accurate size
-information, raising concerns about its robustness in cases of varying object
-sizes.
-
-To address these challenges and provide a more reliable estimate, a simplified
-approach was adopted. The estimated number of rejected objects was calculated by
-examining the number of detected centers and the number of centers that
-successfully passed the filtering procedure. However, this approach also
-inevitably introduced errors associated with multiplets where numerous centers
-were detected, leading to inaccuracies in the final estimate. However, in this
-scenario, rejected objects are overestimated rather than underestimated.
-Additionally, non-uniform object sizes have resulted in negative values when
-using the aforementioned approach. Therefore, since multiplets are expected to
-be infrequent and significantly outnumbered by singlets, we have chosen an
-approach that focuses on analyzing individual centers.
+A final note regarding the estimated number of rejected objects: 
+As previously mentioned, the detection of multiplets may have limitations. When
+only the edges are identified, the number of positive pixels is reduced,
+resulting in an inaccurate estimation of the discarded microbeads. This
+calculation is obtained by dividing the number of detected pixels by the average
+size while subtracting the count of centers that have successfully undergone the
+filter process.
 
 ## Individual usage of the filter functions
+
+The results generated by the `objectDetection` function can be quickly displayed
+using the `resultAnalytics` function. Therefore, let's first examine the
+unfiltered results available from the image.
+
+```{r}
+result_proximityFilter <-
+  resultAnalytics(
+    unfiltered = res_objectDetection$coordinates,
+    coordinates = res_objectDetection$coordinates,
+    size = res_objectDetection$size,
+    img = beads,
+    parallel = FALSE
+  )
+
+result_proximityFilter$detailed
+```
 
 To increase versatility, the filter functions can be used individually, without
 depending on each other. The following section examines the results of applying
@@ -392,18 +392,9 @@ text(
 )
 ```
 
-This filter is effective in addressing multiplets as the identified centers
-often appear in close proximity along the contours. It is important to note that
-only the multiplet has been excluded, which is unexpected given the earlier
-removal of microbeads 1, 2, 29, and 30. An explanation for this inconsistency is
-necessary. The absence of the previous sizeFilter allows the multiplet edge with
-the small object size to persist in the data set, substantially influencing the
-determination of the radius. The average size is lowered by the presence of
-small objects, which in turn limits the examined surrounding area due to a
-reduction in the assumed radius. If the function were to be repeated, the
-original result at the end of Chapter ['Filter microbeads'](#filter) would be
-replicated, as the size would align with the true microbead size after the
-exclusion of the multiplet.
+As expected, the `proximityFilter` excluded microbeads that were close to each
+other. In this situation, a doublet is in close proximity to a single microbead,
+so both the doublet and its neighboring microbead are rejected by the filter.
 
 ```{r}
 result_proximityFilter <-
@@ -417,10 +408,6 @@ result_proximityFilter <-
 
 result_proximityFilter$detailed
 ```
-
-The results of the `objectDetection` can be displayed using the
-`resultAnalytics` function. However, for this sample image, this is not useful,
-so we will move on to the next topic.
 
 ## Relative distance between microparticles
 

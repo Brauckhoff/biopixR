@@ -73,7 +73,7 @@ sizeFilter <- function(centers,
     # error with small n
     # plots distribution of size in order to simplify manual selection of limits
     if (nrow(center_df) < 50) {
-      data |> plot(ylab = "size")
+      data |> plot(ylab = "size in px")
       warning(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
         " Number of detected objects should be >50 for automated detection"
       )
