@@ -110,5 +110,69 @@ edgeDetection <- function(img,
     out <- add.colour(out)
   }
   attr(out, "thresholds") <- c(t1, t2)
+
+  # fill discontinous edges
+
+  out_magick <- cimg2magick(out)
+  out_cimg <- mirror(out, axis = "x")
+  mo1_lineends <- image_morphology(
+    out_magick,
+    "HitAndMiss", "LineEnds"
+  )
+  mo2_diagonalends <- image_morphology(
+    out_magick,
+    "HitAndMiss", "LineEnds:2>"
+  )
+  lineends_cimg <- magick2cimg(mo1_lineends)
+  diagonalends_cimg <- magick2cimg(mo2_diagonalends)
+
+  end_points <- which(lineends_cimg == TRUE, arr.ind = TRUE)
+  end_points_df <- as.data.frame(end_points)
+  colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
+
+  diagonal_edges <-
+    which(diagonalends_cimg == TRUE, arr.ind = TRUE)
+  diagonal_edges_df <- as.data.frame(diagonal_edges)
+  colnames(diagonal_edges_df) <- c("x", "y", "dim3", "dim4")
+
+  lab <- label(out_cimg)
+  df_lab <- as.data.frame(lab) |>
+    subset(value > 0)
+
+  alt_x <- list()
+  alt_y <- list()
+  alt_value <- list()
+  for (g in 1:nrow(df_lab)) {
+    # droplets_array <- as.array(droplets)
+    if (out_cimg[df_lab$x[g], df_lab$y[g], 1, 1] == 1) {
+      alt_x[g] <- df_lab$x[g]
+      alt_y[g] <- df_lab$y[g]
+      alt_value[g] <- df_lab$value[g]
+    }
+  }
+
+  clean_lab_df <- data.frame(x = unlist(alt_x),
+                             y = unlist(alt_y),
+                             value = unlist(alt_value))
+
+  first_overlay <-
+    adaptiveInterpolation(end_points_df,
+                          diagonal_edges_df,
+                          clean_lab_df,
+                          lineends_cimg,
+                          radius = 5
+    )
+
+  first_connect <-
+    parmax(list(out_cimg, as.cimg(first_overlay$overlay)))
+
+  connect_magick <- cimg2magick(first_connect)
+  thresh_clean_magick <-
+    image_morphology(connect_magick, "thinning", "skeleton")
+
+  out_cimg <- magick2cimg(thresh_clean_magick)
+
+  out <- out_cimg
+
   as.pixset(out)
 }
