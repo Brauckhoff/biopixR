@@ -40,6 +40,7 @@ jobs:
           r-version: ${{ matrix.config.r }}
 
       - name: Clean Up Previous Check Directories
+        if: runner.os != 'Windows'
         run: |
           find ${{ github.workspace }} -type d -name '.Rcheck' -exec rm -rf {} +
         working-directory: ${{ github.workspace }}
@@ -53,6 +54,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install imagemagick
+          brew install mactex-no-gui
 
       - name: Install Packages on Linux
         if: runner.os == 'Linux'
