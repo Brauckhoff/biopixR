@@ -37,7 +37,6 @@ jobs:
       - name: Install Chocolatey for windows
         if: runner.os == 'Windows'
         run: |  
-          Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
           # Install Ghostscript & qpdf
           choco install ghostscript qpdf --source=https://chocolatey.org/api/v2/
 
@@ -62,7 +61,8 @@ jobs:
         run: |
           brew install imagemagick
           brew install mactex-no-gui
-          R -e "install.packages(c('igraph', dependencies=TRUE))"
+          R -e "install.packages(c('igraph', 'callr', dependencies=TRUE))"
+          
 
       - name: Install pandoc on MacOS
         if: runner.os == 'macOS'
