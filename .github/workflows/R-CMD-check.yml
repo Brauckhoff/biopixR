@@ -55,6 +55,7 @@ jobs:
         run: |
           brew install imagemagick
           brew install mactex-no-gui
+          R -e "install.packages(c('igraph', dependencies=TRUE)"
 
       - name: Install Packages on Linux
         if: runner.os == 'Linux'
@@ -69,6 +70,16 @@ jobs:
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
+
+      - name: Install Pandoc
+        if: runner.os == 'Windows'
+        run: |
+          # Download and install Pandoc
+          $url = 'https://github.com/jgm/pandoc/releases/download/2.16/pandoc-2.16-windows.msi'
+          $output = 'pandoc_installer.msi'
+          Invoke-WebRequest -Uri $url -OutFile $output
+          Start-Process -Wait -FilePath msiexec -ArgumentList "/i $output /quiet /qn /norestart"
+          Remove-Item -Path $output
 
       - name: Cache R packages
         if: runner.os != 'Windows'
