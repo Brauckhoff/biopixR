@@ -34,6 +34,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install Chocolatey for windows
+        if: runner.os == 'Windows'
+        run: |  
+          Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+          # Install Ghostscript & qpdf
+          choco install ghostscript qpdf --source=https://chocolatey.org/api/v2/
+
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
@@ -57,6 +64,11 @@ jobs:
           brew install mactex-no-gui
           R -e "install.packages(c('igraph', dependencies=TRUE))"
 
+      - name: Install pandoc on MacOS
+        if: runner.os == 'macOS'
+        run: |
+          brew install pandoc
+          
       - name: Install Packages on Linux
         if: runner.os == 'Linux'
         run: |
@@ -71,8 +83,8 @@ jobs:
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
 
-      - name: Install Pandoc
-        if: runner.os != 'Linux'
+      - name: Install Pandoc for windows
+        if: runner.os == 'Windows'
         run: |
           # Download and install Pandoc
           $url = 'https://github.com/jgm/pandoc/releases/download/2.16/pandoc-2.16-windows.msi'
@@ -80,13 +92,6 @@ jobs:
           Invoke-WebRequest -Uri $url -OutFile $output
           Start-Process -Wait -FilePath msiexec -ArgumentList "/i $output /quiet /qn /norestart"
           Remove-Item -Path $output
-
-      - name: Install Chocolatey
-        if: runner.os == 'Windows'
-        run: |  
-          Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-          # Install Ghostscript & qpdf
-          choco install ghostscript qpdf --source=https://chocolatey.org/api/v2/
 
       - name: Cache R packages
         if: runner.os != 'Windows'
