@@ -87,11 +87,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           # Download and install Pandoc
-          $url = 'https://github.com/jgm/pandoc/releases/download/2.16/pandoc-2.16-windows.msi'
-          $output = 'pandoc_installer.msi'
-          Invoke-WebRequest -Uri $url -OutFile $output
-          Start-Process -Wait -FilePath msiexec -ArgumentList "/i $output /quiet /qn /norestart"
-          Remove-Item -Path $output
+          choco install pandoc
 
       - name: Cache R packages
         if: runner.os != 'Windows'
