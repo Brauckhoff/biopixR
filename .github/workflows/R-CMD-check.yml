@@ -72,7 +72,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Install Pandoc
-        if: runner.os == 'Windows'
+        if: runner.os != 'Linux'
         run: |
           # Download and install Pandoc
           $url = 'https://github.com/jgm/pandoc/releases/download/2.16/pandoc-2.16-windows.msi'
@@ -81,19 +81,12 @@ jobs:
           Start-Process -Wait -FilePath msiexec -ArgumentList "/i $output /quiet /qn /norestart"
           Remove-Item -Path $output
 
-          # Install Ghostscript
-          $url_ghostscript = 'https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9570/gs9570w64.exe'
-          $output_ghostscript = 'ghostscript.exe'
-          Invoke-WebRequest -Uri $url_ghostscript -OutFile $output_ghostscript
-          Start-Process -Wait -FilePath .\ghostscript.exe -ArgumentList '/S /D=C:\Ghostscript'
-          Remove-Item -Path $output_ghostscript
-
-          # Install qpdf
-          $url_qpdf = 'https://github.com/qpdf/qpdf/releases/download/release-qpdf-10.3.1/qpdf-10.3.1-bin-mingw64.zip'
-          $output_qpdf = 'qpdf.zip'
-          Invoke-WebRequest -Uri $url_qpdf -OutFile $output_qpdf
-          Expand-Archive -Path $output_qpdf -DestinationPath C:\qpdf -Force
-          Remove-Item -Path $output_qpdf
+      - name: Install Chocolatey
+        if: runner.os == 'Windows'
+        run: |  
+          Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+          # Install Ghostscript & qpdf
+          choco install ghostscript qpdf --source=https://chocolatey.org/api/v2/
 
       - name: Cache R packages
         if: runner.os != 'Windows'
