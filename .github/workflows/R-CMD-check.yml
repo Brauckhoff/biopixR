@@ -55,7 +55,7 @@ jobs:
         run: |
           brew install imagemagick
           brew install mactex-no-gui
-          R -e "install.packages(c('igraph', dependencies=TRUE)"
+          R -e "install.packages(c('igraph', dependencies=TRUE))"
 
       - name: Install Packages on Linux
         if: runner.os == 'Linux'
@@ -80,6 +80,20 @@ jobs:
           Invoke-WebRequest -Uri $url -OutFile $output
           Start-Process -Wait -FilePath msiexec -ArgumentList "/i $output /quiet /qn /norestart"
           Remove-Item -Path $output
+
+          # Install Ghostscript
+          $url_ghostscript = 'https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9570/gs9570w64.exe'
+          $output_ghostscript = 'ghostscript.exe'
+          Invoke-WebRequest -Uri $url_ghostscript -OutFile $output_ghostscript
+          Start-Process -Wait -FilePath .\ghostscript.exe -ArgumentList '/S /D=C:\Ghostscript'
+          Remove-Item -Path $output_ghostscript
+
+          # Install qpdf
+          $url_qpdf = 'https://github.com/qpdf/qpdf/releases/download/release-qpdf-10.3.1/qpdf-10.3.1-bin-mingw64.zip'
+          $output_qpdf = 'qpdf.zip'
+          Invoke-WebRequest -Uri $url_qpdf -OutFile $output_qpdf
+          Expand-Archive -Path $output_qpdf -DestinationPath C:\qpdf -Force
+          Remove-Item -Path $output_qpdf
 
       - name: Cache R packages
         if: runner.os != 'Windows'
