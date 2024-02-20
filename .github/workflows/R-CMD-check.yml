@@ -39,6 +39,7 @@ jobs:
         run: |  
           # Install Ghostscript & qpdf
           choco install ghostscript qpdf --source=https://chocolatey.org/api/v2/
+          choco install rtools
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
