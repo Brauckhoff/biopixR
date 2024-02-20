@@ -21,6 +21,7 @@ Maintainer: Tim Brauckhoff <Tim.Brauckhoff@b-tu.de>
 Description: Extracts features from bioimage data (Schneider J. et al. (2019) <doi:10.21037/jlpm.2019.04.05>).
 License: LGPL (>= 3)
 VignetteBuilder: knitr
+BuildVignettes: true
 Depends:
     R (>= 4.2.0),
     data.table,
