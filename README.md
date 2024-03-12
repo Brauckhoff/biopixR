@@ -221,7 +221,7 @@ For more detailed information about the features and capabilities of the package
 
 ## Code citation
 
-The following functions are adapted from other packages and are not solely the author's own work:
+The following functions are inherited functionality from other packages and were enhanced or adapted by the package authors:
 - `edgeDetection` based on `cannyEdges` from the imager package (https://cran.r-project.org/package=imager)
 - `interactive_objectDetection` based on `interactive_blur` from the magickGUI package (https://cran.r-project.org/package=magickGUI)
 - `changePixelColor` based on `changePixelColor` from the countcolors package (https://cran.r-project.org/package=countcolors)
