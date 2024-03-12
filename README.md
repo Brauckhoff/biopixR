@@ -15,7 +15,7 @@ The rise of high-resolution imaging technologies has led to an exponential incre
 **The primary objectives of this project include**:
  - *Image Preprocessing*: Implementing techniques to fill and reconnect discontinuous lines and edges. Discard coagulated duplets, multiplets, and beads that are too close together as they may excite each other and produce a false positive signal.
  - *Segmentation and Feature Extraction*: Applying algorithms to accurately identify and segment sperical objects (e.g, microparticles). Extracting relevant features such as quantity, size, and intensity for comprehensive characterization. 
- - *Visualization*: Implementing interactive tools with tcltk for the selection of thresholds and smoothing factors. Generating images to control the appropriate functioning of algorithms, for example the reconnection of lines.
+ - *Visualization*: Implementing interactive tools with [Tcl/Tk](https://www.tcl-lang.org/) via the tcltk package for the selection of thresholds and smoothing factors. Generating images to control the appropriate functioning of algorithms, for example the reconnection of lines.
  - *Automatization*: Combining algorithms for high-throughput analysis of image data.
 
 This project aims to meet the immediate need for effective bead microparticle analysis and contribute to the broader field of image processing methodologies in the R programming environment. By providing a comprehensive and adaptable framework, the work empowers researchers and practitioners to extract meaningful insights from image data, thus enhancing our understanding of bead microparticles and their diverse applications.
