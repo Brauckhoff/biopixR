@@ -122,7 +122,7 @@ changePixelColor(
 The visual depiction shows that all relevant coordinates were successfully
 retrieved, with each variant (single microbeads, doublets, and multiplets)
 colored accordingly. As previously stated, these clotted microbeads should be
-excluded from further consideration. The clear difference in size serves as a
+excluded from further consideration. The difference in size serves as a
 critical factor for efficient sorting and subsequent analysis. Therefore, the
 selected parameter for addressing these microbeads will be their size. The next
 section will provide a detailed explanation of the `sizeFilter` application
@@ -601,7 +601,7 @@ vis_lineend <-
 
 After reviewing part of the `fillLineGaps` function, let us apply it to the
 example images provided. The first three parameters have already been discussed,
-which entail converting to binary using thresholding and eliminating identified
+which entails converting to binary using thresholding and eliminating identified
 objects. The alpha and sigma parameters, denoting the threshold and smoothing
 factor, are derived from the `cannyEdge` function in the imager package. Moving
 on to the next parameter, the radius determines the maximum pixel range around
@@ -633,10 +633,10 @@ relatively straight lines are fragmented, but challenges arise in more
 complicated situations. One issue arises from diagonal line endings where, for
 lines with a one-pixel width, each pixel is treated as a separate cluster. As a
 result, the direct neighbor meets the reconnection requirements. To address this
-problem, diagonal line endings will not reconnect with their own cluster or the
+problem, diagonal line endings will not reconnect with their cluster or the
 first direct neighbor's cluster. A different issue arises when there are
 multiple edges in the scan area. In these instances, the endpoint will reconnect
-with all of them, potentially generating new small partitions and a clotted-like
+with all of them, potentially generating small new partitions and a clotted-like
 structure. Despite this, the algorithm successfully manages to close gaps in the
 majority of cases, rendering it satisfactory for our specific example.
 
