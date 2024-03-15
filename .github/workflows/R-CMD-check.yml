@@ -61,6 +61,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install imagemagick
+          eval "$(/usr/libexec/path_helper)"
           brew install --cask mactex-no-gui
           R -e "install.packages(c('igraph', 'callr', dependencies=TRUE))"
           
