@@ -61,7 +61,6 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install imagemagick
-          brew install --cask mactex
           R -e "install.packages(c('igraph', 'callr', dependencies=TRUE))"
           
 
