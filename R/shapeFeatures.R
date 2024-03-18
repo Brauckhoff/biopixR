@@ -110,13 +110,15 @@ shapeFeatures <-
           alpha = c(0.05, 0.01),
           keep.data = TRUE
         )
-      features$class <- som_model$unit.classif
+      res_resultAnalytics$detailed$class <- som_model$unit.classif
 
-      return(features)
+      res_resultAnalytics$detailed <- cbind(res_resultAnalytics$detailed, features)
+
+      return(res_resultAnalytics$detailed)
 
       if(visualize == TRUE) {
         res_resultAnalytics$detailed$class <- som_model$unit.classif
-        plot(t1)
+        plot(img)
         with(
           res_resultAnalytics$detailed,
           points(
