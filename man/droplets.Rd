@@ -13,7 +13,7 @@ droplets
 }
 \description{
 The image displays a water-oil emulsion with droplets observed through
-brightfield microscopy. It is formatted as 'cimg' and sized at 151 × 112
+brightfield microscopy. It is formatted as 'cimg' and sized at 151 x 112
 pixels. The droplets vary in size, and some contain microbeads, which adds
 complexity. Brightfield microscopy enhances the contrast between water and
 oil, revealing the droplet arrangement.

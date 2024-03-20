@@ -1,5 +1,10 @@
 # Next version
 
+# 0.2.3
+- Updates including bugfixes and documentation
+- preparing for CRAN submission
+- R CMD check for Windows, Linux and macOS through CI
+
 # 0.2.2
 - new function - imgPipe:
 	- pipe combining objectDetection, sizeFilter, proximityFilter and resultAnalytics
