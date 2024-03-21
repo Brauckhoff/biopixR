@@ -1,5 +1,10 @@
 # Next version
 
+# 0.2.4
+- Update Description
+- hotfixed errors in R CMD check (as cran)
+- version for cran submission
+
 # 0.2.3
 - Updates including bugfixes and documentation
 - preparing for CRAN submission
