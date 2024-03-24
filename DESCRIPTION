@@ -1,5 +1,5 @@
 Package: biopixR
-Title: Tools for Bioimage Analysis
+Title: Extracting Insights from Biological Images
 Version: 0.2.4
 Authors@R: 
     c(person("Tim", "Brauckhoff", 
@@ -13,8 +13,8 @@ Authors@R:
     person("Coline", "Kieffer",
     email = "coline.kieffer@espci.fr",
     role = c("ctb")))
-Description: Combines the Magick and Imager packages to streamline image analysis, focusing on feature extraction and quantification from biological images, especially 
-    microparticles. By providing high throughput pipelines and clustering capabilities, biopixR facilitates efficient insight generation for researchers (Schneider J. et al. (2019) 
+Description: Combines the 'magick' and 'imager' packages to streamline image analysis, focusing on feature extraction and quantification from biological images, especially 
+    microparticles. By providing high throughput pipelines and clustering capabilities, 'biopixR' facilitates efficient insight generation for researchers (Schneider J. et al. (2019) 
     <doi:10.21037/jlpm.2019.04.05>).
 License: LGPL (>= 3)
 VignetteBuilder: knitr

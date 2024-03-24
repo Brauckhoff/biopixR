@@ -76,6 +76,7 @@ guess.kmeans <- function(x) {
 #' @param t2 threshold for strong edges
 #' @param alpha threshold adjustment factor (default 1)
 #' @param sigma smoothing
+#' @returns Object of class 'cimg', displaying detected edges.
 #' @importFrom stats kmeans
 #' @examples
 #' edgeDetection(beads) |> plot()

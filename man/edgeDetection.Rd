@@ -18,6 +18,9 @@ determined automatically)}
 
 \item{sigma}{smoothing}
 }
+\value{
+Object of class 'cimg', displaying detected edges.
+}
 \description{
 Adapted code from the imager \code{\link[imager]{cannyEdges}}) function
 without the usage of dplyr and purrr. If the threshold parameters are

@@ -32,6 +32,7 @@ knitr::opts_chunk$set(
   dev = "jpeg",
   dev.args = list(quality = 25)
 )
+original_options <- options()
 options(digits = 3)
 ```
 
@@ -825,5 +826,9 @@ data.frame(
 ```{r fig.show='hold', out.width="49%"}
 plot(droplets)
 plot(closed_gaps)
+```
+
+```{r echo=FALSE}
+options(original_options)
 ```
 

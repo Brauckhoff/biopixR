@@ -151,7 +151,7 @@ resultAnalytics <- function(unfiltered,
       stopCluster(cl = my_cluster)
     } else {
       # Handle the case when any of the suggested packages is not available
-      cat("Please install the Package 'doParallel' for parallel processing \n (install.package('doparallel')")
+      warning("Please install the Package 'doParallel' for parallel processing \n (install.package('doparallel')")
     }
   }
 

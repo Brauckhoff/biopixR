@@ -7,3 +7,5 @@ notebook*
 ^Meta$
 ^R/shapeFeatures\.R$
 ^R/scanDir\.R$
+^cran-comments\.md$
+^CRAN-SUBMISSION$
