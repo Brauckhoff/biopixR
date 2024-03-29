@@ -21,11 +21,12 @@ VignetteBuilder: knitr
 BuildVignettes: true
 Depends:
     R (>= 4.2.0),
-    data.table,
     imager,
     magick,
     tcltk,
     foreach
+Imports:
+    data.table
 Suggests:
     knitr,
     rmarkdown,
