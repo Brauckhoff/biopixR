@@ -24,6 +24,14 @@ This project aims to meet the immediate need for effective bead microparticle an
 
 ## Installation
 
+Now available on CRAN so try:
+
+```{r}
+install.packages("biopixR")
+```
+
+or try the latest version of biopixR:
+
 ```{r}
 install.package("devtools")
 devtools::install_github("Brauckhoff/biopixR")
