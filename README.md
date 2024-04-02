@@ -1,4 +1,5 @@
   <!-- badges: start -->
+  [![CRAN Version](https://www.r-pkg.org/badges/version/biopixR)](https://cran.r-project.org/package=biopixR)
   [![R-CMD-check](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yml)
   <!-- badges: end -->
 
