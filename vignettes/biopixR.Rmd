@@ -721,6 +721,7 @@ partition contains its cluster number in the center, and as desired, each
 partition is distinguished by a unique cluster number.
 
 ```{r fig.align='center', out.width="100%"}
+library(data.table)
 # summarizing data frame by cluster (value)
 DT_droplet <- data.table(clean_lab_df)
 
