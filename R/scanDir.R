@@ -132,7 +132,7 @@ path,
 
   duplicate_indices <- duplicated(md5_result$md5_sum)
 
-  # error if md5 sums appear more than onces
+  # error if md5 sums appear more than once
   if (length(unique(duplicate_indices)) > 1) {
     duplicate_entries <- md5_result[duplicate_indices, ]
     if (Rlog == TRUE) {
