@@ -234,6 +234,7 @@ The following functions are inherited functionality from other packages and were
 - `edgeDetection` based on `cannyEdges` from the imager package (https://cran.r-project.org/package=imager)
 - `interactive_objectDetection` based on `interactive_blur` from the magickGUI package (https://cran.r-project.org/package=magickGUI)
 - `changePixelColor` based on `changePixelColor` from the countcolors package (https://cran.r-project.org/package=countcolors)
+- `haralickCluster` partially based on `GLCMFeatures` from the radiomics package (https://cran.r-project.org/package=radiomics)
 
 
 # Related Research

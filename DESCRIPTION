@@ -24,8 +24,7 @@ Depends:
     imager,
     magick,
     tcltk,
-    foreach,
-    cluster
+    foreach
 Imports:
     data.table
 Suggests:

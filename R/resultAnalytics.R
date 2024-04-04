@@ -16,6 +16,7 @@
 #' @import parallel
 #' @importFrom stats na.omit
 #' @import foreach
+#' @seealso [objectDetection()], [sizeFilter()], [proximityFilter()]
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
 #' res_sizeFilter <- sizeFilter(

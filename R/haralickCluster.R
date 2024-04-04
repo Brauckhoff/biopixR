@@ -1,35 +1,68 @@
 # Function to compute GLCM for a given image
-compute_glcm <- function(image, distance = 1, angles = c(0, pi/4, pi/2, 3*pi/4)) {
-  glcm <- matrix(0, nrow = 256, ncol = 256)
-  image <- round(image * 255)
+compute_glcm <-
+  function(image,
+           distance = 1,
+           angles = c(0, pi / 4, pi / 2, 3 * pi / 4)) {
+    glcm <- matrix(0, nrow = 256, ncol = 256)
+    image <- round(image * 255)
 
-  for (angle in angles) {
-    dx <- round(distance * cos(angle))
-    dy <- round(distance * sin(angle))
+    for (angle in angles) {
+      dx <- round(distance * cos(angle))
+      dy <- round(distance * sin(angle))
 
-    for (i in 1:(nrow(image) - abs(dy))) {
-      for (j in 1:(ncol(image) - abs(dx))) {
-        x <- i
-        y <- j
-        x_prime <- x + dx
-        y_prime <- y + dy
+      for (i in 1:(nrow(image) - abs(dy))) {
+        for (j in 1:(ncol(image) - abs(dx))) {
+          x <- i
+          y <- j
+          x_prime <- x + dx
+          y_prime <- y + dy
 
-        # Check bounds
-        if (x_prime >= 1 && x_prime <= nrow(image) && y_prime >= 1 && y_prime <= ncol(image)) {
-          intensity1 <- image[x, y]
-          intensity2 <- image[x_prime, y_prime]
+          # Check bounds
+          if (x_prime >= 1 &&
+              x_prime <= nrow(image) && y_prime >= 1 && y_prime <= ncol(image)) {
+            intensity1 <- image[x, y]
+            intensity2 <- image[x_prime, y_prime]
 
-          glcm[intensity1 + 1, intensity2 + 1] <- glcm[intensity1 + 1, intensity2 + 1] + 1
+            glcm[intensity1 + 1, intensity2 + 1] <-
+              glcm[intensity1 + 1, intensity2 + 1] + 1
+          }
         }
       }
     }
+
+    glcm <- glcm / sum(glcm)
+    return(glcm)
   }
 
-  glcm <- glcm / sum(glcm)
-  return(glcm)
-}
 
-
+#' k-medoids clustering of images according to the Haralick features
+#'
+#' This function performs k-medoids clustering on images using Haralick
+#' features, which describe texture. By evaluating contrast, correlation,
+#' entropy, and homogeneity, it groups images into clusters with similar
+#' textures. K-medoids is chosen for its outlier resilience, using actual
+#' images as cluster centers. This approach simplifies texture-based image
+#' analysis and classification.
+#' @param path directory path to folder with images to be analyzed
+#' @returns data frame containing file names, md5sums and cluster number
+#' @import imager
+#' @importFrom cluster pam silhouette
+#' @references https://cran.r-project.org/package=radiomics
+#' @examples
+#' tempdir()
+#' temp_dir <- tempdir()
+#' file_path <- file.path(temp_dir, "beads.png")
+#' save.image(beads, file_path)
+#' file_path <- file.path(temp_dir, "droplet_beads.png")
+#' save.image(grayscale(droplet_beads), file_path)
+#' file_path <- file.path(temp_dir, "beads_large1.png")
+#' save.image(beads_large1, file_path)
+#' file_path <- file.path(temp_dir, "beads_large2.png")
+#' save.image(grayscale(beads_large2), file_path)
+#' result <- haralickCluster(temp_dir)
+#' result
+#' unlink(temp_dir, recursive = TRUE)
+#' @export
 haralickCluster <- function(path) {
   # Import directory
   cimg_list <- load.dir(path = path)
@@ -61,7 +94,7 @@ haralickCluster <- function(path) {
 
   # error if md5 sums appear more than once
   if (length(unique(duplicate_indices)) > 1) {
-    duplicate_entries <- md5_result[duplicate_indices,]
+    duplicate_entries <- md5_result[duplicate_indices, ]
     if (Rlog == TRUE) {
       cat(
         format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
@@ -214,5 +247,6 @@ haralickCluster <- function(path) {
   k <- optimal_k  # Number of clusters
   kmeans_result <- pam(scaled_features, k)
 
+  rownames(md5_result) <- NULL
   out <- cbind(md5_result, cluster = kmeans_result$cluster)
 }

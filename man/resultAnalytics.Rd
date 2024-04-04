@@ -68,3 +68,6 @@ with(
     )
   )
 }
+\seealso{
+\code{\link[=objectDetection]{objectDetection()}}, \code{\link[=sizeFilter]{sizeFilter()}}, \code{\link[=proximityFilter]{proximityFilter()}}
+}
