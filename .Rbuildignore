@@ -7,6 +7,5 @@ notebook*
 ^Meta$
 ^joss$
 ^R/scanDir\.R$
-^R/haralickCluster\.R$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$

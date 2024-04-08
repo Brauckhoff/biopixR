@@ -46,6 +46,7 @@ compute_glcm <-
 #' @param path directory path to folder with images to be analyzed
 #' @returns data frame containing file names, md5sums and cluster number
 #' @import imager
+#' @importFrom stats dist
 #' @importFrom cluster pam silhouette
 #' @references https://cran.r-project.org/package=radiomics
 #' @examples
@@ -84,6 +85,9 @@ haralickCluster <- function(path) {
   # ignore created directories
   file_paths <- file_paths[!file.info(file_paths)$isdir]
 
+  correct_files <- basename(file_paths) %in% names(cimg_list)
+  file_paths <- file_paths[correct_files]
+
   md5_sums <- md5sums(file_paths)
 
   # summary of file names and md5 sums
@@ -95,16 +99,6 @@ haralickCluster <- function(path) {
   # error if md5 sums appear more than once
   if (length(unique(duplicate_indices)) > 1) {
     duplicate_entries <- md5_result[duplicate_indices, ]
-    if (Rlog == TRUE) {
-      cat(
-        format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-        "Error: Some files seem to have identical md5sums! \n Please remove:",
-        duplicate_entries$file,
-        "  \n",
-        file = new_script_path,
-        append = TRUE
-      )
-    }
     stop(
       format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
       " Some files seem to have identical md5sums! Please remove: ",

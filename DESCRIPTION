@@ -26,7 +26,8 @@ Depends:
     tcltk,
     foreach
 Imports:
-    data.table
+    data.table,
+    cluster
 Suggests:
     knitr,
     rmarkdown,
