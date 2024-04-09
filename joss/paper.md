@@ -40,15 +40,11 @@ explain the research applications of the software in the context of related work
 # Software engineering
 
 `biopixR` (0.2.4, [LGLP-3.0 license](https://www.gnu.org/licenses/lgpl-3.0.en.html)) is an `R` package (S3 class systen). 
-R was choosen beacause:
-Comprehensive Statistical Analysis Toolkit
-Open Source
-Wide Range of Packages
-Powerful Data Visualization Capabilities
-Integration with Other Languages and Tools
-Reproducible Research
-
-Unit testing utilizing the `testthat` package [@testthat] was used for quality control of the `biopixR` package.
+The choice of `R` as a programming language for image processing is based on its open-source framework, advanced packages such as `imager` [@imager] 
+and `magick` [@magick], and its strong support for reproducible research [@Xie_2019]. These features collectively provide a sophisticated environment for 
+image analysis and editing, with the added advantage of community-driven improvements [@Chambers_2008]. `R`'s integration of analysis with documentation ensures 
+methodological precision and transparency in scientific research, making it a preferred choice for complex image processing tasks. The `biopixR` package underwent 
+quality control through unit testing using the `testthat` package [@testthat], ensuring its reliability.
 
 ## Functions
 
@@ -58,11 +54,9 @@ utilizing algorithms to identify spherical objects, extract their features, and 
 it offers features for removing clumped or closely positioned particles to prevent inaccurate results, 
 with the goal of improving the analysis of microparticles in diverse scientific disciplines.
 
-
-
 ...:
 
-* `edgeDetection()`, ,
+* `edgeDetection()`, [@imager],
 * `objectDetection()`, ,
 * `sizeFilter()`, ,
 * `proximityFilter()`, ,
@@ -72,12 +66,12 @@ with the goal of improving the analysis of microparticles in diverse scientific 
 
 ...:
 
-* `scanDir()` ???
-* `haralickCluster()`
+* `haralickCluster()`, [@radiomics],
+* `scanDir()`, .
 
 ...:
 
-* `changePixelColor()`, ,
+* `changePixelColor()`, [@countcolors],
 * `interpolatePixels()`, ,
 * `adaptiveInterpolation()`, ,
 * `fillLineGaps()`, .
@@ -91,9 +85,13 @@ enabling users to adjust the threshold and smoothing settings of the image (\aut
 
 ![Graphical user interface for interactive parameter selection. A) The function `interactive_objectDetection()` provides a user-friendly interface with sliders to adjust threshold, smoothing, and scale. It highlights object contours in purple and centers in green for easy visualization. In this example the GUI was used in `RStudio` (2023.09.0+463, Linux, Ubuntu 22.04.3 LTS, [@RStudio]). B) The rendering process is displayed on the console, including timestamps and the current state.\label{fig:fig_1}](fig_1.png)
 
-# Conclusion
+# Current status and outlook
 
-
+The `biopixR` package was released on CRAN in March 2024. To ensure code quality, we employed various methodologies, including 
+[Continuous Integration](https://github.com/Brauckhoff/biopixR/blob/main/.github/workflows/R-CMD-check.yml) (CI), 
+unit testing [@testthat], adherence to naming conventions [@Rasmus_2012], and the application of style guidelines [@Wickham_2019]. 
+Although the package is relatively new, we are working to expand its features and evaluate its applicability using empirical research data from diverse sources. 
+In addition, future developments will involve expanding its capabilities to identify DNA damage, particularly in the form of foci.
 
 # Acknowledgments
 
@@ -105,4 +103,3 @@ enabling users to adjust the threshold and smoothing settings of the image (\aut
 
 # References
 
-250-1000 words
