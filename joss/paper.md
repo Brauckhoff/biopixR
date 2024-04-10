@@ -29,13 +29,28 @@ bibliography: paper.bib
 
 # Summary
 
-explain the software functionality and domain of use to a non-specialist reader
+beads 
 
-`biopixR` is a `R` @R_Core_Team
+`biopixR` is an `R` package [@R_Core_Team] ...
+
+
 
 # Statement of need
 
 explain the research applications of the software in the context of related work
+
+detection is often done by using microscopy, advances towards imageing on smart devices in order to make microbeads mor accesible for POCT [@Zhang_2019] software for automated evaluation is needed also precenting the possiblty for high troughput analysis directly from images without flow cytometry
+dtection of other factors than fluorescent intensity can be used for bead encoding like size and shape [@Zhang_2019]. disease diagnosis
+
+improvemnets in this field could be made by making beads detectable through imaging in the field of microbead based drug delivery making real-time detection and localization possible [@Bannerman_2016]
+
+requires software for image analysis, microboead technology for quantification of multiple biomolecules and biomarkers relevant for medical diagnostic applications [@Vafajoo_2018]
+
+potential of microbeads: high degree of multiplexing, high throughput applicability, reduced time of analysis and smaller sample consumption [@Roediger_2014]
+
+application gene expression analysis [@Brenner_2000]
+
+analysis through image analysis; other fields like wastewater evalutation [@Ding_2020]
 
 # Software engineering
 
@@ -54,27 +69,28 @@ utilizing algorithms to identify spherical objects, extract their features, and 
 it offers features for removing clumped or closely positioned particles to prevent inaccurate results, 
 with the goal of improving the analysis of microparticles in diverse scientific disciplines.
 
-...:
+In addition to the `shapeFeatures()` function, capable of extracting shape-related information from detected objects and grouping them using the 
+SOM (Self-Organizing Map) algorithm [@kohonen], there's also the `imgPipe()` function. This latter function serves as a comprehensive pipeline for image analysis, 
+offering a variety of selectable functions:
 
-* `edgeDetection()`, [@imager],
-* `objectDetection()`, ,
-* `sizeFilter()`, ,
-* `proximityFilter()`, ,
-* `resultAnalytics()`, ,
-* `imgPipe()`, ,
-* `shapeFeatures()`, .
+* `edgeDetection()`, a combination of a Canny edge detector and gap filling [@imager],
+* `objectDetection()`, detects objects in an image by identifying their coordinates,
+* `sizeFilter()`, eliminates objects that exceed or fall below a certain size threshold,
+* `proximityFilter()`, filters objects that are in close proximity to each other,
+* `resultAnalytics()`, summarizes the extracted features in a clear and concise manner.
 
-...:
+The `biopixR` package includes functions for analyzing entire directories, allowing for high-throughput analysis. 
+Making feature extraction and image clustering easily accessible:
 
-* `haralickCluster()`, [@radiomics],
-* `scanDir()`, .
+* `haralickCluster()`, extracts Haralick features and cluster using PAM (Partitioning Around Medoids) [@Haralick_1973; @radiomics; @cluster],
+* `scanDir()`, utilizing the pipline for whole directory analysis.
 
-...:
+The `fillLineGaps()` algorthim, along with helper functions:
 
-* `changePixelColor()`, [@countcolors],
-* `interpolatePixels()`, ,
-* `adaptiveInterpolation()`, ,
-* `fillLineGaps()`, .
+* `interpolatePixels()`, calculates the coordinates required to connect two given points,
+* `adaptiveInterpolation()`, searches a given radius surrounding a line end for contours and connects them,
+
+addresses the issue of discontinuous edges by iteratively scanning for line ends within the image and reconnecting them to adjacent contours.
 
 Examples demonstrating the use of @biopixR for image analysis tasks can be found in the package's vignette.
 
