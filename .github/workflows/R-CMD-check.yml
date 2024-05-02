@@ -109,8 +109,7 @@ jobs:
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE, type = "source")
-          R -e "install.packages(c('rcmdcheck', dependencies=TRUE))"
-#remotes::install_cran("rcmdcheck")
+          remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
       - name: Use xvfb on Linux and MacOS
