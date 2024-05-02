@@ -116,6 +116,9 @@ shapeFeatures <-
     # extract feature: circularity
     circularity <- (4 * pi * area) / perimeter ^ 2
 
+    # extract feature: aspect ratio
+    aspect_ratio <- (2 * distances[, 3]) / (2 * distances[, 4])
+
     # assign results
     mean_radius <- distances$X1
     sd_radius <- distances$X2
@@ -129,11 +132,12 @@ shapeFeatures <-
                  circularity,
                  eccentricity,
                  mean_radius,
-                 sd_radius)
+                 sd_radius,
+                 aspect_ratio)
 
     if (SOM == FALSE) {
       res_resultAnalytics$detailed <-
-        cbind(res_resultAnalytics$detailed, features[, 3:7])
+        cbind(res_resultAnalytics$detailed, features[, 3:8])
       return(res_resultAnalytics$detailed)
     } else {
       if (requireNamespace("kohonen", quietly = TRUE)) {
@@ -153,7 +157,7 @@ shapeFeatures <-
         res_resultAnalytics$detailed$class <- som_model$unit.classif
 
         res_resultAnalytics$detailed <-
-          cbind(res_resultAnalytics$detailed, features[, 3:7])
+          cbind(res_resultAnalytics$detailed, features[, 3:8])
 
         if (visualize == TRUE) {
           img |> plot()

@@ -112,73 +112,9 @@ resultAnalytics <- function(unfiltered,
     mean_size = mean(unlist(cluster_size)),
     mean_intensity = mean(xy_coords$intensity),
     bead_density = amount_true / length(pic),
-    estimated_rejected = dis_count
+    estimated_rejected = dis_count,
+    coverage = sum(res_df_long$size) / (width(img) * height(img))
   )
-
-  # calculate the relative distance between all object centers based on
-  # Euclidean distance
-  DT <- data.table(coordinates)
-  res_center <- DT[, list(x = mean(x), y = mean(y)), by = value]
-
-  # formula for the Euclidean distance
-  euclidean_distance <- function(point1, point2) {
-    sqrt((point2$x - point1$x)^2 + (point2$y - point1$y)^2)
-  }
-
-  num_points <- nrow(res_center)
-  relative_distances <- matrix(NA, nrow = num_points, ncol = num_points)
-
-  # using parallel processing to compare the distance between all objects
-  if (parallel == TRUE) {
-    if (requireNamespace("doParallel", quietly = TRUE)) {
-      # Code that uses functions from the suggested packages
-
-      n_cores <- round(detectCores() * 0.75)
-      my_cluster <- makeCluster(n_cores,
-                                type = "PSOCK")
-      doParallel::registerDoParallel(cl = my_cluster)
-
-      relative_distances <-
-        foreach(i = 1:num_points, .combine = 'cbind') %dopar% {
-          distances <- rep(NA, num_points)
-          for (j in 1:num_points) {
-            if (i != j) {
-              distances[j] <- euclidean_distance(res_center[i, ], res_center[j, ])
-            }
-          }
-          distances
-        }
-
-      stopCluster(cl = my_cluster)
-    } else {
-      # Handle the case when any of the suggested packages is not available
-      warning("Please install the Package 'doParallel' for parallel processing \n (install.package('doparallel')")
-    }
-  }
-
-
-  # calculating distance without parallel processing
-  if (parallel == FALSE) {
-    for (i in 1:num_points) {
-      for (j in 1:num_points) {
-        if (i == j) {
-          next
-        } else {
-          relative_distances[i, j] <-
-            euclidean_distance(res_center[i,], res_center[j,])
-        }
-      }
-    }
-    as.matrix(relative_distances)
-  }
-
-  # add relative distance to the detailed result
-  for (a in 1:num_points) {
-    res_df_long$relative_distance[a] <- mean(na.omit(relative_distances[a, ]))
-  }
-
-  # add mean distance to the summarized result
-  result$mean_distance <- mean(res_df_long$relative_distance)
 
   out <- list(
     summary = result,
