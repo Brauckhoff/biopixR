@@ -75,6 +75,7 @@ jobs:
           sudo apt install ghostscript
           sudo apt install gsfonts
           sudo apt install libmagick++-dev
+          sudo apt install libcurl4-openssl-dev
           sudo apt-get install -y pandoc
           R -e "install.packages(c('imager', 'magick', 'foreach', 'rcmdcheck', dependencies=TRUE))"
 
