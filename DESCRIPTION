@@ -1,6 +1,6 @@
 Package: biopixR
 Title: Extracting Insights from Biological Images
-Version: 0.2.4
+Version: 0.2.5
 Authors@R: 
     c(person("Tim", "Brauckhoff", 
     email = "Tim.Brauckhoff@b-tu.de", 

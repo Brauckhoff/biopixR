@@ -1,5 +1,9 @@
 # Next version
 
+# 0.2.5
+- Update function: resultAnalytics
+- added new functions: haralickCluster and shapeFeatures
+
 # 0.2.4
 - Update Description
 - hotfixed errors in R CMD check (as cran)
