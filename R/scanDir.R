@@ -47,9 +47,7 @@ scanDir <- function(path,
     cat(
 "---
 title: 'scanDir log file'
-output:
-  pdf_document:
-    latex_engine: xelatex
+output: pdf_document
 --- \n",
       file = new_script_path,
       append = TRUE
@@ -123,6 +121,7 @@ path,
 
   # ignore created directories
   file_paths <- file_paths[!file.info(file_paths)$isdir]
+  file_paths <- file_paths[grep("\\.Rmd$", file_paths, invert = TRUE)]
 
   md5_sums <- md5sums(file_paths)
 
@@ -334,7 +333,15 @@ all_files <- list.files(directory_path, recursive = TRUE, full.names = TRUE)
 matching_files <- all_files[grep(target_file_name, all_files, ignore.case = TRUE)]
 
 md5result <- readRDS(matching_files)
-print(md5result)
+name <- basename(md5result$file)
+md5result <- data.frame(name = name,
+                        amount = md5result$number_of_beads,
+                        size = md5result$mean_size,
+                        intensity = md5result$mean_intensity,
+                        density = md5result$bead_density,
+                        rejected = md5result$estimated_rejected,
+                        coverage = md5result$coverage)
+md5result
 ```  \n",
       file = new_script_path,
       append = TRUE)
@@ -342,6 +349,7 @@ print(md5result)
 
     cat(
 "```{r, echo=FALSE}
+library(biopixR)
 target_directory_name <- 'log_files'
 all_directories <- list.dirs(directory_path, recursive = TRUE, full.names = TRUE)
 matching_directories <- all_directories[grep(target_directory_name, all_directories, ignore.case = TRUE)]
@@ -349,10 +357,11 @@ matching_directories <- all_directories[grep(target_directory_name, all_director
 for (i in 1:nrow(md5result)) {
 file_path <- file.path(matching_directories, paste0('log_', i, '.RDS'))
 import <- readRDS(file_path)
-image <- import$image
+image <- import$image[[1]]
 data <- import$data
+name <- name[i]
 
-plot(image)
+plot(image, main = name)
 with(data$unfiltered_centers, points(data$unfiltered_centers$mx, data$unfiltered_centers$my, col = 'darkred'))
 with(data$detailed, points(data$detailed$x, data$detailed$y, col = 'darkgreen'))
 }
@@ -363,6 +372,8 @@ with(data$detailed, points(data$detailed$x, data$detailed$y, col = 'darkgreen'))
 
 
     rmarkdown::render(new_script_path)
+    # Write the data frame to a CSV file
+    write.csv(md5_result, file = paste0(path, "/result.csv"), row.names = FALSE)
   }
   out <- md5_result
 }

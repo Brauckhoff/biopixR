@@ -1,0 +1,49 @@
+---
+title: 'scanDir log file'
+output: pdf_document
+--- 
+# Analysis of directory notebook/Images 
+2024-05-13 17:54:40 Importing images from directory...   
+2024-05-13 17:54:40 Checking md5sums...   
+2024-05-13 17:54:40 Creating parallel backend...   
+2024-05-13 17:54:41 Parallel backend successfully created. 6 workers recruited.  
+2024-05-13 17:54:41 Starting image analysis...   
+2024-05-13 17:54:41 Currently analyzing: notebook/Images/beads_large1.bmp   
+2024-05-13 17:54:41 Currently analyzing: notebook/Images/beads.png   
+2024-05-13 17:54:41 Currently analyzing: notebook/Images/beads_large2.png   
+2024-05-13 17:54:41 Currently analyzing: notebook/Images/droplet_beads.png   
+```{r, echo=FALSE}
+directory_path <- getwd()
+target_file_name <- 'result.RDS'
+all_files <- list.files(directory_path, recursive = TRUE, full.names = TRUE)
+matching_files <- all_files[grep(target_file_name, all_files, ignore.case = TRUE)]
+
+md5result <- readRDS(matching_files)
+name <- basename(md5result$file)
+md5result <- data.frame(name = name,
+                        amount = md5result$number_of_beads,
+                        size = md5result$mean_size,
+                        intensity = md5result$mean_intensity,
+                        density = md5result$bead_density,
+                        rejected = md5result$estimated_rejected,
+                        coverage = md5result$coverage)
+md5result
+```  
+```{r, echo=FALSE}
+library(biopixR)
+target_directory_name <- 'log_files'
+all_directories <- list.dirs(directory_path, recursive = TRUE, full.names = TRUE)
+matching_directories <- all_directories[grep(target_directory_name, all_directories, ignore.case = TRUE)]
+
+for (i in 1:nrow(md5result)) {
+file_path <- file.path(matching_directories, paste0('log_', i, '.RDS'))
+import <- readRDS(file_path)
+image <- import$image[[1]]
+data <- import$data
+name <- name[i]
+
+plot(image, main = name)
+with(data$unfiltered_centers, points(data$unfiltered_centers$mx, data$unfiltered_centers$my, col = 'darkred'))
+with(data$detailed, points(data$detailed$x, data$detailed$y, col = 'darkgreen'))
+}
+```  
