@@ -181,7 +181,7 @@ capabilities to identify DNA damage, particularly in the form of foci.
 
 # Funding
 
-
+The study was funded in part by the project Rubin: NeuroMiR (03RU1U051A, federal ministry of eduction and research, Germany).
 
 # References
 
