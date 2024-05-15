@@ -31,7 +31,7 @@ bibliography: paper.bib
 
 Imaging is crucial for data acquisition in biological laboratories and the
 broader field of life sciences. It provides essential insights into cells
-[@Roediger_2018], biomarkers [@Vafajoo_2018], stress responses
+[@Roediger_2018; @schneider_open_2019], biomarkers [@Vafajoo_2018], stress responses
 [@Korkmaz_2018], and gene expression [@Brenner_2000], which are necessary
 for diagnostics and predicting disease outcomes. Microbead technology is a
 highly promising field for gathering complex information in a straightforward,
@@ -43,8 +43,10 @@ analyze the data.
 `biopixR` is an `R` package [@R_Core_Team] that utilizes the `imager`
 [@imager] and `magick` [@magick] packages to perform various image
 processing tasks, such as preprocessing, object counting, feature extraction,
-and filtering. It is designed for high-throughput analysis and generates log
-files to track the analytical process in detail. `biopixR` can extract various
+and filtering. It is designed for medium-throughput analysis and generates log
+files to track the analytical process in detail. Core functionality of `biopixR` 
+was used in a recent study [@geithe_multiplex_2024] to perform quality control 
+on microbeads. `biopixR` can extract various
 types of information, including *object size*, *quantity*, *shape* and
 *intensity*. The package includes an algorithm that fills gaps between lines and
 reconnects loose ends, making complex images accessible for later analysis.
@@ -163,8 +165,9 @@ adjust the threshold and smoothing settings of the image
 
 # Current status and outlook
 
-The `biopixR` package was released on CRAN in March 2024. To ensure code
-quality, we employed various methodologies, including [Continuous Integration](https://github.com/Brauckhoff/biopixR/blob/main/.github/workflows/R-CMD-check.yml)
+The `biopixR` package was released on 
+CRAN in March 2024. To ensure code quality, we employed various methodologies, 
+including [Continuous Integration](https://github.com/Brauckhoff/biopixR/blob/main/.github/workflows/R-CMD-check.yml)
 (CI), unit testing [@testthat], adherence to naming conventions
 [@Rasmus_2012], and the application of style guidelines [@Wickham_2019].
 Although the package is relatively new, we are working to expand its features
@@ -178,7 +181,7 @@ capabilities to identify DNA damage, particularly in the form of foci.
 
 # Funding
 
-
+The study was funded in part by the project Rubin: NeuroMiR (03RU1U051A, federal ministry of eduction and research, Germany).
 
 # References
 
