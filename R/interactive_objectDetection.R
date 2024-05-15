@@ -164,28 +164,23 @@ interactive_objectDetection <-
     tkpack(win1.frame3, side = "top", anchor = "c")
 
     tkpack(win1.button,
-      side = "top",
-      anchor = "c",
-      pady = 20
-    )
+           side = "top",
+           anchor = "c",
+           pady = 20)
     pre_slider_values <-
-      c(
-        as.numeric(tclvalue(slider_value_alpha)),
+      c(as.numeric(tclvalue(slider_value_alpha)),
         as.numeric(tclvalue(slider_value_sigma)),
-        as.numeric(tclvalue(slider_value_scale))
-      )
+        as.numeric(tclvalue(slider_value_scale)))
     if (quit_waiting) {
       wait_test <- TRUE
       while (wait_test) {
         wait_test <- FALSE
-        tryCatch(
-          {
-            tkwm.state(win1)
-          },
-          error = function(e) {
-            assign("wait_test", TRUE, inherits = TRUE)
-          }
-        )
+        tryCatch({
+          tkwm.state(win1)
+        },
+        error = function(e) {
+          assign("wait_test", TRUE, inherits = TRUE)
+        })
       }
       wait_time_long()
       tkdestroy(win1.button)
@@ -194,14 +189,12 @@ interactive_objectDetection <-
 
     # check if values changed, if values changed update image
     while (TRUE) {
-      tryCatch(
-        {
-          tkwm.state(win1)
-        },
-        error = function(e) {
-          assign("quit_waiting", TRUE, inherits = TRUE)
-        }
-      )
+      tryCatch({
+        tkwm.state(win1)
+      },
+      error = function(e) {
+        assign("quit_waiting", TRUE, inherits = TRUE)
+      })
       if (quit_waiting) {
         break
       }
@@ -212,38 +205,28 @@ interactive_objectDetection <-
           as.numeric(tclvalue(slider_value_scale)))
 
       # warn if parameter would cause an error and reset values
-      if (class(try(edgeDetection(beads, alpha = temp_val[1], sigma = temp_val[2]))
-      )[1] == 'try-error') {
-
+      if (class(try(edgeDetection(beads, alpha = temp_val[1], sigma = temp_val[2])))[1] == 'try-error') {
         temp_val <-
-          c(
-            pre_slider_values[1],
+          c(pre_slider_values[1],
             pre_slider_values[2],
-            pre_slider_values[3]
-          )
+            pre_slider_values[3])
         tkset(win1.frame1.slider, temp_val[1])
         tkset(win1.frame2.slider, temp_val[2])
       }
 
       if (any(temp_val != pre_slider_values)) {
         temp_label_alpha <-
-          sprintf(
-            "%s%s",
-            text_label_alpha,
-            sprintf(label_template, temp_val[1])
-          )
+          sprintf("%s%s",
+                  text_label_alpha,
+                  sprintf(label_template, temp_val[1]))
         temp_label_sigma <-
-          sprintf(
-            "%s%s",
-            text_label_sigma,
-            sprintf(label_template, temp_val[2])
-          )
+          sprintf("%s%s",
+                  text_label_sigma,
+                  sprintf(label_template, temp_val[2]))
         temp_label_scale <-
-          sprintf(
-            "%s%s",
-            text_label_scale,
-            sprintf(label_template, temp_val[3])
-          )
+          sprintf("%s%s",
+                  text_label_scale,
+                  sprintf(label_template, temp_val[3]))
 
         tkconfigure(win1.frame1.label, text = temp_label_alpha)
         tkconfigure(win1.frame2.label, text = temp_label_sigma)
@@ -256,9 +239,8 @@ interactive_objectDetection <-
     }
     val_res <- pre_slider_values
     names(val_res) <- c("alpha", "sigma", "scale")
-    if (return_param) {
+    if (return_param == TRUE) {
       return(val_res)
     }
     out <- val_res
-    out
   }

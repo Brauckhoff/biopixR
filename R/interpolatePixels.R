@@ -15,15 +15,23 @@
 #' test[link] <- 1
 #' @export
 interpolatePixels <- function(row1, col1, row2, col2) {
-  # calculate the number of points needed for interpolation
+  # Calculate the maximum number of points required for interpolation between
+  # two points
   num_points <- max(abs(row2 - row1), abs(col2 - col1)) + 1
 
-  # generate linearly spaced coordinates
+  # Generate linearly spaced row coordinates from row1 to row2, with length
+  # equal to num_points
   rows <- round(seq(row1, row2, length.out = num_points))
+
+  # Similarly, generate linearly spaced column coordinates from col1 to col2
   cols <- round(seq(col1, col2, length.out = num_points))
 
-  # combine row and column coordinates into a matrix
+  # Combine the row and column coordinates to form a 2-column matrix, where the
+  # first column is row indices and the second column is column indices. Each
+  # row in this matrix represents a pixel coordinate on a linear path between
+  # the start and end points.
   interpolated_pixels <- cbind(rows, cols)
 
+  # Return the matrix of interpolated pixel coordinates.
   return(interpolated_pixels)
 }

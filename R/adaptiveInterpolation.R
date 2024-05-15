@@ -1,7 +1,7 @@
-#' Connects LineEnd with the nearest labeled region
+#' Connects Line Ends with the nearest labeled region
 #'
-#' Function scans an increasing radius around a line end and connects it with
-#' the nearest labeled region.
+#' The function scans an increasing radius around a line end and connects it
+#' with the nearest labeled region.
 #' @param end_points_df data frame with the coordinates of all line ends. can
 #' be obtained with \code{\link[magick]{image_morphology}}.
 #' @param diagonal_edges_df data frame with coordinates of diagonal line ends.
@@ -15,22 +15,23 @@
 #' @return binary matrix that can be applied as an overlay, for example with
 #' \code{\link[imager]{imager.combine}} to fill the gaps between line ends.
 #' @details
-#' This function is intended to be part of the fillLineGaps function, which
-#' does the thresholding and line end detection preprocessing. The
-#' adaptiveInterpolation creates a matrix in the dimensions of the original
-#' image. At the beginning there are only background values (0) = black image.
-#' The function then searches for LineEnds and looks for a given radius around
-#' this line end for the nearest labeled region. The own cluster of the line
-#' end is of course not considered as nearest neighbor.If another cluster is
-#' found, the interpolatePixels function is used to connect the line end to the
-#' found cluster. This means that specified pixels of the matrix are
-#' transformed to a foreground value of (1). The diagonal line ends get a
-#' special treatment, because for the labeling function,7 the diagonal pixels
-#' are always treated as a separate cluster, which makes them difficult to
-#' reconnect. To deal with this problem, diagonal line ends ignore not only
-#' their cluster, but also the cluster of the direct neighbor. Thereafter,
-#' the same procedure as before is repeated, where pixel values are changed
-#' according to the interpolatePixel function.
+#' This function is designed to be part of the `fillLineGaps()` function, which
+#' performs the thresholding and line end detection preprocessing. The
+#' `adaptiveInterpolation()` generates a matrix with dimensions matching those
+#' of the original image. Initially, the matrix contains only background
+#' values (0) corresponding to a black image. The function then searches for
+#' line ends and identifies the nearest labeled region within a given radius of
+#' the line end. It should be noted that the cluster of the line end in question
+#' is not considered a nearest neighbor. In the event that another cluster is
+#' identified, the `interpolatePixels()` function is employed to connect the
+#' line end to the aforementioned cluster. This entails transforming the
+#' specified pixels of the matrix to a foreground value of (1).
+#' It is important to highlight that diagonal line ends receive a special
+#' treatment, as they are always treated as a separate cluster by the labeling
+#' function. This makes it challenging to reconnect them. To address this issue,
+#' diagonal line ends not only ignore their own cluster but also that of their
+#' direct neighbor. Thereafter, the same procedure is repeated, with pixel
+#' values being changed according to the `interpolatePixel()` function.
 #' @examples
 #' # creating an artificial binary image
 #' mat <- matrix(0, 8, 8)
@@ -40,7 +41,7 @@
 #' mat[5, 6:8] <- 1
 #' mat_cimg <- as.cimg(mat)
 #'
-#' # preprocessing / LineEnd detection / labeling  (done in fillLineGaps)
+#' # preprocessing / LineEnd detection / labeling (done in fillLineGaps())
 #' mat_cimg_m <- mirror(mat_cimg, axis = "x")
 #' mat_magick <- cimg2magick(mat_cimg)
 #' lineends <- image_morphology(mat_magick, "HitAndMiss", "LineEnds")
@@ -85,76 +86,72 @@ adaptiveInterpolation <- function(end_points_df,
                                   clean_lab_df,
                                   lineends_cimg,
                                   radius = 5) {
-  # creating an matrix with only 0 = background in the dimensions of the
-  # image to be modified
+  # Initialize a matrix to represent the image, filled with zeros (background)
   connected_components <- matrix(0,
-    nrow = nrow(lineends_cimg),
-    ncol = ncol(lineends_cimg)
-  )
+                                 nrow = nrow(lineends_cimg),
+                                 ncol = ncol(lineends_cimg))
 
-  # scan trough end points / line ends
+  # Iterate over all end points specified in the end_points_df data frame
   for (a in 1:nrow(end_points_df)) {
     x <- end_points_df$x[a]
     y <- end_points_df$y[a]
-    # setting the radius of the surroundings that should be searched for
-    # another labeled region
+
+    # Iterate from a radius of 2 to the specified radius around each end point
     for (b in 2:radius) {
-      # creating a square around the line end
+      # Find indices of points within a square (radius 'b') around the current
+      # end point
       one_for_all <- which(
         clean_lab_df$x > (x - b) &
           clean_lab_df$x < (x + b) &
           clean_lab_df$y > (y - b) &
           clean_lab_df$y < (y + b)
       )
-      # if conditions are met find position of the current line end in the
-      # data frame containing all the labeled lines (to get the cluster of the
-      # current line end later on)
+
+      # Locate the current end point in the clean_lab_df
       xy_pos <- which(clean_lab_df$x == x & clean_lab_df$y == y)
 
-      # special condition for diagonal line ends:
-      # as the label function does not recognize single pixel diagonal lines as
-      # one line (and labels every pixel in that line as a separate cluster)
-      # these type of line ends are difficult to connect to another cluster.
-      # to at least get some of these line ends reconnected additionally to
-      # ignoring the own cluster, the first neighboring cluster will also be
-      # ignored and not taken into account as reconnection partner
-      if (isTRUE(nrow(merge(end_points_df[a, ], diagonal_edges_df)) >
-        0) == TRUE) {
+      # Check for diagonal line ends by merging current end point with
+      # diagonal_edges_df
+      if (isTRUE(nrow(merge(end_points_df[a,], diagonal_edges_df)) >
+                 0) == TRUE) {
         if (b == 2) {
+          # Ignore the cluster of the current end point and the first
+          # neighboring cluster
           clus_ign <- which(one_for_all != xy_pos)
           dia_ignore <- one_for_all[clus_ign]
         }
+        # Identify connecting positions excluding the ignored clusters
         connector_pos <- which(
-          clean_lab_df[one_for_all, ]$value !=
-            clean_lab_df[xy_pos, ]$value &
-            clean_lab_df[one_for_all, ]$value !=
-              clean_lab_df[dia_ignore, ]$value
+          clean_lab_df[one_for_all,]$value !=
+            clean_lab_df[xy_pos,]$value &
+            clean_lab_df[one_for_all,]$value !=
+            clean_lab_df[dia_ignore,]$value
         )
       } else {
-        connector_pos <- which(clean_lab_df[one_for_all, ]$value !=
-          clean_lab_df[xy_pos, ]$value)
+        # Identify connecting positions excluding the cluster of the current
+        # end point
+        connector_pos <- which(clean_lab_df[one_for_all,]$value !=
+                                 clean_lab_df[xy_pos,]$value)
       }
-      # get the line end surrounding cluster(s) that are not equal to the
-      # cluster of the line end
+
+      # Get indices of clusters that can connect to the current end point
       connector <- one_for_all[connector_pos]
 
-      # use the interpolatePixels function to connect two coordinates with each
-      # other the coordinates obtained by interpolatePixels are used for
-      # changing the value of th coordinates in the matrix
+      # Connect the current end point to each found connector using
+      # interpolatePixels function
       if (length(connector) != 0) {
         for (c in connector) {
-          interpolated_pixels <- interpolatePixels(
-            x, y,
-            clean_lab_df[c, ]$x,
-            clean_lab_df[c, ]$y
-          )
+          interpolated_pixels <- interpolatePixels(x, y,
+                                                   clean_lab_df[c,]$x,
+                                                   clean_lab_df[c,]$y)
+          # Update the connected_components matrix at the interpolated positions
           connected_components[interpolated_pixels] <- 1
         }
         break
       }
     }
   }
-  # output: list containing the matrix with connected points
+  # Return a list containing the matrix with connected components
   out <- list(overlay = connected_components)
   out
 }

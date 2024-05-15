@@ -1,28 +1,30 @@
 # Function to compute GLCM for a given image
-compute_glcm <-
+computeGLCM <-
   function(image,
-           distance = 1,
-           angles = c(0, pi / 4, pi / 2, 3 * pi / 4)) {
-    glcm <- matrix(0, nrow = 256, ncol = 256)
-    image <- round(image * 255)
+           distance = 1,                          # Specifies the pixel distance for computing relationships
+           angles = c(0, pi / 4, pi / 2, 3 * pi / 4)) {  # Angles at which to compute pixel adjacency
+    glcm <- matrix(0, nrow = 256, ncol = 256)     # Initialize GLCM with 256x256 matrix (for grayscale images)
+    image <- round(image * 255)                   # Scale image pixel values from range 0-1 to 0-255
 
-    for (angle in angles) {
-      dx <- round(distance * cos(angle))
-      dy <- round(distance * sin(angle))
+    for (angle in angles) {                       # Loop through each specified angle
+      dx <- round(distance * cos(angle))          # Calculate horizontal offset based on angle and distance
+      dy <- round(distance * sin(angle))          # Calculate vertical offset based on angle and distance
 
-      for (i in 1:(nrow(image) - abs(dy))) {
-        for (j in 1:(ncol(image) - abs(dx))) {
+      for (i in 1:(nrow(image) - abs(dy))) {      # Iterate over image rows, adjusted for vertical offset
+        for (j in 1:(ncol(image) - abs(dx))) {    # Iterate over image columns, adjusted for horizontal offset
           x <- i
           y <- j
-          x_prime <- x + dx
-          y_prime <- y + dy
+          x_prime <- x + dx                       # Calculate new row index based on horizontal offset
+          y_prime <- y + dy                       # Calculate new column index based on vertical offset
 
-          # Check bounds
+          # Ensure new indices are within image bounds
           if (x_prime >= 1 &&
-              x_prime <= nrow(image) && y_prime >= 1 && y_prime <= ncol(image)) {
-            intensity1 <- image[x, y]
-            intensity2 <- image[x_prime, y_prime]
+              x_prime <= nrow(image) &&
+              y_prime >= 1 && y_prime <= ncol(image)) {
+            intensity1 <- image[x, y]             # Get intensity at the original pixel
+            intensity2 <- image[x_prime, y_prime] # Get intensity at the offset pixel
 
+            # Increment GLCM value based on intensities found
             glcm[intensity1 + 1, intensity2 + 1] <-
               glcm[intensity1 + 1, intensity2 + 1] + 1
           }
@@ -30,10 +32,10 @@ compute_glcm <-
       }
     }
 
+    # Normalize the GLCM matrix by the total number of observations
     glcm <- glcm / sum(glcm)
-    return(glcm)
+    return(glcm)                                  # Return the normalized GLCM
   }
-
 
 #' k-medoids clustering of images according to the Haralick features
 #'
@@ -65,40 +67,40 @@ compute_glcm <-
 #' unlink(temp_dir, recursive = TRUE)
 #' @export
 haralickCluster <- function(path) {
-  # Import directory
+  # Load images from the directory specified by the path
   cimg_list <- load.dir(path = path)
 
-  # checking directory for identical images using md5 sums
-  # calculating md5sum function
+  # Function to calculate md5 hash of a file, used to check for identical images
   calculatemd5 <- function(file_path) {
     md5_hash <- tools::md5sum(file_path)
     return(md5_hash)
   }
 
-  # applying calculating function to all files in directory
+  # Apply md5 hash function to all files in the directory
   md5sums <- function(file_paths) {
     sapply(file_paths, calculatemd5)
   }
 
+  # Get full file paths and exclude directories
   file_paths <- list.files(path, full.names = TRUE)
-
-  # ignore created directories
   file_paths <- file_paths[!file.info(file_paths)$isdir]
 
+  # Filter file paths to include only files that are loaded as 'cimg' objects
   correct_files <- basename(file_paths) %in% names(cimg_list)
   file_paths <- file_paths[correct_files]
 
+  # Compute md5 sums of the files
   md5_sums <- md5sums(file_paths)
 
-  # summary of file names and md5 sums
+  # Create a summary dataframe of files and their md5 hashes
   md5_result <- data.frame(file = file_paths,
                            md5_sum = md5_sums)
 
   duplicate_indices <- duplicated(md5_result$md5_sum)
 
-  # error if md5 sums appear more than once
+  # Identify duplicate files based on md5 hash
   if (length(unique(duplicate_indices)) > 1) {
-    duplicate_entries <- md5_result[duplicate_indices, ]
+    duplicate_entries <- md5_result[duplicate_indices,]
     stop(
       format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
       " Some files seem to have identical md5sums! Please remove: ",
@@ -106,14 +108,15 @@ haralickCluster <- function(path) {
     )
   }
 
-  # Function to compute Haralick features from a given GLCM
+  # Function to compute Haralick features for a given GLCM
   compute_haralick_features <- function(glcm) {
+    # Initialize vector for 8 features
     features <- numeric(8)
 
-    # Angular Second Moment (checked)
+    # Angular Second Moment
     features[1] <- sum(glcm ^ 2)
 
-    # Contrast (checked)
+    # Contrast
     contrast <- 0
     for (i in 1:nrow(glcm)) {
       for (j in 1:ncol(glcm)) {
@@ -122,7 +125,7 @@ haralickCluster <- function(path) {
     }
     features[2] <- contrast
 
-    # Correlation (checked)
+    # Correlation
     numerator <- 0
     # Calculate marginal probabilities along the rows for p_x(i)
     p_x <- rowSums(glcm)
@@ -146,7 +149,7 @@ haralickCluster <- function(path) {
     correlation <- numerator / (sigma_x * sigma_y)
     features[3] <- correlation
 
-    # Sum of Squares: Variance (checked)
+    # Sum of Squares: Variance
     mean <- sum(1:(nrow(glcm)) %*% glcm)
     variance <- 0
     for (i in 1:nrow(glcm)) {
@@ -156,7 +159,7 @@ haralickCluster <- function(path) {
     }
     features[4] <- variance
 
-    # Inverse Difference Moment (checked)
+    # Inverse Difference Moment
     IDM <- 0
     for (i in 1:nrow(glcm)) {
       for (j in 1:ncol(glcm)) {
@@ -165,7 +168,7 @@ haralickCluster <- function(path) {
     }
     features[5] <- IDM
 
-    # Sum Average (checked)
+    # Sum Average
     # Number of gray levels
     Ng <- nrow(glcm)
     P_x_plus_y <- numeric(2 * Ng)
@@ -178,32 +181,28 @@ haralickCluster <- function(path) {
     sum_average <- sum((2:(2 * Ng)) * P_x_plus_y[2:(2 * Ng)])
     features[6] <- sum_average
 
-    # Sum Variance (checked)
+    # Sum Variance
     sum_variance <-
       sum(((2:(2 * Ng)) - sum_average) ^ 2 * P_x_plus_y[2:(2 * Ng)])
     features[7] <- sum_variance
 
-    # Entropy (checked)
-    # It takes into account cells with a probability of 0 by replacing these with
-    # 1 before taking the logarithm, as log(1) = 0 and log(0) is undefined.
-    # This adjustment doesn't affect the entropy calculation because
-    # the contribution from these cells is 0.
+    # Entropy
     entropy <- -sum(glcm * log(ifelse(glcm == 0, 1, glcm)))
     features[8] <- entropy
 
     return(features)
   }
 
-  # Function to extract features from an image using Haralick features
-  extract_features <- function(image) {
+  # Function to extract Haralick features from an image
+  extractFeatures <- function(image) {
     gray_matrix <- as.matrix(image)
-    glcm <- compute_glcm(gray_matrix)
+    glcm <- computeGLCM(gray_matrix)
     haralick_features <- compute_haralick_features(glcm)
     return(haralick_features)
   }
 
-  # Extract features from each image
-  features_list <- lapply(cimg_list, extract_features)
+  # Process each image to extract features
+  features_list <- lapply(cimg_list, extractFeatures)
 
   # Combine features into a matrix
   feature_matrix <- do.call(rbind, features_list)
@@ -213,6 +212,7 @@ haralickCluster <- function(path) {
 
   silhouette_scores <- numeric(10)
 
+  # Compute silhouette scores for k clusters
   for (k in (nrow(scaled_features) - 1)) {
     kmeans_result <- pam(scaled_features, k)
     sil_obj <-
@@ -236,11 +236,14 @@ haralickCluster <- function(path) {
       mean(as.data.frame(sil_obj)$sil_width)
   }
 
+  # Identify the optimal number of clusters
   optimal_k <- which.max(silhouette_scores) + 1
 
+  # Perform final clustering
   k <- optimal_k  # Number of clusters
   kmeans_result <- pam(scaled_features, k)
 
   rownames(md5_result) <- NULL
+  # Return the final data including file path, md5 sum, and cluster assignment
   out <- cbind(md5_result, cluster = kmeans_result$cluster)
 }

@@ -1,7 +1,43 @@
-
-
+#' Directory Analysis
+#'
+#' This function identifies objects in an image using edge detection and
+#' labeling, gathering the coordinates and centers of the identified objects.
+#' The edges of detected objects are then highlighted for easy recognition.
+#' @param img image (import by \code{\link[imager]{load.image}})
+#' @param alpha threshold adjustment factor ('auto' / 'interactive' / numeric)
+#' @param sigma smoothing ('auto' / 'interactive' / numeric)
+#' @param parallel (TRUE | FALSE) when alpha & sigma = 'auto', if calculation
+#' of parameters should be done using foreach
+#' @returns list of 4 objects:
+#' 1. data frame of labeled region with the central coordinates
+#' 2. all coordinates that are in labeled regions
+#' 3. size of labeled objects
+#' 4. image were object edges (purple) and detected centers (green) are colored
+#' @import
+#' @import imager
+#' @examples
+#' \donttest{
+#' if (interactive()) {
+#'   tempdir()
+#'   temp_dir <- tempdir()
+#'   file_path <- file.path(temp_dir, "beads.png")
+#'   save.image(beads, file_path)
+#'   file_path <- file.path(temp_dir, "droplet_beads.png")
+#'   save.image(grayscale(droplet_beads), file_path)
+#'   file_path <- file.path(temp_dir, "beads_large1.png")
+#'   save.image(beads_large1, file_path)
+#'   file_path <- file.path(temp_dir, "beads_large2.png")
+#'   save.image(grayscale(beads_large2), file_path)
+#'   scanDir(temp_dir)
+#'   unlink(temp_dir, recursive = TRUE)
+#' }
+#' }
+#' @export
 scanDir <- function(path,
                     format = 'jpg',
+                    parallel = TRUE,
+                    backend = 'PSOCK',
+                    cores = 'auto',
                     alpha = 1,
                     sigma = 2,
                     sizeFilter = TRUE,
@@ -145,10 +181,11 @@ path,
     )
   }
 
+  # save input parameters
+  alpha_i <- alpha
+  sigma_i <- sigma
+
   # with parallel processing (currently problems with alpha / sigma = 'auto')
-  #parallel = TRUE,
-  #backend = 'PSOCK',
-  #cores = 'auto',
   if (parallel == TRUE) {
     if (requireNamespace("doParallel", quietly = TRUE)) {
       # creating parallel backend
@@ -213,7 +250,8 @@ path,
         foreach(
           i = 1:length(cimg_list),
           .combine = rbind,
-          .verbose = TRUE
+          .verbose = TRUE,
+          .packages = "biopixR"
         ) %dopar% {
 
           if (Rlog == TRUE) {
@@ -234,6 +272,17 @@ path,
           ))
 
           img <- cimg_list[[i]]
+
+          if(dim(img)[4] != 1){
+            img <- grayscale(img)
+          }
+
+          if(alpha_i == 'interactive' & sigma_i == 'interactive') {
+            parameter <- biopixR::interactive_objectDetection(img)
+            alpha <- as.numeric(parameter[1])
+            sigma <- as.numeric(parameter[2])
+          }
+
           # actual function to be processed
           res <- biopixR::imgPipe(
             img1 = img,
@@ -296,6 +345,17 @@ path,
 
       # actual function to be processed
       img <- cimg_list[[i]]
+
+      if(dim(img)[4] != 1){
+        img <- grayscale(img)
+      }
+
+      if(alpha_i == 'interactive' & sigma_i == 'interactive') {
+        parameter <- biopixR::interactive_objectDetection(img)
+        alpha <- as.numeric(parameter[1])
+        sigma <- as.numeric(parameter[2])
+      }
+
       res <- biopixR::imgPipe(img1 = img,
                      alpha = alpha,
                      sigma = sigma,

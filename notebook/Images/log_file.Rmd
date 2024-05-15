@@ -3,15 +3,25 @@ title: 'scanDir log file'
 output: pdf_document
 --- 
 # Analysis of directory notebook/Images 
-2024-05-13 17:54:40 Importing images from directory...   
-2024-05-13 17:54:40 Checking md5sums...   
-2024-05-13 17:54:40 Creating parallel backend...   
-2024-05-13 17:54:41 Parallel backend successfully created. 6 workers recruited.  
-2024-05-13 17:54:41 Starting image analysis...   
-2024-05-13 17:54:41 Currently analyzing: notebook/Images/beads_large1.bmp   
-2024-05-13 17:54:41 Currently analyzing: notebook/Images/beads.png   
-2024-05-13 17:54:41 Currently analyzing: notebook/Images/beads_large2.png   
-2024-05-13 17:54:41 Currently analyzing: notebook/Images/droplet_beads.png   
+2024-05-15 08:01:27 Importing images from directory...   
+2024-05-15 08:01:27 Checking md5sums...   
+2024-05-15 08:01:27 Creating parallel backend...   
+2024-05-15 08:01:28 Parallel backend successfully created. 6 workers recruited.  
+2024-05-15 08:01:28 Starting image analysis...   
+---
+title: 'scanDir log file'
+output: pdf_document
+--- 
+# Analysis of directory notebook/Images 
+2024-05-15 08:03:18 Importing images from directory...   
+2024-05-15 08:03:18 Checking md5sums...   
+2024-05-15 08:03:18 Creating parallel backend...   
+2024-05-15 08:03:18 Parallel backend successfully created. 6 workers recruited.  
+2024-05-15 08:03:18 Starting image analysis...   
+2024-05-15 08:03:20 Currently analyzing: notebook/Images/beads_large1.bmp   
+2024-05-15 08:03:20 Currently analyzing: notebook/Images/beads_large2.png   
+2024-05-15 08:03:20 Currently analyzing: notebook/Images/beads.png   
+2024-05-15 08:03:20 Currently analyzing: notebook/Images/droplet_beads.png   
 ```{r, echo=FALSE}
 directory_path <- getwd()
 target_file_name <- 'result.RDS'
@@ -40,9 +50,9 @@ file_path <- file.path(matching_directories, paste0('log_', i, '.RDS'))
 import <- readRDS(file_path)
 image <- import$image[[1]]
 data <- import$data
-name <- name[i]
+name_i <- name[i]
 
-plot(image, main = name)
+plot(image, main = name_i)
 with(data$unfiltered_centers, points(data$unfiltered_centers$mx, data$unfiltered_centers$my, col = 'darkred'))
 with(data$detailed, points(data$detailed$x, data$detailed$y, col = 'darkgreen'))
 }
