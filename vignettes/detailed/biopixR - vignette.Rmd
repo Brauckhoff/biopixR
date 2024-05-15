@@ -1,5 +1,5 @@
 ---
-title: "biopixR - Introduction"
+title: "biopixR - Tools for Biological Image Processing and Analysis"
 author: "Tim Brauckhoff"
 date: "`r Sys.Date()`"
 output:
@@ -8,10 +8,6 @@ output:
     number_sections: yes
   pdf_document:
     toc: yes
-vignette: >
-  %\VignetteIndexEntry{biopixR - Introduction} 
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 <style>
@@ -36,17 +32,120 @@ original_options <- options()
 options(digits = 3)
 ```
 
+```{r}
+knitr::include_graphics("Figures/final_logo.png")
+```
+
+# Aims of the `biopixR` package
+
+# Introduction to Object Quantification in Biological Images
+
+## Techniques in Bioimage Informatics for Object Detection
+
+### Segmentation and Classification
+
+# Concepts and Methods
+
+## Development, Implementation and Installation
+
+### Version Control and Continous Integration
+
+### Naming Convention and Literate Programming
+
+### Installation of the `biopixR` package
+
+The ongoing developments will be consistently updated in the GitHub repository.
+Consequently, the latest developer version of the `biopixR` package can be
+accessed and downloaded directly from the repository using the `devtools`
+package.
+
+```{r, eval=FALSE}
+# Install the 'devtools' package from CRAN.
+# 'devtools' is required for installing R packages directly from GitHub repositories.
+install.packages("devtools")
+
+# Install the 'biopixR' package from a GitHub repository.
+# 'install_github' is a function in 'devtools' that is used to install R packages hosted on GitHub.
+# The argument "Brauckhoff/biopixR" specifies the GitHub username/repo of the package.
+devtools::install_github("Brauckhoff/biopixR")
+```
+
+The `biopixR` package is available on The **C**omprehensive **R** **A**rchive
+**N**etwork (CRAN), which can be accessed at
+[https://CRAN.R-project.org/package=biopixR]. CRAN employs rigorous testing
+procedures to ensure that the package can be downloaded and built on all major
+operating systems. Additionally, it validates the examples and documentation
+through the `R CMD check`. In order to utilize the `biopixR` package, it is
+first necessary to install R (version 4.2.0 or higher) and then to execute the
+following code:
+
+```{r, eval=FALSE}
+# Install the 'biopixR' package from the Comprehensive R Archive Network (CRAN).
+install.packages("biopixR")
+```
+
+The results of the R CMD check conducted by CRAN can be accessed via the
+following link:
+[https://cran.r-project.org/web/checks/check_results_biopixR.html]
+
+### Unit Testing of the `biopixR` Package
+
+## Quantitative Analysis of Biological Images with Focus on DSB and Microbeads
+
+### Imaging Double Strand Breaks
+
+### Quantitative Assessment of Microbeads
+
+### Why is there a need for the `biopixR` package?
+
+### Software for Quantitative Evaluation of Biological Images
+
+### Principles in Bioimage Informatics
+
+## Functions for Quantitative Data Analysis in `biopixR`
+
+### Quantification of Microbeads with Function of the `biopixR` package
+
+### `objectDetection()` Function to Quantify Microbeads in an Image
+
+### Dealing with Autofluorescence and Clotting with `sizeFilter()` and `proximityFilter()`
+
+### Interpretation with `resultAnalytics()`
+
+## Functions for Droplet Analyisis
+
+### Dealing with discontinous edges
+
+### `fillLineGaps()` - 
+
+## Shape, Texture and unsupervised Machine Learning
+
+### `shapeFeatures()` - Object clustering based on shape features
+
+### `HaralickCluster()` - Image classification based on texture features
+
+## Batch proccesing Functions within the `biopixR` package
+
+### `imgPipe()` and `scanDir()`
+
+## Helper Functions of the `biopixR` Package
+
+- `interpolatePixels()`
+- `adaptiveInterpolation()`
+- `edgeDetection()`
+- `changePixelColor()`
+
+# Case study for the Application of the `biopixR` package
+
 
 ```{r}
 library(imager)
 
 circ <- load.image("Figures/analysis_circularity3.png")
 
-test <- shapeFeatures(grayscale(circ), sigma = 2)
+test <- biopixR::shapeFeatures(grayscale(circ), sigma = 2)
 
 ```
-
-
 
 # Getting started
 
@@ -843,5 +942,16 @@ plot(closed_gaps)
 
 ```{r echo=FALSE}
 options(original_options)
+```
+
+
+# Summary and Conclusion
+
+
+
+\pagebreak
+
+```{r}
+sessionInfo()
 ```
 

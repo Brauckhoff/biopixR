@@ -19,6 +19,7 @@ print_with_timestamp <- function(msg) {
 #' @param color3 name of color in img3
 #' @param alpha threshold adjustment factor
 #' @param sigma smoothing
+#' @param parallel if TRUE uses multiple cores (75 %) to calculate alpha & sigma
 #' @param sizeFilter applying sizeFilter function (default - TRUE)
 #' @param upperlimit highest accepted object size (only needed if
 #' sizeFilter = TRUE)
@@ -27,7 +28,6 @@ print_with_timestamp <- function(msg) {
 #' @param proximityFilter applying proximityFilter function (default - TRUE)
 #' @param radius distance from one center in which no other centers
 #' are allowed (in pixels)
-#' @param parallel if TRUE uses multiple cores (75 %) to process results
 #' @returns list of 3 to 4 objects:
 #' 1. summary of all the microbeads in the image
 #' 2. detailed information about every single bead
@@ -58,12 +58,13 @@ imgPipe <- function(img1 = img,
                     color3 = "color3",
                     alpha = 1,
                     sigma = 2,
+                    parallel = FALSE,
                     sizeFilter = TRUE,
                     upperlimit = "auto",
                     lowerlimit = "auto",
                     proximityFilter = TRUE,
-                    radius = "auto",
-                    parallel = FALSE) {
+                    radius = "auto"
+                    ) {
 
   print_with_timestamp("Starting object detection")
 
@@ -71,7 +72,11 @@ imgPipe <- function(img1 = img,
   img <- beadnumber <- intensity <- color <- NULL
 
   # object detection of every individual channel
-  col1_detect <- objectDetection(img1, alpha = alpha, sigma = sigma)
+  col1_detect <-
+    objectDetection(img1,
+                    alpha = alpha,
+                    sigma = sigma,
+                    parallel = parallel)
 
   if (is.null(img2) != TRUE) {
     print_with_timestamp("Starting object detection II & checking dimensions")
@@ -275,8 +280,7 @@ imgPipe <- function(img1 = img,
     unfiltered = coordinates,
     coordinates = res_proximityFilter$coordinates,
     size = res_proximityFilter$size,
-    img = combine,
-    parallel = parallel
+    img = combine
   )
 
   # add multi-color info to result

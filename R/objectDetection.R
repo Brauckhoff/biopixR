@@ -6,6 +6,8 @@
 #' @param img image (import by \code{\link[imager]{load.image}})
 #' @param alpha threshold adjustment factor
 #' @param sigma smoothing
+#' @param parallel (TRUE | FALSE) when alpha & sigma = 'auto', if calculation
+#' of parameters should be done using foreach
 #' @returns list of 4 objects:
 #' 1. data frame of labeled region with the central coordinates
 #' 2. all coordinates that are in labeled regions
@@ -19,7 +21,8 @@
 #' @export
 objectDetection <- function(img,
                             alpha = 1,
-                            sigma = 2) {
+                            sigma = 2,
+                            parallel = FALSE) {
   # assign import
   object_img <- img
 
@@ -146,71 +149,103 @@ objectDetection <- function(img,
         param_grid <- as.data.frame(new_grid) |> unique()
       }
 
-      # Initialize parallel computing cluster with a specified number of cores
-      n <- detectCores()
-      num_cores <- round(n * 0.75)
-      cl <- makeCluster(num_cores,
-                        type = "PSOCK")
+      if(parallel == TRUE) {
+        if (requireNamespace("doParallel", quietly = TRUE)) {
+          # Initialize parallel computing cluster with a specified number of cores
+          n <- detectCores()
+          num_cores <- round(n * 0.75)
+          cl <- makeCluster(num_cores,
+                            type = "PSOCK")
 
-      doParallel::registerDoParallel(cl)
+          doParallel::registerDoParallel(cl)
 
-      # Setup environment for parallel computation
-      env <- new.env()
-      env$object_img <- object_img
-      env$hayflick <- function(img, alpha, sigma) {
-        property <- shapeFeatures(img, alpha, sigma)
+          # Setup environment for parallel computation
+          env <- new.env()
+          env$object_img <- object_img
+          env$hayflick <- function(img, alpha, sigma) {
+            property <- shapeFeatures(img, alpha, sigma)
 
-        df_complete <- property[complete.cases(property), ]
-        t <- threshold(img)
+            df_complete <- property[complete.cases(property),]
+            t <- threshold(img)
 
-        combine <- data.frame(
-          area = abs(length(which(t == TRUE)) / sum(property$size) - 1),
-          pixels = length(which(
-            df_complete$size < (mean(df_complete$size) - 0.9 * mean(df_complete$size))
-          )) / mean(df_complete$size),
-          sd_area = sd(df_complete$size) / mean(df_complete$size),
-          sd_perimeter = sd(df_complete$perimeter) / mean(df_complete$perimeter),
-          mean_circularity = mean(abs(df_complete$circularity - 1)),
-          #sd_circularity = sd(df_complete$circularity) / mean(df_complete$circularity),
-          mean_eccentricity = mean(df_complete$eccentricity),
-          #sd_eccentricity = sd(df_complete$eccentricity),
-          sd_radius = sd(df_complete$mean_radius) / mean(df_complete$mean_radius)
+            combine <- data.frame(
+              area = abs(length(which(t == TRUE)) / sum(property$size) - 1),
+              pixels = length(which(
+                df_complete$size < (mean(df_complete$size) - 0.9 * mean(df_complete$size))
+              )) / mean(df_complete$size),
+              sd_area = sd(df_complete$size) / mean(df_complete$size),
+              sd_perimeter = sd(df_complete$perimeter) / mean(df_complete$perimeter),
+              mean_circularity = mean(abs(df_complete$circularity - 1)),
+              #sd_circularity = sd(df_complete$circularity) / mean(df_complete$circularity),
+              mean_eccentricity = mean(df_complete$eccentricity),
+              #sd_eccentricity = sd(df_complete$eccentricity),
+              sd_radius = sd(df_complete$mean_radius) / mean(df_complete$mean_radius)
+            )
+
+            quality <-
+              sum(combine) / ncol(combine)
+
+            quality_size <- list(quality, sum(property$size))
+
+            return(quality_size)
+          }
+          env$param_grid <-
+            param_grid  # Assume param_grid is previously created
+
+          varlist <- c("object_img",
+                       "hayflick",
+                       "param_grid")
+          # Export necessary functions and data to parallel workers
+          clusterExport(cl, varlist, envir = env)
+
+          # Execute parallel computation using foreach loop
+          #tictoc::tic()
+          results_df <-
+            foreach(i = 1:nrow(param_grid), .combine = 'rbind') %dopar% {
+              row <- param_grid[i,]
+              res_main <- tryCatch({
+                hayflick(object_img, row$alpha, row$sigma)
+              },
+              error = function(error_condition) {
+                return(NA)
+              })
+              data.frame(quality = unlist(res_main[1]),
+                         size = unlist(res_main[2]))
+              #result_list[[i]] <- res_main
+
+            }
+          #tictoc::toc()
+          stopCluster(cl)
+        } else {
+        stop(
+          format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+          " Please install the Package 'doParallel' for parallel processing \n (install.package('doparallel')"
         )
-
-        quality <-
-          sum(combine) / ncol(combine)
-
-        quality_size <- list(quality, sum(property$size))
-
-        return(quality_size)
       }
-      env$param_grid <-
-        param_grid  # Assume param_grid is previously created
+      }
 
-      varlist <- c("object_img",
-                   "hayflick",
-                   "param_grid")
-      # Export necessary functions and data to parallel workers
-      clusterExport(cl, varlist, envir = env)
 
-      # Execute parallel computation using foreach loop
-      #tictoc::tic()
-      results_df <-
-        foreach(i = 1:nrow(param_grid), .combine = 'rbind') %dopar% {
-          row <- param_grid[i, ]
+      if (parallel == FALSE) {
+        # Assuming param_grid is already defined and is a data.frame
+        n <- nrow(param_grid)
+        results_df <-
+          data.frame()  # Initialize an empty data frame to store results
+
+        for (b in 1:n) {
+          row <- param_grid[b,]
           res_main <- tryCatch({
-            hayflick(object_img, row$alpha, row$sigma)
-          },
-          error = function(error_condition) {
-            return(NA)
+            hayflick(object_img, row$alpha, row$sigma)  # Function call as in your foreach loop
+          }, error = function(error_condition) {
+            return(list(NA, NA))  # Ensure the list has two NAs to match expected structure
           })
-          data.frame(quality = unlist(res_main[1]),
-                     size = unlist(res_main[2]))
-          #result_list[[i]] <- res_main
-
+          # Create a data frame row from the results and bind it to the results data frame
+          temp_df <- data.frame(quality = unlist(res_main[1]),
+                                size = unlist(res_main[2]))
+          results_df <-
+            rbind(results_df, temp_df)  # Combine results row-wise
         }
-      #tictoc::toc()
-      stopCluster(cl)
+      }
+
 
       # Define the reverse min-max normalization function
       normalize_reverse_minmax <- function(x) {

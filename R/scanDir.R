@@ -2,9 +2,6 @@
 
 scanDir <- function(path,
                     format = 'jpg',
-                    parallel = TRUE,
-                    backend = 'PSOCK',
-                    cores = 'auto',
                     alpha = 1,
                     sigma = 2,
                     sizeFilter = TRUE,
@@ -43,7 +40,7 @@ scanDir <- function(path,
     # create .rmd log file at input path
     file.edit(new_script_path)
 
-    # writing into the log.rmg (do not use styler on this part!!!)
+    # writing into the log.rmd (do not use styler on this part!!!)
     cat(
 "---
 title: 'scanDir log file'
@@ -148,7 +145,10 @@ path,
     )
   }
 
-  # with parallel processing
+  # with parallel processing (currently problems with alpha / sigma = 'auto')
+  #parallel = TRUE,
+  #backend = 'PSOCK',
+  #cores = 'auto',
   if (parallel == TRUE) {
     if (requireNamespace("doParallel", quietly = TRUE)) {
       # creating parallel backend
@@ -216,49 +216,49 @@ path,
           .verbose = TRUE
         ) %dopar% {
 
-        img <- cimg_list[[i]]
+          if (Rlog == TRUE) {
+            cat(
+              format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+              "Currently analyzing:",
+              md5_result$file[i],
+              "  \n",
+              file = new_script_path,
+              append = TRUE
+            )
+          }
 
-        if (Rlog == TRUE) {
-        cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "Currently analyzing:",
-            md5_result$file[i], "  \n",
-            file = new_script_path,
-            append = TRUE)
-        }
-        message(
-          paste(
+          message(paste(
             format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
             "Currently analyzing:",
             md5_result$file[i]
-          )
-        )
+          ))
 
-        # actual function to be processed
-        res <- biopixR::imgPipe(
-          img1 = img,
-          alpha = alpha,
-          sigma = sigma,
-          sizeFilter = sizeFilter,
-          lowerlimit = lowerlimit,
-          upperlimit = upperlimit,
-          proximityFilter = proximityFilter,
-          radius = radius,
-          parallel = FALSE
-        )
-
-        # plot visualization into log file
-        if (Rlog == TRUE) {
-          # save produced data into log_files
-          export <- list(
-            data = res,
-            image = cimg_list[i]
+          img <- cimg_list[[i]]
+          # actual function to be processed
+          res <- biopixR::imgPipe(
+            img1 = img,
+            alpha = alpha,
+            sigma = sigma,
+            sizeFilter = sizeFilter,
+            lowerlimit = lowerlimit,
+            upperlimit = upperlimit,
+            proximityFilter = proximityFilter,
+            radius = radius,
+            parallel = FALSE
           )
-          saveRDS(export, file = paste0(log_path, "log_", i, ".RDS"))
+
+          # plot visualization into log file
+          if (Rlog == TRUE) {
+            # save produced data into log_files
+            export <- list(data = res,
+                           image = cimg_list[i])
+            saveRDS(export, file = paste0(log_path, "log_", i, ".RDS"))
+          }
+
+          # combining results from the loop with the file information
+          md5_result_row <- cbind(md5_result[i,], res$summary)
+          md5_result_row
         }
-
-        # combining results from the loop with the file information
-        md5_result_row <- cbind(md5_result[i, ], res$summary)
-        md5_result_row
-      }
 
       stopCluster(cl = my_cluster)
     } else {
@@ -304,7 +304,7 @@ path,
                      upperlimit = upperlimit,
                      proximityFilter = proximityFilter,
                      radius = radius,
-                     parallel = FALSE)
+                     parallel = TRUE)
 
       # plot visualization into log file
       if (Rlog == TRUE) {
@@ -359,9 +359,9 @@ file_path <- file.path(matching_directories, paste0('log_', i, '.RDS'))
 import <- readRDS(file_path)
 image <- import$image[[1]]
 data <- import$data
-name <- name[i]
+name_i <- name[i]
 
-plot(image, main = name)
+plot(image, main = name_i)
 with(data$unfiltered_centers, points(data$unfiltered_centers$mx, data$unfiltered_centers$my, col = 'darkred'))
 with(data$detailed, points(data$detailed$x, data$detailed$y, col = 'darkgreen'))
 }
