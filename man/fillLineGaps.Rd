@@ -5,21 +5,21 @@
 \title{Reconnecting discontinuous lines}
 \usage{
 fillLineGaps(
-  droplet.img,
-  bead.img = NULL,
+  contours,
+  objects = NULL,
   threshold = "13\%",
-  alpha = 0.75,
-  sigma = 0.1,
+  alpha = 1,
+  sigma = 2,
   radius = 5,
   iterations = 2,
   visualize = TRUE
 )
 }
 \arguments{
-\item{droplet.img}{image that contains discontinuous lines like edges or
+\item{contours}{image that contains discontinuous lines like edges or
 contours}
 
-\item{bead.img}{image that contains objects that should be removed before
+\item{objects}{image that contains objects that should be removed before
 before applying the fill algorithm}
 
 \item{threshold}{"in \%" (from \code{\link[imager]{threshold}})}
@@ -45,16 +45,20 @@ The function attempts to fill in edge discontinuities in order to enable
 normal labeling and edge detection.
 }
 \details{
-The function pre-processes the image to enable the application of
-adaptiveInterpolation. Pre-processing involves thresholding, optional
-object removal, LineEnd and diagonal LineEnd detection, and labeling. The
-threshold should be set to allow for some remaining "bridge" pixels between
-gaps to facilitate reconnection. For more details about reconnection,
-please consult adaptiveInterpolation.
-Post-processing involves thinning the lines. When removing objects from an
-image, their coordinates are collected using the objectDetection function.
-Next, the pixels of the detected objects are nullified in the original
-image, allowing the algorithm to proceed without the objects.
+The function pre-processes the image in order to enable the implementation
+of the \code{adaptiveInterpolation()} function. The pre-processing stage
+encompasses a number of operations, including thresholding, the optional
+removal of objects, the detection of line ends and diagonal line ends, and
+the labeling of pixels. The threshold should be set to allow for the
+retention of some "bridge" pixels between gaps, thus facilitating the
+subsequent process of reconnection. For further details regarding the process
+of reconnection, please refer to the documentation on \code{\link[biopixR]{adaptiveInterpolation}}).
+The subsequent post-processing stage entails the reduction of line thickness
+in the image. With regard to the possibility of object removal, the
+coordinates associated with these objects are collected using the
+\code{objectDetection()} function. Subsequently, the pixels of the detected
+objects are set to null in the original image, thus allowing the algorithm to
+proceed without the objects.
 }
 \examples{
 fillLineGaps(droplets)

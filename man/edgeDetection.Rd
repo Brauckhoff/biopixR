@@ -16,14 +16,14 @@ determined automatically)}
 
 \item{alpha}{threshold adjustment factor (default 1)}
 
-\item{sigma}{smoothing}
+\item{sigma}{smoothing (default 2)}
 }
 \value{
 Object of class 'cimg', displaying detected edges.
 }
 \description{
-Adapted code from the imager \code{\link[imager]{cannyEdges}}) function
-without the usage of dplyr and purrr. If the threshold parameters are
+Adapted code from the 'imager' \code{\link[imager]{cannyEdges}}) function
+without the usage of 'dplyr' and 'purrr'. If the threshold parameters are
 missing, they are determined automatically using a k-means heuristic. Use
 the alpha parameter to adjust the automatic thresholds up or down. The
 thresholds are returned as attributes. The edge detection is based on a

@@ -9,9 +9,9 @@ objectDetection(img, alpha = 1, sigma = 2)
 \arguments{
 \item{img}{image (import by \code{\link[imager]{load.image}})}
 
-\item{alpha}{threshold adjustment factor}
+\item{alpha}{threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian')}
 
-\item{sigma}{smoothing}
+\item{sigma}{smoothing (numeric / 'static' / 'interactive' / 'gaussian')}
 }
 \value{
 list of 4 objects:
@@ -26,6 +26,34 @@ list of 4 objects:
 This function identifies objects in an image using edge detection and
 labeling, gathering the coordinates and centers of the identified objects.
 The edges of detected objects are then highlighted for easy recognition.
+}
+\details{
+The \code{objectDetection()} function provides several methods for calculating
+the alpha and sigma parameters, which are critical for edge detection:
+\enumerate{
+\item Input of a Numeric Value:
+}
+\itemize{
+\item Users can directly input numeric values for alpha and sigma, allowing for precise control over the edge detection parameters.
+}
+\enumerate{
+\item Static Scanning:
+}
+\itemize{
+\item When both alpha and sigma are set to "static", the function systematically tests all possible combinations of these parameters within the range (alpha: 0.1 - 1.4, sigma: 0 - 1.4). This exhaustive search helps identify the optimal parameter values for the given image. (Note: takes a lot of time)
+}
+\enumerate{
+\item Interactive Selection:
+}
+\itemize{
+\item By setting alpha and sigma to "interactive", a Tcl/Tk graphical user interface (GUI) is opened. This allows users to select the parameters interactively based on visual feedback. This method requires user input for fine-tuning the parameters according to the specific requirements of the image.
+}
+\enumerate{
+\item Multi-Objective Optimization:
+}
+\itemize{
+\item For advanced parameter optimization, the function \code{\link[GPareto]{GParetoptim}} will be utilize for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
+}
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)

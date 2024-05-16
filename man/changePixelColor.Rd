@@ -4,25 +4,25 @@
 \alias{changePixelColor}
 \title{Change the color of pixels}
 \usage{
-changePixelColor(img, coords, color = "purple", visualize = FALSE)
+changePixelColor(img, coordinates, color = "purple", visualize = FALSE)
 }
 \arguments{
 \item{img}{image (import by \code{\link[imager]{load.image}})}
 
-\item{coords}{coordinates specifying which pixels to be colored (should
-be a X|Y Data frame (first column: X; second column: Y)).}
+\item{coordinates}{specifying which pixels to be colored (should
+be a X|Y data frame (first column: X; second column: Y)).}
 
-\item{color}{color with which to replace specified pixels. can be either a
-an RGB triplet or one of the colors listed by \code{\link[grDevices]{colors}}.}
+\item{color}{color with which to replace specified pixels. can be either an
+RGB triplet or one of the colors listed by \code{\link[grDevices]{colors}}.}
 
 \item{visualize}{if TRUE the resulting image gets plotted}
 }
 \value{
-cimg with changed colors at desired positions and plot of the cimg
+'cimg' with changed colors at desired positions and a plot of the 'cimg'
 }
 \description{
-Can be used to change the color of specified pixels in an image. The coordinates
-of the pixels are needed to colorize them.
+Can be used to change the color of specified pixels in an image. The
+coordinates of the pixels are needed to colorize them.
 }
 \examples{
 coordinates <- objectDetection(beads)

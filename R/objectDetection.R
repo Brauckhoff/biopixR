@@ -4,15 +4,24 @@
 #' labeling, gathering the coordinates and centers of the identified objects.
 #' The edges of detected objects are then highlighted for easy recognition.
 #' @param img image (import by \code{\link[imager]{load.image}})
-#' @param alpha threshold adjustment factor (numeric / 'auto')
-#' @param sigma smoothing (numeric / 'auto')
-#' @param parallel (TRUE | FALSE) when alpha & sigma = 'auto', calculation
-#' of parameters will be done using 'foreach'
+#' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian')
+#' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian')
 #' @returns list of 4 objects:
 #' 1. data frame of labeled region with the central coordinates
 #' 2. all coordinates that are in labeled regions
 #' 3. size of labeled objects
 #' 4. image were object edges (purple) and detected centers (green) are colored
+#' @details
+#' The `objectDetection()` function provides several methods for calculating
+#' the alpha and sigma parameters, which are critical for edge detection:
+#' 1. Input of a Numeric Value:
+#' - Users can directly input numeric values for alpha and sigma, allowing for precise control over the edge detection parameters.
+#' 2. Static Scanning:
+#' - When both alpha and sigma are set to "static", the function systematically tests all possible combinations of these parameters within the range (alpha: 0.1 - 1.4, sigma: 0 - 1.4). This exhaustive search helps identify the optimal parameter values for the given image. (Note: takes a lot of time)
+#' 3. Interactive Selection:
+#' - By setting alpha and sigma to "interactive", a Tcl/Tk graphical user interface (GUI) is opened. This allows users to select the parameters interactively based on visual feedback. This method requires user input for fine-tuning the parameters according to the specific requirements of the image.
+#' 4. Multi-Objective Optimization:
+#' - For advanced parameter optimization, the function \code{\link[GPareto]{GParetoptim}} will be utilize for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
 #' @import data.table
 #' @import imager
 #' @examples
@@ -21,10 +30,11 @@
 #' @export
 objectDetection <- function(img,
                             alpha = 1,
-                            sigma = 2,
-                            parallel = FALSE) {
+                            sigma = 2) {
   # Assign import
   object_img <- img
+  alpha_i <- alpha
+  sigma_i <- sigma
 
   # Ensure the image is of type 'cimg', if not, stop the function
   if (class(object_img)[1] != "cimg") {
@@ -41,16 +51,16 @@ objectDetection <- function(img,
   }
 
   # Initialize edge detection parameters
-  # If set to 'auto', optimization is attempted
-  if (alpha == "auto" &
-      sigma == "auto") {
-    # Fitness function for optimizing alpha and sigma via image analysis
+  # If set to 'static', optimization is attempted - testing all combinations
+  if (alpha_i == "static" &
+      sigma_i == "static") {
+    # Fitness function
     hayflick <- function(img, alpha, sigma) {
       # Compute shape features based on the image and given parameters
       property <- shapeFeatures(img, alpha, sigma)
 
       # Filter rows without missing values
-      df_complete <- property[complete.cases(property),]
+      df_complete <- property[complete.cases(property), ]
       # Apply a thresholding function to the image
       t <- threshold(img)
 
@@ -77,232 +87,181 @@ objectDetection <- function(img,
       return(quality_size)
     }
 
-    # Placeholder values for future developments
-    perc = 1
-    iterations = 1
-    #population = 5,
-    #window = 0.1) {
-
     # Generate parameter ranges for alpha and sigma
-    alpha_range <- seq(0.1, 1, by = 0.1)
-    sigma_range <- seq(0, 2, by = 0.1)
+    alpha_range <- seq(0.1, 1.4, by = 0.1)
+    sigma_range <- seq(0, 1.4, by = 0.1)
 
     # Create a grid of parameter combinations for alpha and sigma
     param_grid <-
       expand.grid(alpha = alpha_range, sigma = sigma_range)
 
-    # Modify parameter grid based on a Gaussian distribution, if perc != 1
-    # <under development: start>
-    if (perc != 1) {
-      # parameter for gauss curve
-      grid_size <- length(sigma_range)
-      center_mean <- grid_size / 2
-      std_dev <- grid_size / 3
+    # Assuming param_grid is already defined and is a data.frame
+    n <- nrow(param_grid)
+    # Initialize an empty data frame to store results
+    results_df <-
+      data.frame()
 
-      gaussian_probs <-
-        dnorm(1:grid_size, mean = center_mean, sd = std_dev)
-      gaussian_probs <- gaussian_probs / sum(gaussian_probs)
-
-      # weighted approach for sigma highest probability of good values between 0.6 and 1.4
-      random_indices <-
-        sample(
-          1:grid_size,
-          size = (perc * nrow(param_grid)),
-          replace = TRUE,
-          prob = gaussian_probs
-        )
-
-      alpha_start <-
-        sample(alpha_range,
-               size = (perc * nrow(param_grid)),
-               replace = TRUE)
-      sigma_start <- sigma_range[random_indices]
-
-      # starting grid
-      param_grid <- data.frame(alpha = alpha_start,
-                               sigma = sigma_start) |> unique()
+    # Loop through each row in the parameter grid
+    for (b in 1:n) {
+      row <- param_grid[b, ]
+      # Call the hayflick function and handle errors
+      res_main <- tryCatch({
+        hayflick(object_img, row$alpha, row$sigma)
+      }, error = function(error_condition) {
+        return(list(NA, NA))  # Ensure the list has two NAs to match expected structure
+      })
+      # Create a data frame row from the results and bind it to the results data frame
+      temp_df <- data.frame(quality = unlist(res_main[1]),
+                            size = unlist(res_main[2]))
+      results_df <-
+        rbind(results_df, temp_df)  # Combine results row-wise
     }
 
-    # Iterate over the number of iterations specified
-    for (i in 1:iterations) {
-      # creating new adaptive grid
-      if (i > 1) {
-        lower_a <- result$alpha - window
-        upper_a <- result$alpha + window
-        lower_s <- result$sigma - window
-        upper_s <- result$sigma + window
-
-        for (a in 1:length(lower_a)) {
-          alpha_range <- seq(lower_a[a], upper_a[a], by = 0.1)
-          sigma_range <- seq(lower_s[a], upper_s[a], by = 0.1)
-
-          # create a grid of parameter combinations
-          param_grid <-
-            expand.grid(alpha = alpha_range, sigma = sigma_range)
-          if (a == 1) {
-            new_grid <- param_grid
-          }
-
-          if (a > 1) {
-            new_grid <- rbind(new_grid, param_grid)
-          }
-        }
-
-        param_grid <- as.data.frame(new_grid) |> unique()
-      }
-      # <under development: end>
-
-      # If parallel processing is enabled, setup and perform parallel
-      # computations
-      if (parallel == TRUE) {
-        if (requireNamespace("doParallel", quietly = TRUE)) {
-          # Initialize parallel computing cluster with a specified number of cores
-          n <- detectCores()
-          num_cores <- round(n * 0.75)
-          cl <- makeCluster(num_cores,
-                            type = "PSOCK")
-
-          doParallel::registerDoParallel(cl)
-
-          # Setup environment for parallel computation
-          env <- new.env()
-          env$object_img <- object_img
-          env$hayflick <- function(img, alpha, sigma) {
-            property <- shapeFeatures(img, alpha, sigma)
-
-            df_complete <- property[complete.cases(property), ]
-            t <- threshold(img)
-
-            combine <- data.frame(
-              area = abs(length(which(
-                t == TRUE
-              )) / sum(property$size) - 1),
-              pixels = length(which(
-                df_complete$size < (
-                  mean(df_complete$size) - 0.9 * mean(df_complete$size)
-                )
-              )) / mean(df_complete$size),
-              sd_area = sd(df_complete$size) / mean(df_complete$size),
-              sd_perimeter = sd(df_complete$perimeter) / mean(df_complete$perimeter),
-              mean_circularity = mean(abs(df_complete$circularity - 1)),
-              #sd_circularity = sd(df_complete$circularity) / mean(df_complete$circularity),
-              mean_eccentricity = mean(df_complete$eccentricity),
-              #sd_eccentricity = sd(df_complete$eccentricity),
-              sd_radius = sd(df_complete$mean_radius) / mean(df_complete$mean_radius)
-            )
-
-            quality <-
-              sum(combine) / ncol(combine)
-
-            quality_size <- list(quality, sum(property$size))
-
-            return(quality_size)
-          }
-          env$param_grid <-
-            param_grid  # Assume param_grid is previously created
-
-          varlist <- c("object_img",
-                       "hayflick",
-                       "param_grid")
-          # Export necessary functions and data to parallel workers
-          clusterExport(cl, varlist, envir = env)
-
-          # Execute parallel computation using foreach loop
-          #tictoc::tic()
-          results_df <-
-            foreach(i = 1:nrow(param_grid),
-                    .combine = 'rbind') %dopar% {
-                      row <- param_grid[i, ]
-                      res_main <- tryCatch({
-                        hayflick(object_img, row$alpha, row$sigma)
-                      },
-                      error = function(error_condition) {
-                        return(NA)
-                      })
-                      data.frame(quality = unlist(res_main[1]),
-                                 size = unlist(res_main[2]))
-                      #result_list[[i]] <- res_main
-
-                    }
-          #tictoc::toc()
-          stopCluster(cl)
-        } else {
-          stop(
-            format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-            " Please install the Package 'doParallel' for parallel processing \n (install.package('doparallel')"
-          )
-        }
-      }
-
-
-      if (parallel == FALSE) {
-        # Assuming param_grid is already defined and is a data.frame
-        n <- nrow(param_grid)
-        results_df <-
-          data.frame()  # Initialize an empty data frame to store results
-
-        for (b in 1:n) {
-          row <- param_grid[b, ]
-          res_main <- tryCatch({
-            hayflick(object_img, row$alpha, row$sigma)  # Function call as in your foreach loop
-          }, error = function(error_condition) {
-            return(list(NA, NA))  # Ensure the list has two NAs to match expected structure
-          })
-          # Create a data frame row from the results and bind it to the results data frame
-          temp_df <- data.frame(quality = unlist(res_main[1]),
-                                size = unlist(res_main[2]))
-          results_df <-
-            rbind(results_df, temp_df)  # Combine results row-wise
-        }
-      }
-
-
-      # Define the reverse min-max normalization function
-      normalizeReverseMinmax <- function(x) {
-        return(1 - (x - min(x)) / (max(x) - min(x)))
-      }
-
-      # Filter rows without missing values
-      results_df <- results_df[complete.cases(results_df),]
-
-      # Normalize and aggregate results for fitness calculation
-      if (length(unique(results_df$size)) != 1) {
-        results_df$size <- normalizeReverseMinmax(results_df$size) / 7
-        fitness <- rowSums(results_df) / 2
-      } else {
-        fitness <- results_df$quality
-      }
-
-      # Store unique fitness scores
-      u_fitness <- unique(fitness)
-
-      if (i != iterations) {
-        sorted_res <- sort(u_fitness, decreasing = FALSE)
-        sorted_res <- sorted_res[1:(population - (i - 1))]
-      } else {
-        sorted_res <- sort(u_fitness, decreasing = FALSE)
-        sorted_res <- sorted_res[1]
-      }
-
-      # Gather best results based on sorted fitness scores
-      mylist <- list()
-      for (b in 1:length(sorted_res)) {
-        index <- which(fitness == sorted_res[b])
-        mylist[[b]] <- index
-      }
-
-      result_1 <- param_grid[unlist(mylist),]
-
-      if (i != iterations) {
-        result <- unique(result_1)[1:(population - (i - 1)), ]
-      } else {
-        result <- result_1
-      }
-
+    # Define the reverse min-max normalization function
+    normalizeReverseMinmax <- function(x) {
+      return(1 - (x - min(x)) / (max(x) - min(x)))
     }
+
+    # Filter rows without missing values
+    results_df <- results_df[complete.cases(results_df),]
+
+    # Normalize and aggregate results for fitness calculation
+    if (length(unique(results_df$size)) != 1) {
+      results_df$size <- normalizeReverseMinmax(results_df$size) / 7
+      fitness <- rowSums(results_df) / 2
+    } else {
+      fitness <- results_df$quality
+    }
+
+    # Store unique fitness scores
+    u_fitness <- unique(fitness)
+
+    # Sort fitness scores in ascending order
+    sorted_res <- sort(u_fitness, decreasing = FALSE)
+    sorted_res <- sorted_res[1]
+
+    # Gather best results based on sorted fitness scores
+    mylist <- list()
+    for (b in 1:length(sorted_res)) {
+      index <- which(fitness == sorted_res[b])
+      mylist[[b]] <- index
+    }
+
+    # Retrieve the best parameter set from the parameter grid
+    result_1 <- param_grid[unlist(mylist),]
+    result <- result_1
     result <- result[1,]
     alpha <- result$alpha
     sigma <- result$sigma
+  }
+
+  # If parameters are set to 'interactive', call the interactive detection function
+  if (alpha_i == "interactive" & sigma_i == "interactive") {
+    parameter <- interactive_objectDetection(object_img)
+    alpha <- as.numeric(parameter[1])
+    sigma <- as.numeric(parameter[2])
+  }
+
+  # If parameters are set to 'gaussian', perform Gaussian process optimization
+  if (alpha_i == "gaussian" &
+      sigma_i == "gaussian") {
+    if (requireNamespace(c("GPareto", "DiceDesign"), quietly = TRUE)) {
+      hayflick <- function(x) {
+        alpha <- x[1]
+        sigma <- x[2]
+
+        # Compute shape features based on the image and given parameters
+        property <- shapeFeatures(object_img, alpha, sigma)
+
+        # Filter rows without missing values
+        df_complete <- property[complete.cases(property), ]
+        # Apply a thresholding function to the image
+        t <- threshold(object_img)
+
+        # Calculate a variety of statistics based on image features
+        combine <- data.frame(
+          area = abs(length(which(t == TRUE)) / sum(property$size) - 1),
+          pixels = length(which(
+            df_complete$size < (mean(df_complete$size) - 0.9 * mean(df_complete$size))
+          )) / mean(df_complete$size),
+          sd_area = sd(df_complete$size) / mean(df_complete$size),
+          sd_perimeter = sd(df_complete$perimeter) / mean(df_complete$perimeter),
+          mean_circularity = mean(abs(df_complete$circularity - 1)),
+          #sd_circularity = sd(df_complete$circularity) / mean(df_complete$circularity),
+          mean_eccentricity = mean(df_complete$eccentricity),
+          #sd_eccentricity = sd(df_complete$eccentricity),
+          sd_radius = sd(df_complete$mean_radius) / mean(df_complete$mean_radius)
+        )
+
+        # Calculate overall quality score as average of combined statistics
+        quality <- sum(combine) / ncol(combine)
+
+        # Return both quality and total size as a list
+        return(c(quality,-sum(property$size)))
+      }
+
+      # Define bounds for the parameters
+      lower_bounds <- c(alpha = 0.1, sigma = 0)
+      upper_bounds <- c(alpha = 1.4, sigma = 1.4)
+
+      # Generate initial Latin Hypercube Sample
+      lhs_sample <- lhsDesign(n = 20, dimension = 2)$design
+
+      # Scale the LHS sample to the parameter ranges
+      scaled_design <- lhs_sample
+      scaled_design[, 1] = lhs_sample[, 1] * (upper_bounds[1] - lower_bounds[1]) + lower_bounds[1]
+      scaled_design[, 2] = lhs_sample[, 2] * (upper_bounds[2] - lower_bounds[2]) + lower_bounds[2]
+
+      # Convert to data frame and name the columns
+      design_df <- as.data.frame(scaled_design)
+      colnames(design_df) <- c("alpha", "sigma")
+
+      # Assuming the hayflick function is already defined and takes a vector of parameters
+      responses <- apply(design_df, 1, function(params) {
+        hayflick(c(alpha = params['alpha'], sigma = params['sigma']))
+      })
+
+      # Build Gaussian Process models for each objective
+      responses_matrix <-
+        matrix(unlist(responses), ncol = 2, byrow = TRUE)  # Ensure responses are structured correctly
+      models <- list(
+        km1 = km(
+          ~ .,
+          design = design_df,
+          response = responses_matrix[, 1],
+          covtype = "matern5_2"
+        ),
+        km2 = km(
+          ~ .,
+          design = design_df,
+          response = responses_matrix[, 2],
+          covtype = "matern5_2"
+        )
+      )
+
+      # Perform multi-objective optimization using Gaussian Process models
+      results <-
+        GParetoptim(
+          model = models,
+          fn = hayflick,
+          nsteps = 25,
+          lower = lower_bounds,
+          upper = upper_bounds,
+          ncores = 6
+        )
+
+      #plotGPareto(results)
+
+      # Extract optimized parameters
+      alpha <- results$par[25, 1]
+      sigma <- results$par[25, 2]
+
+    } else {
+      stop(
+        format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+        " Please install the Package 'GPareto' & 'DiceDesign' \n for multi-objective optimization \n (install.package(c('GPareto', 'DiceDesign'))"
+      )
+    }
   }
 
   # Apply edge detection to the image using specified alpha and sigma parameters
@@ -356,15 +315,19 @@ objectDetection <- function(img,
     grouped_lab_img$my,
     radius = (sqrt(mean(
       unlist(cluster_size)
-    ) / pi) / 2),   # Compute radius from the area assuming clusters are roughly circular
+    ) / pi) / 2),
+    # Compute radius from the area assuming clusters are roughly circular
     color = "darkgreen"   # Circle color
   )
 
   # Compile all useful information into a single output list
   out <- list(
-    centers = grouped_lab_img,    # Centers of clusters
-    coordinates = df_lab_img,     # Coordinates of all labeled pixels
-    size = unlist(cluster_size),  # Sizes of each cluster
+    centers = grouped_lab_img,
+    # Centers of clusters
+    coordinates = df_lab_img,
+    # Coordinates of all labeled pixels
+    size = unlist(cluster_size),
+    # Sizes of each cluster
     marked_beads = colored_edge   # Visualized image with marked edges and circles
   )
 }

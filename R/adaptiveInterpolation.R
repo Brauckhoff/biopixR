@@ -15,15 +15,17 @@
 #' @return binary matrix that can be applied as an overlay, for example with
 #' \code{\link[imager]{imager.combine}} to fill the gaps between line ends.
 #' @details
-#' This function is designed to be part of the `fillLineGaps()` function, which
-#' performs the thresholding and line end detection preprocessing. The
-#' `adaptiveInterpolation()` generates a matrix with dimensions matching those
-#' of the original image. Initially, the matrix contains only background
-#' values (0) corresponding to a black image. The function then searches for
-#' line ends and identifies the nearest labeled region within a given radius of
-#' the line end. It should be noted that the cluster of the line end in question
-#' is not considered a nearest neighbor. In the event that another cluster is
-#' identified, the `interpolatePixels()` function is employed to connect the
+#' This function is designed to be part of the
+#' \code{\link[biopixR]{fillLineGaps}} function, which performs the thresholding
+#' and line end detection preprocessing. The
+#' \code{\link[biopixR]{adaptiveInterpolation}} generates a matrix with
+#' dimensions matching those of the original image. Initially, the matrix
+#' contains only background values (0) corresponding to a black image. The
+#' function then searches for line ends and identifies the nearest labeled
+#' region within a given radius of the line end. It should be noted that the
+#' cluster of the line end in question is not considered a nearest neighbor. In
+#' the event that another cluster is identified, the
+#' \code{\link[biopixR]{interpolatePixels}} function is employed to connect the
 #' line end to the aforementioned cluster. This entails transforming the
 #' specified pixels of the matrix to a foreground value of (1).
 #' It is important to highlight that diagonal line ends receive a special
@@ -31,7 +33,8 @@
 #' function. This makes it challenging to reconnect them. To address this issue,
 #' diagonal line ends not only ignore their own cluster but also that of their
 #' direct neighbor. Thereafter, the same procedure is repeated, with pixel
-#' values being changed according to the `interpolatePixel()` function.
+#' values being changed according to the
+#' \code{\link[biopixR]{interpolatePixels}} function.
 #' @examples
 #' # creating an artificial binary image
 #' mat <- matrix(0, 8, 8)

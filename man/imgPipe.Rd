@@ -13,12 +13,12 @@ imgPipe(
   color3 = "color3",
   alpha = 1,
   sigma = 2,
+  parallel = FALSE,
   sizeFilter = TRUE,
   upperlimit = "auto",
   lowerlimit = "auto",
   proximityFilter = TRUE,
-  radius = "auto",
-  parallel = FALSE
+  radius = "auto"
 )
 }
 \arguments{
@@ -38,6 +38,8 @@ imgPipe(
 
 \item{sigma}{smoothing}
 
+\item{parallel}{if TRUE uses multiple cores (75 \%) to calculate alpha & sigma}
+
 \item{sizeFilter}{applying sizeFilter function (default - TRUE)}
 
 \item{upperlimit}{highest accepted object size (only needed if
@@ -50,8 +52,6 @@ calculated by using the mean and the standard deviation)}
 
 \item{radius}{distance from one center in which no other centers
 are allowed (in pixels)}
-
-\item{parallel}{if TRUE uses multiple cores (75 \%) to process results}
 }
 \value{
 list of 3 to 4 objects:

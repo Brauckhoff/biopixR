@@ -1,16 +1,28 @@
 #' Proximity-based exclusion
 #'
-#' To detect objects within a defined range of one another, it is necessary to
-#' calculate their centers to determine proximity. Pairs that are too close
-#' will be discarded. (Input can be obtained by objectDetection function)
+#' In order to identify objects within a specified proximity, it is essential to
+#' calculate their respective centers, which serve to determine their proximity.
+#' Pairs that are in close proximity will be discarded.
+#' (Input can be obtained by \code{\link[biopixR]{objectDetection}} function)
 #' @param centers center coordinates of objects (mx|my|value data frame)
 #' @param coordinates all coordinates of the objects (x|y|value data frame)
 #' @param radius distance from one center in which no other centers
-#' are allowed (in pixels)
+#' are allowed (in pixels) (numeric / 'auto')
+#' @param elongation factor by which the radius should be multiplied to create
+#' the area of exclusion (default 2)
 #' @returns list of 3 objects:
 #' 1. center coordinates of remaining objects
 #' 2. all coordinates of remaining objects
 #' 3. size of remaining objects
+#' @details
+#' The automated radius calculation in the `proximityFilter()` function is based
+#' on the presumption of circular-shaped objects. The radius is calculated using
+#' the formula `sqrt(A/pi)`, where A is the area of the detected objects. The
+#' function will exclude objects that are too close by extending the calculated
+#' radius by one radius length beyond the assumed circle, effectively doubling
+#' the radius to create an exclusion zone. Therefore the elongation factor is
+#' set to 2 by default, with one radius covering the object and an additional
+#' radius creating the area of exclusion.
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
 #' res_proximityFilter <- proximityFilter(
@@ -27,12 +39,13 @@
 #' @export
 proximityFilter <- function(centers,
                             coordinates,
-                            radius = "auto") {
-  # assign imports
+                            radius = "auto",
+                            elongation = 2) {
+  # Assign input arguments to local variables
   center_df <- centers
   xy_coords <- coordinates
 
-  # size calculation, which is needed to calculate the radius
+  # Calculate the size of each detected object
   cluster_size <- list()
   for (c in center_df$value) {
     for (e in xy_coords$value) {
@@ -49,12 +62,12 @@ proximityFilter <- function(centers,
   size <- unlist(cluster_size)
 
   if (radius != "auto") {
-    # proximity calculation starting from every center and scanning for any TRUE
-    # pixel in the given radius
+    # Proximity calculation for a given radius
     xy_edit <- xy_coords
     for (j in 1:nrow(center_df)) {
       x <- center_df$mx[j]
       y <- center_df$my[j]
+      # Find pixels within the specified radius of the current center
       center_sur <- which(
         xy_coords$x > (x - radius) &
           xy_coords$x < (x + radius) &
@@ -62,12 +75,12 @@ proximityFilter <- function(centers,
           xy_coords$y < (y + radius)
       )
 
-      # checking that the detected pixels are not part of their own object
+      # Check that the detected pixels are not part of their own object
       if (is.null(center_sur) == FALSE &
-        length(unique(xy_coords$value[center_sur])) > 1) {
+          length(unique(xy_coords$value[center_sur])) > 1) {
         too_close <- unique(xy_coords$value[center_sur])
 
-        # removing them from the xy coordinate data set
+        # Remove the close objects from the xy coordinate data set
         for (k in too_close) {
           xy_pos <- which(xy_coords$value == k)
           xy_edit[xy_pos, ] <- NA
@@ -77,11 +90,11 @@ proximityFilter <- function(centers,
       }
     }
 
-    # removing NAs
+    # Remove NAs from the edited coordinates
     pre_coords <- na.omit(xy_edit)
 
-    # comparing to input centers (only keeping xy coordinates that pass the
-    # proximityFilter and are included in centers)
+    # Keep only xy coordinates that pass the proximity filter and are included
+    # in centers
     update <- list()
     for (l in center_df$value) {
       to_keep <- which(pre_coords$value == l)
@@ -90,34 +103,32 @@ proximityFilter <- function(centers,
       }
     }
 
-    # result: xy coordinates
+    # Result: xy coordinates that pass the filter
     xy_coords_clus <- pre_coords[unlist(update), ]
 
-    # result: remaining centers
+    # Result: remaining centers
     DT <- data.table(xy_coords_clus)
 
-    # summarize by center and calculate center
+    # Summarize by center and calculate mean coordinates
     remaining_center_df <-
       DT[, list(mx = mean(x), my = mean(y)), by = value]
   }
 
-  # error
-  # automated radius calculation
+  # Automated radius calculation if radius is set to "auto"
   if (radius == "auto") {
-    # calculate radius from given size (for circular shaped objects)
+    # Calculate radius from the average size (assuming circular objects)
     mean_size <- mean(size)
     radius <- sqrt(mean_size / pi)
 
-    # radius times two, as starting from the center one radius covers the
-    # current object
-    radius <- round(radius) * 2
+    # Radius times two to cover the entire object starting from the center
+    radius <- round(radius) * elongation
 
-    # proximity calculation starting from every center and scanning for any TRUE
-    # pixel in the given radius
+    # Proximity calculation for the auto-calculated radius
     xy_edit <- xy_coords
     for (j in 1:nrow(center_df)) {
       x <- center_df$mx[j]
       y <- center_df$my[j]
+      # Find pixels within the auto-calculated radius of the current center
       center_sur <- which(
         xy_coords$x > (x - radius) &
           xy_coords$x < (x + radius) &
@@ -125,12 +136,12 @@ proximityFilter <- function(centers,
           xy_coords$y < (y + radius)
       )
 
-      # checking that the detected pixels are not part of their own object
+      # Check that the detected pixels are not part of their own object
       if (is.null(center_sur) == FALSE &
-        length(unique(xy_coords$value[center_sur])) > 1) {
+          length(unique(xy_coords$value[center_sur])) > 1) {
         too_close <- unique(xy_coords$value[center_sur])
 
-        # removing them from the xy coordinate data set
+        # Remove the close objects from the xy coordinate data set
         for (k in too_close) {
           xy_pos <- which(xy_coords$value == k)
           xy_edit[xy_pos, ] <- NA
@@ -140,11 +151,11 @@ proximityFilter <- function(centers,
       }
     }
 
-    # removing NAs
+    # Remove NAs from the edited coordinates
     pre_coords <- na.omit(xy_edit)
 
-    # comparing to input centers (only keeping xy coordinates that pass the
-    # proximityFilter and are included in centers)
+    # Keep only xy coordinates that pass the proximity filter and are included
+    # in centers
     update <- list()
     for (l in center_df$value) {
       to_keep <- which(pre_coords$value == l)
@@ -153,20 +164,19 @@ proximityFilter <- function(centers,
       }
     }
 
-    # result: xy coordinates
+    # Result: xy coordinates that pass the filter
     xy_coords_clus <- pre_coords[unlist(update), ]
 
-    # result: remaining centers
+    # Result: remaining centers
     DT <- data.table(xy_coords_clus)
 
-    # summarize by center and calculate center
+    # Summarize by center and calculate mean coordinates
     remaining_center_df <-
       DT[, list(mx = mean(x), my = mean(y)), by = value]
   }
 
-  out <- list(
-    centers = remaining_center_df,
-    coordinates = xy_coords_clus,
-    size = cluster_size[remaining_center_df$value]
-  )
+  # Return the filtered centers, coordinates, and sizes as a list
+  out <- list(centers = remaining_center_df,
+              coordinates = xy_coords_clus,
+              size = cluster_size[remaining_center_df$value])
 }

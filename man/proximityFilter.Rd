@@ -4,7 +4,7 @@
 \alias{proximityFilter}
 \title{Proximity-based exclusion}
 \usage{
-proximityFilter(centers, coordinates, radius = "auto")
+proximityFilter(centers, coordinates, radius = "auto", elongation = 2)
 }
 \arguments{
 \item{centers}{center coordinates of objects (mx|my|value data frame)}
@@ -12,7 +12,10 @@ proximityFilter(centers, coordinates, radius = "auto")
 \item{coordinates}{all coordinates of the objects (x|y|value data frame)}
 
 \item{radius}{distance from one center in which no other centers
-are allowed (in pixels)}
+are allowed (in pixels) (numeric / 'auto')}
+
+\item{elongation}{factor by which the radius should be multiplied to create
+the area of exclusion (default 2)}
 }
 \value{
 list of 3 objects:
@@ -23,9 +26,20 @@ list of 3 objects:
 }
 }
 \description{
-To detect objects within a defined range of one another, it is necessary to
-calculate their centers to determine proximity. Pairs that are too close
-will be discarded. (Input can be obtained by objectDetection function)
+In order to identify objects within a specified proximity, it is essential to
+calculate their respective centers, which serve to determine their proximity.
+Pairs that are in close proximity will be discarded.
+(Input can be obtained by \code{\link[biopixR]{objectDetection}} function)
+}
+\details{
+The automated radius calculation in the \code{proximityFilter()} function is based
+on the presumption of circular-shaped objects. The radius is calculated using
+the formula \code{sqrt(A/pi)}, where A is the area of the detected objects. The
+function will exclude objects that are too close by extending the calculated
+radius by one radius length beyond the assumed circle, effectively doubling
+the radius to create an exclusion zone. Therefore the elongation factor is
+set to 2 by default, with one radius covering the object and an additional
+radius creating the area of exclusion.
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
