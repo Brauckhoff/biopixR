@@ -13,7 +13,6 @@ imgPipe(
   color3 = "color3",
   alpha = 1,
   sigma = 2,
-  parallel = FALSE,
   sizeFilter = TRUE,
   upperlimit = "auto",
   lowerlimit = "auto",
@@ -34,30 +33,28 @@ imgPipe(
 
 \item{color3}{name of color in img3}
 
-\item{alpha}{threshold adjustment factor}
+\item{alpha}{threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})}
 
-\item{sigma}{smoothing}
+\item{sigma}{smoothing (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})}
 
-\item{parallel}{if TRUE uses multiple cores (75 \%) to calculate alpha & sigma}
-
-\item{sizeFilter}{applying sizeFilter function (default - TRUE)}
+\item{sizeFilter}{applying \code{\link[biopixR]{sizeFilter}} function (default - TRUE)}
 
 \item{upperlimit}{highest accepted object size (only needed if
 sizeFilter = TRUE)}
 
 \item{lowerlimit}{smallest accepted object size (when 'auto' both limits are
-calculated by using the mean and the standard deviation)}
+calculated by using the IQR)}
 
-\item{proximityFilter}{applying proximityFilter function (default - TRUE)}
+\item{proximityFilter}{applying \code{\link[biopixR]{proximityFilter}} function (default - TRUE)}
 
 \item{radius}{distance from one center in which no other centers
-are allowed (in pixels)}
+are allowed (in pixels) (only needed if proximityFilter = TRUE)}
 }
 \value{
 list of 3 to 4 objects:
 \enumerate{
-\item summary of all the microbeads in the image
-\item detailed information about every single bead
+\item summary of all the objects in the image
+\item detailed information about every single object
 \item (optional) result for every individual color
 \item unfiltered coordinates of img1
 }
@@ -65,8 +62,8 @@ list of 3 to 4 objects:
 \description{
 This function serves as a pipeline that integrates tools for complete
 start-to-finish image analysis. It enables the handling of images from
-different channels, including the analysis of dual-color microbeads. This
-approach simplifies the workflow, providing a straightforward method to
+different channels, for example the analysis of dual-color microbeads.
+This approach simplifies the workflow, providing a straightforward method to
 analyze complex image data.
 }
 \examples{
@@ -84,4 +81,7 @@ with(
     pch = 19
     )
   )
+}
+\seealso{
+\code{\link[=objectDetection]{objectDetection()}} \code{\link[=sizeFilter]{sizeFilter()}} \code{\link[=proximityFilter]{proximityFilter()}} \code{\link[=resultAnalytics]{resultAnalytics()}} \code{\link[=shapeFeatures]{shapeFeatures()}}
 }

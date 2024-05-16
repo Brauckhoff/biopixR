@@ -102,6 +102,9 @@ guessKmeans <- function(x) {
 #' @param alpha threshold adjustment factor (default 1)
 #' @param sigma smoothing (default 2)
 #' @returns Object of class 'cimg', displaying detected edges.
+#' @import imager
+#' @import magick
+#' @import data.table
 #' @importFrom stats kmeans
 #' @examples
 #' edgeDetection(beads) |> plot()

@@ -50,6 +50,7 @@ computeGLCM <-
 #' @import imager
 #' @importFrom stats dist
 #' @importFrom cluster pam silhouette
+#' @importFrom tools md5sum
 #' @references https://cran.r-project.org/package=radiomics
 #' @examples
 #' tempdir()
@@ -72,7 +73,7 @@ haralickCluster <- function(path) {
 
   # Function to calculate md5 hash of a file, used to check for identical images
   calculatemd5 <- function(file_path) {
-    md5_hash <- tools::md5sum(file_path)
+    md5_hash <- md5sum(file_path)
     return(md5_hash)
   }
 
@@ -109,7 +110,7 @@ haralickCluster <- function(path) {
   }
 
   # Function to compute Haralick features for a given GLCM
-  compute_haralick_features <- function(glcm) {
+  computeHaralickFeatures <- function(glcm) {
     # Initialize vector for 8 features
     features <- numeric(8)
 
@@ -197,7 +198,7 @@ haralickCluster <- function(path) {
   extractFeatures <- function(image) {
     gray_matrix <- as.matrix(image)
     glcm <- computeGLCM(gray_matrix)
-    haralick_features <- compute_haralick_features(glcm)
+    haralick_features <- computeHaralickFeatures(glcm)
     return(haralick_features)
   }
 

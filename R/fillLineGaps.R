@@ -16,9 +16,6 @@
 #' @param visualize if TRUE (default) a plot is displayed highlighting the
 #' added pixels in the original image
 #' @returns image with continuous edges (closed gaps)
-#' @import imager
-#' @import magick
-#' @import data.table
 #' @details
 #' The function pre-processes the image in order to enable the implementation
 #' of the `adaptiveInterpolation()` function. The pre-processing stage
@@ -34,6 +31,9 @@
 #' `objectDetection()` function. Subsequently, the pixels of the detected
 #' objects are set to null in the original image, thus allowing the algorithm to
 #' proceed without the objects.
+#' @import imager
+#' @import magick
+#' @import data.table
 #' @examples
 #' fillLineGaps(droplets)
 #' @export

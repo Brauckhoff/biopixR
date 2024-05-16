@@ -2,9 +2,9 @@
 % Please edit documentation in R/resultAnalytics.R
 \name{resultAnalytics}
 \alias{resultAnalytics}
-\title{Image Summary}
+\title{Result Extraction and Summary}
 \usage{
-resultAnalytics(unfiltered, coordinates, size, img, parallel = FALSE)
+resultAnalytics(unfiltered, coordinates, size, img)
 }
 \arguments{
 \item{unfiltered}{all coordinates from every object before applying filter functions}
@@ -14,21 +14,19 @@ resultAnalytics(unfiltered, coordinates, size, img, parallel = FALSE)
 \item{size}{size of the objects}
 
 \item{img}{image (import by \code{\link[imager]{load.image}})}
-
-\item{parallel}{if TRUE uses multiple cores (75 \%) to process results}
 }
 \value{
 list of 2 objects:
 \enumerate{
-\item summary of all the microbeads in the image
-\item detailed information about every single bead
+\item summary of all the objects in the image
+\item detailed information about every single object
 }
 }
 \description{
-Extracts all important information of the remaining microbeads. This function
-summarizes the data obtained by previous functions: objectDetection,
-proximityFilter and sizeFilter. Provides information like amount, intensity,
-size and density.
+This function summarizes the data obtained by previous functions:
+\code{\link[biopixR]{objectDetection}}, \code{\link[biopixR]{proximityFilter}}
+or \code{\link[biopixR]{sizeFilter}}. Extracts information like amount,
+intensity, size and density.
 }
 \examples{
 res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)

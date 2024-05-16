@@ -1,20 +1,29 @@
 #' Directory Analysis
 #'
-#' This function identifies objects in an image using edge detection and
-#' labeling, gathering the coordinates and centers of the identified objects.
-#' The edges of detected objects are then highlighted for easy recognition.
-#' @param img image (import by \code{\link[imager]{load.image}})
-#' @param alpha threshold adjustment factor ('auto' / 'interactive' / numeric)
-#' @param sigma smoothing ('auto' / 'interactive' / numeric)
-#' @param parallel (TRUE | FALSE) when alpha & sigma = 'auto', if calculation
-#' of parameters should be done using foreach
-#' @returns list of 4 objects:
-#' 1. data frame of labeled region with the central coordinates
-#' 2. all coordinates that are in labeled regions
-#' 3. size of labeled objects
-#' 4. image were object edges (purple) and detected centers (green) are colored
+#'
+#' @param path directory path to folder with images to be analyzed
+#' @param format ('jpg' / 'png' / 'bmp') uses \code{\link[imager]{load.dir}} or 'tiff' uses \code{\link[magick]{image_read}}
+#' @param parallel processing multiple images at the same time (TRUE | FALSE)
+#' @param backend 'PSOCK' or 'FORK' (see \code{\link[parallel]{makeCluster}})
+#' @param cores number of cores for parallel processing (numeric / 'auto') ('auto' uses 75% of the available cores)
+#' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})
+#' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})
+#' @param sizeFilter applying \code{\link[biopixR]{sizeFilter}} function (default - TRUE)
+#' @param upperlimit highest accepted object size (only needed if sizeFilter = TRUE)
+#' @param lowerlimit smallest accepted object size (when 'auto' both limits are
+#' calculated by using the IQR)
+#' @param proximityFilter applying \code{\link[biopixR]{proximityFilter}} function (default - TRUE)
+#' @param radius distance from one center in which no other centers
+#' are allowed (in pixels) (only needed if proximityFilter = TRUE)
+#' @param Rlog creates a log markdown document, summarizing the results (TRUE | FALSE)
+#' @returns
+#'
+#' @details
+#'
 #' @import
-#' @import imager
+#' @import
+#' @importFrom rmarkdown render
+#' @seealso [imgPipe()]
 #' @examples
 #' \donttest{
 #' if (interactive()) {
@@ -28,7 +37,7 @@
 #'   save.image(beads_large1, file_path)
 #'   file_path <- file.path(temp_dir, "beads_large2.png")
 #'   save.image(grayscale(beads_large2), file_path)
-#'   scanDir(temp_dir)
+#'   scanDir(temp_dir, alpha = 'interactive', sigma = 'interactive')
 #'   unlink(temp_dir, recursive = TRUE)
 #' }
 #' }
@@ -46,14 +55,13 @@ scanDir <- function(path,
                     proximityFilter = TRUE,
                     radius = 'auto',
                     Rlog = TRUE) {
-
-  # function to print a message with a timestamp
-  print_with_timestamp <- function(msg) {
+  # Function to print a message with a timestamp
+  printWithTimestamp <- function(msg) {
     timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
     message(paste(timestamp, msg))
   }
 
-  # another function to print with timestamp (but directly into log file)
+  # Another function to print with timestamp (but directly into log file)
   logIt <- function(msg) {
     timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
     cat(timestamp, msg, "\n",
@@ -61,22 +69,17 @@ scanDir <- function(path,
         append = TRUE)
   }
 
-
-  # format = jpg/png/bmp/tiff
-  # backend = 'PSOCK' or 'FORK'
-  # cores auto using 75% of present cores or number of cores to be used
-
-  # creating log
+  # Creating log
   if (Rlog == TRUE) {
-    # create path of log_file
+    # Create path of log_file
     desired_location <- path
     log_file <- "log_file.Rmd"
     new_script_path <- file.path(desired_location, log_file)
 
-    # create .rmd log file at input path
+    # Create .rmd log file at input path
     file.edit(new_script_path)
 
-    # writing into the log.rmd (do not use styler on this part!!!)
+    # Writing into the log.rmd (do not use styler on this part!!!)
     cat(
 "---
 title: 'scanDir log file'
@@ -93,10 +96,10 @@ path,
         file = new_script_path,
         append = TRUE)
 
-    # creating folder for log files containing results
+    # Creating folder for log files containing results
     log_path <- file.path(desired_location, "log_files")
 
-    # create directory for log files
+    # Create directory for log files
     dir.create(log_path)
 
     log_path <- file.path(desired_location, "log_files/")
@@ -107,22 +110,20 @@ path,
     #} else {
     #  print("Failed to create directory.")
     #}
-
-
   }
 
-  # printing steps to console and log file
+  # Printing steps to console and log file
   if (Rlog == TRUE) {
     logIt("Importing images from directory...  ")
   }
-  print_with_timestamp("Importing images from directory...")
+  printWithTimestamp("Importing images from directory...")
 
-  # import via imager for jpg/png/bmp
+  # Import images via imager for jpg/png/bmp formats
   if (format == 'jpg' | format == 'png' | format == 'bmp') {
     cimg_list <- load.dir(path = path)
   }
 
-  # import via magick for tif
+  # Import images via magick for tiff format
   if (format == 'tif') {
     image_files <-
       list.files(path = path,
@@ -132,47 +133,50 @@ path,
     cimg_list <- lapply(image_list, magick2cimg)
   }
 
-
   if (Rlog == TRUE) {
     logIt("Checking md5sums...  ")
   }
-  print_with_timestamp("Checking md5sums...")
+  printWithTimestamp("Checking md5sums...")
 
-  # checking directory for identical images using md5 sums
-  # calculating md5sum function
+  # Checking directory for identical images using md5 sums
+  # Function to calculate md5sum
   calculatemd5 <- function(file_path) {
     md5_hash <- tools::md5sum(file_path)
     return(md5_hash)
   }
 
-  # applying calculating function to all files in directory
+  # Applying md5sum calculation function to all files in directory
   md5sums <- function(file_paths) {
     sapply(file_paths, calculatemd5)
   }
 
   file_paths <- list.files(path, full.names = TRUE)
 
-  # ignore created directories
+  # Ignore created directories and log file
   file_paths <- file_paths[!file.info(file_paths)$isdir]
-  file_paths <- file_paths[grep("\\.Rmd$", file_paths, invert = TRUE)]
+  file_paths <-
+    file_paths[grep("\\.Rmd$", file_paths, invert = TRUE)]
 
   md5_sums <- md5sums(file_paths)
 
-  # summary of file names and md5 sums
+  # Summary of file names and md5 sums
   md5_result <- data.frame(file = file_paths,
                            md5_sum = md5_sums)
 
   duplicate_indices <- duplicated(md5_result$md5_sum)
 
-  # error if md5 sums appear more than once
+  # Error if md5 sums appear more than once
   if (length(unique(duplicate_indices)) > 1) {
     duplicate_entries <- md5_result[duplicate_indices, ]
     if (Rlog == TRUE) {
-      cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-          "Error: Some files seem to have identical md5sums! \n Please remove:",
-          duplicate_entries$file, "  \n",
+      cat(
+        format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+        "Error: Some files seem to have identical md5sums! \n Please remove:",
+        duplicate_entries$file,
+        "  \n",
         file = new_script_path,
-        append = TRUE)
+        append = TRUE
+      )
     }
     stop(
       format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
@@ -181,18 +185,18 @@ path,
     )
   }
 
-  # save input parameters
+  # Save input parameters
   alpha_i <- alpha
   sigma_i <- sigma
 
-  # with parallel processing (currently problems with alpha / sigma = 'auto')
+  # With parallel processing
   if (parallel == TRUE) {
     if (requireNamespace("doParallel", quietly = TRUE)) {
-      # creating parallel backend
+      # Creating parallel backend
       if (Rlog == TRUE) {
         logIt("Creating parallel backend...  ")
       }
-      print_with_timestamp("Creating parallel backend...")
+      printWithTimestamp("Creating parallel backend...")
 
       if (cores == 'auto') {
         n_cores <- round(detectCores() * 0.75)
@@ -205,7 +209,7 @@ path,
       }
 
       if (cores != 'auto') {
-        if(is.numeric(cores) != TRUE) {
+        if (is.numeric(cores) != TRUE) {
           if (Rlog == TRUE) {
             logIt("Error: Number of cores needs to be numeric.  ")
           }
@@ -213,15 +217,13 @@ path,
                " Number of cores needs to be numeric.")
         }
         n_cores <- cores
-
         my_cluster <- makeCluster(n_cores,
                                   type = backend,
-                                  outfile="")
-
+                                  outfile = "")
         registerDoParallel(cl = my_cluster)
       }
 
-      # giving information about the cores used
+      # Giving information about the cores used
       if (Rlog == TRUE) {
         cat(
           format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
@@ -244,8 +246,8 @@ path,
       if (Rlog == TRUE) {
         logIt("Starting image analysis...  ")
       }
-      print_with_timestamp("Starting image analysis...")
-      # starting with analysis foreach loop
+      printWithTimestamp("Starting image analysis...")
+      # Starting analysis with foreach loop
       md5_result <-
         foreach(
           i = 1:length(cimg_list),
@@ -253,7 +255,6 @@ path,
           .verbose = TRUE,
           .packages = "biopixR"
         ) %dopar% {
-
           if (Rlog == TRUE) {
             cat(
               format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
@@ -273,17 +274,12 @@ path,
 
           img <- cimg_list[[i]]
 
-          if(dim(img)[4] != 1){
+          # Convert image to grayscale if not already
+          if (dim(img)[4] != 1) {
             img <- grayscale(img)
           }
 
-          if(alpha_i == 'interactive' & sigma_i == 'interactive') {
-            parameter <- biopixR::interactive_objectDetection(img)
-            alpha <- as.numeric(parameter[1])
-            sigma <- as.numeric(parameter[2])
-          }
-
-          # actual function to be processed
+          # Actual function to be processed
           res <- biopixR::imgPipe(
             img1 = img,
             alpha = alpha,
@@ -296,16 +292,15 @@ path,
             parallel = FALSE
           )
 
-          # plot visualization into log file
+          # Save produced data into log_files
           if (Rlog == TRUE) {
-            # save produced data into log_files
             export <- list(data = res,
                            image = cimg_list[i])
             saveRDS(export, file = paste0(log_path, "log_", i, ".RDS"))
           }
 
-          # combining results from the loop with the file information
-          md5_result_row <- cbind(md5_result[i,], res$summary)
+          # Combining results from the loop with the file information
+          md5_result_row <- cbind(md5_result[i, ], res$summary)
           md5_result_row
         }
 
@@ -324,65 +319,58 @@ path,
     }
   }
 
-  # without parallel processing
+  # Without parallel processing
   if (parallel == FALSE) {
     for (i in seq_along(cimg_list)) {
-
       if (Rlog == TRUE) {
-        cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-            "Currently analyzing:",
-            md5_result$file[i], "  \n",
-            file = new_script_path,
-            append = TRUE)
-      }
-      message(
-        paste(
+        cat(
           format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
           "Currently analyzing:",
-          md5_result$file[i]
+          md5_result$file[i],
+          "  \n",
+          file = new_script_path,
+          append = TRUE
         )
-      )
+      }
+      message(paste(
+        format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+        "Currently analyzing:",
+        md5_result$file[i]
+      ))
 
-      # actual function to be processed
+      # Actual function to be processed
       img <- cimg_list[[i]]
 
-      if(dim(img)[4] != 1){
+      # Convert image to grayscale if not already
+      if (dim(img)[4] != 1) {
         img <- grayscale(img)
       }
 
-      if(alpha_i == 'interactive' & sigma_i == 'interactive') {
-        parameter <- biopixR::interactive_objectDetection(img)
-        alpha <- as.numeric(parameter[1])
-        sigma <- as.numeric(parameter[2])
-      }
+      res <- biopixR::imgPipe(
+        img1 = img,
+        alpha = alpha,
+        sigma = sigma,
+        sizeFilter = sizeFilter,
+        lowerlimit = lowerlimit,
+        upperlimit = upperlimit,
+        proximityFilter = proximityFilter,
+        radius = radius
+      )
 
-      res <- biopixR::imgPipe(img1 = img,
-                     alpha = alpha,
-                     sigma = sigma,
-                     sizeFilter = sizeFilter,
-                     lowerlimit = lowerlimit,
-                     upperlimit = upperlimit,
-                     proximityFilter = proximityFilter,
-                     radius = radius,
-                     parallel = TRUE)
-
-      # plot visualization into log file
+      # Save produced data into log_files
       if (Rlog == TRUE) {
-        # save produced data into log_files
-        export <- list(
-          data = res,
-          image = cimg_list[i]
-        )
+        export <- list(data = res,
+                       image = cimg_list[i])
         saveRDS(export, file = paste0(log_path, "log_", i, ".RDS"))
       }
 
       md5_result[i, c(colnames(res$summary))] <- res$summary
     }
-
   }
-  # render log file
+
+  # Render log file
   if (Rlog == TRUE) {
-    # save md5result
+    # Save md5result
     saveRDS(md5_result, file = paste0(log_path, "result.RDS"))
 
         cat(
@@ -395,10 +383,9 @@ matching_files <- all_files[grep(target_file_name, all_files, ignore.case = TRUE
 md5result <- readRDS(matching_files)
 name <- basename(md5result$file)
 md5result <- data.frame(name = name,
-                        amount = md5result$number_of_beads,
+                        amount = md5result$number_of_objects,
                         size = md5result$mean_size,
                         intensity = md5result$mean_intensity,
-                        density = md5result$bead_density,
                         rejected = md5result$estimated_rejected,
                         coverage = md5result$coverage)
 md5result
@@ -429,11 +416,12 @@ with(data$detailed, points(data$detailed$x, data$detailed$y, col = 'darkgreen'))
       file = new_script_path,
       append = TRUE)
 
-
-
     rmarkdown::render(new_script_path)
     # Write the data frame to a CSV file
-    write.csv(md5_result, file = paste0(path, "/result.csv"), row.names = FALSE)
+    write.csv(md5_result,
+              file = paste0(path, "/result.csv"),
+              row.names = FALSE)
   }
+
   out <- md5_result
 }

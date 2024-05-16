@@ -24,6 +24,7 @@
 #' - For advanced parameter optimization, the function \code{\link[GPareto]{GParetoptim}} will be utilize for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
 #' @import data.table
 #' @import imager
+#' @importFrom stats complete.cases
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
 #' res_objectDetection$marked_beads |> plot()
@@ -60,7 +61,7 @@ objectDetection <- function(img,
       property <- shapeFeatures(img, alpha, sigma)
 
       # Filter rows without missing values
-      df_complete <- property[complete.cases(property), ]
+      df_complete <- property[complete.cases(property),]
       # Apply a thresholding function to the image
       t <- threshold(img)
 
@@ -103,7 +104,7 @@ objectDetection <- function(img,
 
     # Loop through each row in the parameter grid
     for (b in 1:n) {
-      row <- param_grid[b, ]
+      row <- param_grid[b,]
       # Call the hayflick function and handle errors
       res_main <- tryCatch({
         hayflick(object_img, row$alpha, row$sigma)
@@ -123,7 +124,7 @@ objectDetection <- function(img,
     }
 
     # Filter rows without missing values
-    results_df <- results_df[complete.cases(results_df),]
+    results_df <- results_df[complete.cases(results_df), ]
 
     # Normalize and aggregate results for fitness calculation
     if (length(unique(results_df$size)) != 1) {
@@ -148,9 +149,9 @@ objectDetection <- function(img,
     }
 
     # Retrieve the best parameter set from the parameter grid
-    result_1 <- param_grid[unlist(mylist),]
+    result_1 <- param_grid[unlist(mylist), ]
     result <- result_1
-    result <- result[1,]
+    result <- result[1, ]
     alpha <- result$alpha
     sigma <- result$sigma
   }
@@ -165,7 +166,7 @@ objectDetection <- function(img,
   # If parameters are set to 'gaussian', perform Gaussian process optimization
   if (alpha_i == "gaussian" &
       sigma_i == "gaussian") {
-    if (requireNamespace(c("GPareto", "DiceDesign"), quietly = TRUE)) {
+    if (requireNamespace(c("GPareto", "DiceDesign", "DiceKriging"), quietly = TRUE)) {
       hayflick <- function(x) {
         alpha <- x[1]
         sigma <- x[2]
@@ -174,7 +175,7 @@ objectDetection <- function(img,
         property <- shapeFeatures(object_img, alpha, sigma)
 
         # Filter rows without missing values
-        df_complete <- property[complete.cases(property), ]
+        df_complete <- property[complete.cases(property),]
         # Apply a thresholding function to the image
         t <- threshold(object_img)
 
@@ -197,7 +198,7 @@ objectDetection <- function(img,
         quality <- sum(combine) / ncol(combine)
 
         # Return both quality and total size as a list
-        return(c(quality,-sum(property$size)))
+        return(c(quality, -sum(property$size)))
       }
 
       # Define bounds for the parameters
@@ -205,7 +206,8 @@ objectDetection <- function(img,
       upper_bounds <- c(alpha = 1.4, sigma = 1.4)
 
       # Generate initial Latin Hypercube Sample
-      lhs_sample <- lhsDesign(n = 20, dimension = 2)$design
+      lhs_sample <-
+        DiceDesign::lhsDesign(n = 20, dimension = 2)$design
 
       # Scale the LHS sample to the parameter ranges
       scaled_design <- lhs_sample
@@ -225,13 +227,13 @@ objectDetection <- function(img,
       responses_matrix <-
         matrix(unlist(responses), ncol = 2, byrow = TRUE)  # Ensure responses are structured correctly
       models <- list(
-        km1 = km(
+        km1 = DiceKriging::km(
           ~ .,
           design = design_df,
           response = responses_matrix[, 1],
           covtype = "matern5_2"
         ),
-        km2 = km(
+        km2 = DiceKriging::km(
           ~ .,
           design = design_df,
           response = responses_matrix[, 2],
@@ -241,7 +243,7 @@ objectDetection <- function(img,
 
       # Perform multi-objective optimization using Gaussian Process models
       results <-
-        GParetoptim(
+        GPareto::GParetoptim(
           model = models,
           fn = hayflick,
           nsteps = 25,
@@ -259,7 +261,7 @@ objectDetection <- function(img,
     } else {
       stop(
         format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-        " Please install the Package 'GPareto' & 'DiceDesign' \n for multi-objective optimization \n (install.package(c('GPareto', 'DiceDesign'))"
+        " Please install the Package 'GPareto' & 'DiceDesign' & 'DiceKriging' \n for multi-objective optimization \n (install.package(c('GPareto', 'DiceDesign', 'DiceKriging'))"
       )
     }
   }

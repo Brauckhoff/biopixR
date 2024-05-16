@@ -18,18 +18,16 @@ shapeFeatures(
 \arguments{
 \item{img}{image (import by \code{\link[imager]{load.image}})}
 
-\item{alpha}{threshold adjustment factor}
+\item{alpha}{threshold adjustment factor (from \code{\link[biopixR]{objectDetection}})}
 
-\item{sigma}{smoothing}
+\item{sigma}{smoothing (from \code{\link[biopixR]{objectDetection}})}
 
 \item{xdim}{x-dimension for the SOM-grid (grid = hexagonal)}
 
 \item{ydim}{y-dimension for the SOM-grid (xdim * ydim = number of neurons)}
 
-\item{SOM}{if TRUE runs SOM algorithms on extracted shape features, grouping
+\item{SOM}{if TRUE runs SOM algorithm on extracted shape features, grouping
 the detected objects}
-
-\item{parallel}{if TRUE uses multiple cores (75 \%) to process results}
 
 \item{visualize}{visualizes the groups computed by SOM}
 }
@@ -40,7 +38,7 @@ data frame containing detailed information about every single bead
 This function analyzes the objects detected in an image and calculates
 distinct shape characteristics for each object, such as circularity,
 eccentricity, radius, and perimeter. The resulting shape attributes can then
-be grouped using a Self-Organizing Map (SOM) from the Kohonen package.
+be grouped using a Self-Organizing Map (SOM) from the 'Kohonen' package.
 }
 \examples{
 shapeFeatures(

@@ -10,6 +10,7 @@
 #' @param visualize if TRUE the resulting image gets plotted
 #' @returns
 #' 'cimg' with changed colors at desired positions and a plot of the 'cimg'
+#' @import imager
 #' @importFrom grDevices col2rgb
 #' @examples
 #' coordinates <- objectDetection(beads)
