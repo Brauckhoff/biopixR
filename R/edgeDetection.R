@@ -31,8 +31,10 @@ rescueFill <- function(strong, weak) {
   # Store initial state in out
   out <- v
 
+  limiter <- nrow(strong) * ncol(strong) * 0.01
+
   # Stop function if no edges are detected to process (i.e., dataframe is empty)
-  if (nrow(df) == 0) {
+  if (nrow(df) == 0 | nrow(df) > limiter) {
     stop("The parameters cannot be increased any further since no edges could be detected.")
   }
 
@@ -173,55 +175,60 @@ edgeDetection <- function(img,
   end_points_df <- as.data.frame(end_points)
   colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
 
-  diagonal_edges <-
-    which(diagonalends_cimg == TRUE, arr.ind = TRUE)
-  diagonal_edges_df <- as.data.frame(diagonal_edges)
-  colnames(diagonal_edges_df) <- c("x", "y", "dim3", "dim4")
+  limiter <- nrow(img) * ncol(img) * 0.01
 
-  # Label regions in the processed image for additional analysis
-  lab <- label(out_cimg)
-  df_lab <- as.data.frame(lab) |>
-    subset(value > 0)
+  if(nrow(end_points_df) < limiter) {
+    diagonal_edges <-
+      which(diagonalends_cimg == TRUE, arr.ind = TRUE)
+    diagonal_edges_df <- as.data.frame(diagonal_edges)
+    colnames(diagonal_edges_df) <- c("x", "y", "dim3", "dim4")
 
-  # Collect data of labeled regions that correspond to edges
-  alt_x <- list()
-  alt_y <- list()
-  alt_value <- list()
-  for (g in 1:nrow(df_lab)) {
-    # droplets_array <- as.array(droplets)
-    if (out_cimg[df_lab$x[g], df_lab$y[g], 1, 1] == 1) {
-      alt_x[g] <- df_lab$x[g]
-      alt_y[g] <- df_lab$y[g]
-      alt_value[g] <- df_lab$value[g]
+    # Label regions in the processed image for additional analysis
+    lab <- label(out_cimg)
+    df_lab <- as.data.frame(lab) |>
+      subset(value > 0)
+
+    # Collect data of labeled regions that correspond to edges
+    alt_x <- list()
+    alt_y <- list()
+    alt_value <- list()
+    for (g in 1:nrow(df_lab)) {
+      # droplets_array <- as.array(droplets)
+      if (out_cimg[df_lab$x[g], df_lab$y[g], 1, 1] == 1) {
+        alt_x[g] <- df_lab$x[g]
+        alt_y[g] <- df_lab$y[g]
+        alt_value[g] <- df_lab$value[g]
+      }
     }
+
+    # Clean and prepare data for further interpolation
+    clean_lab_df <- data.frame(
+      x = unlist(alt_x),
+      y = unlist(alt_y),
+      value = unlist(alt_value)
+    )
+
+    # Use adaptive interpolation to connect discontinuous edges
+    first_overlay <-
+      adaptiveInterpolation(end_points_df,
+                            diagonal_edges_df,
+                            clean_lab_df,
+                            lineends_cimg,
+                            radius = 5)
+
+    # Merge original edge image with interpolated results
+    first_connect <-
+      parmax(list(out_cimg, as.cimg(first_overlay$overlay)))
+
+    # Final morphology processing to thin and skeletonize the connected edges
+    connect_magick <- cimg2magick(first_connect)
+    thresh_clean_magick <-
+      image_morphology(connect_magick, "thinning", "skeleton")
+
+    # Convert the final processed image back to 'cimg' format
+    out_cimg <- magick2cimg(thresh_clean_magick)
+
   }
-
-  # Clean and prepare data for further interpolation
-  clean_lab_df <- data.frame(
-    x = unlist(alt_x),
-    y = unlist(alt_y),
-    value = unlist(alt_value)
-  )
-
-  # Use adaptive interpolation to connect discontinuous edges
-  first_overlay <-
-    adaptiveInterpolation(end_points_df,
-                          diagonal_edges_df,
-                          clean_lab_df,
-                          lineends_cimg,
-                          radius = 5)
-
-  # Merge original edge image with interpolated results
-  first_connect <-
-    parmax(list(out_cimg, as.cimg(first_overlay$overlay)))
-
-  # Final morphology processing to thin and skeletonize the connected edges
-  connect_magick <- cimg2magick(first_connect)
-  thresh_clean_magick <-
-    image_morphology(connect_magick, "thinning", "skeleton")
-
-  # Convert the final processed image back to 'cimg' format
-  out_cimg <- magick2cimg(thresh_clean_magick)
 
   # Final output in pixset format
   out <- out_cimg

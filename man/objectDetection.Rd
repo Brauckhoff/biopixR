@@ -4,7 +4,7 @@
 \alias{objectDetection}
 \title{Object detection}
 \usage{
-objectDetection(img, alpha = 1, sigma = 2)
+objectDetection(img, alpha = 1, sigma = 2, vis = TRUE)
 }
 \arguments{
 \item{img}{image (import by \code{\link[imager]{load.image}})}
@@ -12,6 +12,8 @@ objectDetection(img, alpha = 1, sigma = 2)
 \item{alpha}{threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian')}
 
 \item{sigma}{smoothing (numeric / 'static' / 'interactive' / 'gaussian')}
+
+\item{vis}{creates image were object edges (purple) and detected centers (green) are highlighted (TRUE | FALSE)}
 }
 \value{
 list of 4 objects:

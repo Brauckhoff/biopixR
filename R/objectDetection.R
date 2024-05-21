@@ -6,6 +6,7 @@
 #' @param img image (import by \code{\link[imager]{load.image}})
 #' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian')
 #' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian')
+#' @param vis creates image were object edges (purple) and detected centers (green) are highlighted (TRUE | FALSE)
 #' @returns list of 4 objects:
 #' 1. data frame of labeled region with the central coordinates
 #' 2. all coordinates that are in labeled regions
@@ -24,6 +25,7 @@
 #' - For advanced parameter optimization, the function \code{\link[GPareto]{GParetoptim}} will be utilize for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
 #' @import data.table
 #' @import imager
+#' @import GPareto
 #' @importFrom stats complete.cases
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
@@ -31,7 +33,8 @@
 #' @export
 objectDetection <- function(img,
                             alpha = 1,
-                            sigma = 2) {
+                            sigma = 2,
+                            vis = TRUE) {
   # Assign import
   object_img <- img
   alpha_i <- alpha
@@ -201,62 +204,110 @@ objectDetection <- function(img,
         return(c(quality, -sum(property$size)))
       }
 
+      # Function to find the lower boundary
+      findLowerBound <- function(min_value, max_value, step_size) {
+        parameter <- min_value
+        while (parameter <= max_value) {
+          result <- tryCatch({
+            setTimeLimit(elapsed = timeout, transient = FALSE)
+            edgeDetection(object_img, alpha = parameter, sigma = 0)
+            return(parameter)
+          }, error = function(e) {
+            return(NULL)
+          }, finally = {
+            setTimeLimit(elapsed = Inf)   # Disable the timeout
+          })
+          if (!is.null(result)) {
+            return(result)
+          } else {
+            parameter <- parameter + step_size
+          }
+        }
+        return(NA)  # In case no valid parameter is found within the range
+      }
+
+      # Function to find the upper boundary
+      findUpperBound <- function(max_value, min_value, step_size) {
+        parameter <- max_value
+        while (parameter >= min_value) {
+          tryCatch({
+            setTimeLimit(elapsed = timeout, transient = FALSE)
+            edgeDetection(object_img, alpha = parameter, sigma = 1.4)
+            return(parameter)
+          }, error = function(e) {
+            return(NULL)
+          }, finally = {
+            setTimeLimit(elapsed = Inf)
+          })
+          if (!is.null(result)) {
+            return(result)
+          } else {
+            parameter <- parameter - step_size
+          }
+        }
+        return(NA)  # In case no valid parameter is found within the range
+      }
+
+      # Define the range and step size
+      min_value <- 0.1  # Starting point for lower boundary search
+      max_value <- 1.4   # Starting point for upper boundary search
+      step_size <- 0.1  # Increment/Decrement step size
+      timeout <- 5
+
+      # Find the lower and upper boundaries
+      lower_bound <- findLowerBound(min_value, max_value, step_size)
+      upper_bound <- findUpperBound(max_value, min_value, step_size)
+
       # Define bounds for the parameters
-      lower_bounds <- c(alpha = 0.1, sigma = 0)
-      upper_bounds <- c(alpha = 1.4, sigma = 1.4)
-
-      # Generate initial Latin Hypercube Sample
-      lhs_sample <-
-        DiceDesign::lhsDesign(n = 20, dimension = 2)$design
-
-      # Scale the LHS sample to the parameter ranges
-      scaled_design <- lhs_sample
-      scaled_design[, 1] = lhs_sample[, 1] * (upper_bounds[1] - lower_bounds[1]) + lower_bounds[1]
-      scaled_design[, 2] = lhs_sample[, 2] * (upper_bounds[2] - lower_bounds[2]) + lower_bounds[2]
-
-      # Convert to data frame and name the columns
-      design_df <- as.data.frame(scaled_design)
-      colnames(design_df) <- c("alpha", "sigma")
-
-      # Assuming the hayflick function is already defined and takes a vector of parameters
-      responses <- apply(design_df, 1, function(params) {
-        hayflick(c(alpha = params['alpha'], sigma = params['sigma']))
-      })
-
-      # Build Gaussian Process models for each objective
-      responses_matrix <-
-        matrix(unlist(responses), ncol = 2, byrow = TRUE)  # Ensure responses are structured correctly
-      models <- list(
-        km1 = DiceKriging::km(
-          ~ .,
-          design = design_df,
-          response = responses_matrix[, 1],
-          covtype = "matern5_2"
-        ),
-        km2 = DiceKriging::km(
-          ~ .,
-          design = design_df,
-          response = responses_matrix[, 2],
-          covtype = "matern5_2"
-        )
-      )
+      lower_bounds <- c(alpha = lower_bound, sigma = 0)
+      upper_bounds <- c(alpha = upper_bound, sigma = 1.4)
 
       # Perform multi-objective optimization using Gaussian Process models
       results <-
-        GPareto::GParetoptim(
-          model = models,
+        easyGParetoptim(
           fn = hayflick,
-          nsteps = 25,
+          budget = 20,
           lower = lower_bounds,
-          upper = upper_bounds,
-          ncores = 6
+          upper = upper_bounds
         )
 
-      #plotGPareto(results)
+      # Extract the Pareto-optimal solutions
+      pareto_set <- results$par
+      pareto_front <- results$value
+
+      # Function for Min-Max Normalization
+      min_max_normalize <- function(x) {
+        if (!is.numeric(x))
+          stop("Input must be numeric")
+        if (length(unique(x)) == 1)
+          return(rep(0, length(x))) # Avoid division by zero when all values are identical
+
+        min_val <- min(x)
+        max_val <- max(x)
+
+        normalized_x <- (x - min_val) / (max_val - min_val)
+        return(normalized_x)
+      }
+
+      pareto_front_n <- pareto_front
+      pareto_front_n[, 2] <- min_max_normalize(pareto_front[, 2])
+
+      # Calculate the Euclidean distance from the ideal point
+      # Assuming a minimization problem, the ideal point is (0, 0)
+      ideal_point <- c(0, 0)
+      distances <-
+        apply(pareto_front_n, 1, function(x)
+          sqrt(sum((x - ideal_point) ^ 2)))
+
+      # Find the index of the knee point
+      knee_point_index <- which.min(distances)
+
+      # Extract the knee point parameters
+      knee_point_parameters <- pareto_set[knee_point_index,]
 
       # Extract optimized parameters
-      alpha <- results$par[25, 1]
-      sigma <- results$par[25, 2]
+      alpha <- knee_point_parameters[1]
+      sigma <- knee_point_parameters[2]
 
     } else {
       stop(
@@ -305,22 +356,26 @@ objectDetection <- function(img,
     }
   }
 
-  # Visualization: Highlight the edges of detected objects
-  edge_coords <- which(edge_img == TRUE, arr.ind = TRUE)
-  # Change the color of the detected edges to purple for visualization
-  colored_edge <-
-    changePixelColor(object_img, edge_coords, color = "purple")
-  # Draw circles around the detected clusters using their mean coordinates
-  colored_edge <- draw_circle(
-    colored_edge,
-    grouped_lab_img$mx,
-    grouped_lab_img$my,
-    radius = (sqrt(mean(
-      unlist(cluster_size)
-    ) / pi) / 2),
-    # Compute radius from the area assuming clusters are roughly circular
-    color = "darkgreen"   # Circle color
-  )
+  if (vis == TRUE) {
+    # Visualization: Highlight the edges of detected objects
+    edge_coords <- which(edge_img == TRUE, arr.ind = TRUE)
+    # Change the color of the detected edges to purple for visualization
+    colored_edge <-
+      changePixelColor(object_img, edge_coords, color = "purple")
+    # Draw circles around the detected clusters using their mean coordinates
+    colored_edge <- draw_circle(
+      colored_edge,
+      grouped_lab_img$mx,
+      grouped_lab_img$my,
+      radius = (sqrt(mean(
+        unlist(cluster_size)
+      ) / pi) / 2),
+      # Compute radius from the area assuming clusters are roughly circular
+      color = "darkgreen"   # Circle color
+    )
+  } else {
+    colored_edge <- NULL
+  }
 
   # Compile all useful information into a single output list
   out <- list(

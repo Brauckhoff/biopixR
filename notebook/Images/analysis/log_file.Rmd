@@ -1,0 +1,9 @@
+---
+title: 'scanDir log file'
+output: pdf_document
+--- 
+# Analysis of directory notebook/Images/analysis 
+2024-05-21 18:46:33 Importing images from directory...   
+2024-05-21 18:46:34 Checking md5sums...   
+2024-05-21 18:46:34 Currently analyzing: notebook/Images/analysis/1_000000_40x_Cy5_Grey=1000_Z=3509370_Well=A1_Ti=149999us_t=000173547ms.bmp   
+2024-05-21 18:56:47 Currently analyzing: notebook/Images/analysis/1_000007_40x_Cy5_Grey=1000_Z=3516170_Well=C1_Ti=149999us_t=000242390ms.bmp   
