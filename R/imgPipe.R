@@ -77,7 +77,8 @@ imgPipe <- function(img1 = img,
   col1_detect <-
     objectDetection(img1,
                     alpha = alpha,
-                    sigma = sigma)
+                    sigma = sigma,
+                    vis = FALSE)
 
   # Object detection for the second image channel if provided
   if (is.null(img2) != TRUE) {

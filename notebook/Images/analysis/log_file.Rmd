@@ -3,7 +3,76 @@ title: 'scanDir log file'
 output: pdf_document
 --- 
 # Analysis of directory notebook/Images/analysis 
-2024-05-21 18:46:33 Importing images from directory...   
-2024-05-21 18:46:34 Checking md5sums...   
-2024-05-21 18:46:34 Currently analyzing: notebook/Images/analysis/1_000000_40x_Cy5_Grey=1000_Z=3509370_Well=A1_Ti=149999us_t=000173547ms.bmp   
-2024-05-21 18:56:47 Currently analyzing: notebook/Images/analysis/1_000007_40x_Cy5_Grey=1000_Z=3516170_Well=C1_Ti=149999us_t=000242390ms.bmp   
+2024-05-22 16:38:38 Importing images from directory...   
+2024-05-22 16:38:39 Checking md5sums...   
+2024-05-22 16:38:39 Currently analyzing: notebook/Images/analysis/1_000000_40x_Cy5_Grey=1000_Z=3509370_Well=A1_Ti=149999us_t=000173547ms.bmp   
+2024-05-22 16:50:06 Currently analyzing: notebook/Images/analysis/1_000007_40x_Cy5_Grey=1000_Z=3516170_Well=C1_Ti=149999us_t=000242390ms.bmp   
+2024-05-22 16:56:26 Currently analyzing: notebook/Images/analysis/1_000020_40x_Cy5_Grey=1000_Z=3551510_Well=G1_Ti=149999us_t=000376422ms.bmp   
+2024-05-22 16:58:26 Failed to analyze: notebook/Images/analysis/1_000020_40x_Cy5_Grey=1000_Z=3551510_Well=G1_Ti=149999us_t=000376422ms.bmp   
+2024-05-22 16:58:26 Currently analyzing: notebook/Images/analysis/1_000025_40x_Cy5_Grey=1000_Z=3519150_Well=A2_Ti=149999us_t=000438625ms.bmp   
+2024-05-22 17:08:56 Currently analyzing: notebook/Images/analysis/1_000036_40x_Cy5_Grey=1000_Z=3513100_Well=D2_Ti=149999us_t=000543422ms.bmp   
+```{r, echo=FALSE}
+directory_path <- getwd()
+target_file_name <- 'result.RDS'
+all_files <- list.files(directory_path, recursive = TRUE, full.names = TRUE)
+matching_files <- all_files[grep(target_file_name, all_files, ignore.case = TRUE)]
+
+md5result <- readRDS(matching_files)
+name <- basename(md5result$file)
+md5result <- data.frame(name = name,
+                        amount = md5result$number_of_objects,
+                        size = md5result$mean_size,
+                        intensity = md5result$mean_intensity,
+                        rejected = md5result$estimated_rejected,
+                        coverage = md5result$coverage)
+md5result
+```  
+```{r, echo=FALSE}
+library(biopixR)
+target_directory_name <- 'log_files'
+all_directories <- list.dirs(directory_path, recursive = TRUE, full.names = TRUE)
+matching_directories <- all_directories[grep(target_directory_name, all_directories, ignore.case = TRUE)]
+
+for (i in 1:nrow(md5result)) {
+file_path <- file.path(matching_directories, paste0('log_', i, '.RDS'))
+import <- readRDS(file_path)
+image <- import$image[[1]]
+data <- import$data
+name_i <- name[i]
+
+plot(image, main = name_i)
+with(data$unfiltered_centers, points(data$unfiltered_centers$mx, data$unfiltered_centers$my, col = 'darkred'))
+with(data$detailed, points(data$detailed$x, data$detailed$y, col = 'darkgreen'))
+}
+```  
+---
+title: 'scanDir log file'
+output: pdf_document
+--- 
+# Analysis of directory notebook/Images/analysis 
+2024-05-22 18:09:18 Importing images from directory...   
+2024-05-22 18:09:18 Checking md5sums...   
+2024-05-22 18:09:18 Creating parallel backend...   
+2024-05-22 18:09:19 Parallel backend successfully created. 6 workers recruited.  
+2024-05-22 18:09:19 Starting image analysis...   
+2024-05-22 18:09:19 Currently analyzing: notebook/Images/analysis/1_000000_40x_Cy5_Grey=1000_Z=3509370_Well=A1_Ti=149999us_t=000173547ms.bmp   
+---
+title: 'scanDir log file'
+output: pdf_document
+--- 
+# Analysis of directory notebook/Images/analysis 
+2024-05-22 18:10:13 Importing images from directory...   
+2024-05-22 18:10:13 Checking md5sums...   
+2024-05-22 18:10:13 Creating parallel backend...   
+2024-05-22 18:10:14 Parallel backend successfully created. 6 workers recruited.  
+2024-05-22 18:10:14 Starting image analysis...   
+2024-05-22 18:10:16 Currently analyzing: notebook/Images/analysis/1_000000_40x_Cy5_Grey=1000_Z=3509370_Well=A1_Ti=149999us_t=000173547ms.bmp   
+2024-05-22 18:10:16 Currently analyzing: notebook/Images/analysis/1_000025_40x_Cy5_Grey=1000_Z=3519150_Well=A2_Ti=149999us_t=000438625ms.bmp   
+2024-05-22 18:10:162024-05-22 18:10:162024-05-22 18:10:16   Currently analyzing:Currently analyzing:Currently analyzing:   notebook/Images/analysis/1_000007_40x_Cy5_Grey=1000_Z=3516170_Well=C1_Ti=149999us_t=000242390ms.bmpnotebook/Images/analysis/1_000020_40x_Cy5_Grey=1000_Z=3551510_Well=G1_Ti=149999us_t=000376422ms.bmpnotebook/Images/analysis/1_000036_40x_Cy5_Grey=1000_Z=3513100_Well=D2_Ti=149999us_t=000543422ms.bmp     
+  
+  
+2024-05-22 18:10:16 Failed to analyze: notebook/Images/analysis/1_000036_40x_Cy5_Grey=1000_Z=3513100_Well=D2_Ti=149999us_t=000543422ms.bmp   
+2024-05-22 18:10:16 Failed to analyze: notebook/Images/analysis/1_000000_40x_Cy5_Grey=1000_Z=3509370_Well=A1_Ti=149999us_t=000173547ms.bmp   
+2024-05-22 18:10:16 Failed to analyze: notebook/Images/analysis/1_000025_40x_Cy5_Grey=1000_Z=3519150_Well=A2_Ti=149999us_t=000438625ms.bmp   
+2024-05-22 18:10:162024-05-22 18:10:16  Failed to analyze:Failed to analyze:  notebook/Images/analysis/1_000020_40x_Cy5_Grey=1000_Z=3551510_Well=G1_Ti=149999us_t=000376422ms.bmpnotebook/Images/analysis/1_000007_40x_Cy5_Grey=1000_Z=3516170_Well=C1_Ti=149999us_t=000242390ms.bmp    
+  

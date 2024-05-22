@@ -21,7 +21,7 @@
 #' @details
 #'
 #' @import
-#' @import
+#' @import parallel
 #' @importFrom rmarkdown render
 #' @seealso [imgPipe()]
 #' @examples
@@ -199,9 +199,9 @@ path,
       printWithTimestamp("Creating parallel backend...")
 
       if (cores == 'auto') {
-        n_cores <- round(detectCores() * 0.75)
+        n_cores <- round(parallel::detectCores() * 0.75)
 
-        my_cluster <- makeCluster(n_cores,
+        my_cluster <- parallel::makeCluster(n_cores,
                                   type = backend)
 
         doParallel::registerDoParallel(cl = my_cluster)
@@ -248,6 +248,9 @@ path,
       }
       printWithTimestamp("Starting image analysis...")
       # Starting analysis with foreach loop
+
+
+
       md5_result <-
         foreach(
           i = 1:length(cimg_list),
@@ -265,7 +268,7 @@ path,
               append = TRUE
             )
           }
-
+          #browser()
           message(paste(
             format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
             "Currently analyzing:",
@@ -280,23 +283,50 @@ path,
           }
 
           # Actual function to be processed
-          res <- biopixR::imgPipe(
-            img1 = img,
-            alpha = alpha,
-            sigma = sigma,
-            sizeFilter = sizeFilter,
-            lowerlimit = lowerlimit,
-            upperlimit = upperlimit,
-            proximityFilter = proximityFilter,
-            radius = radius,
-            parallel = FALSE
-          )
+          timeout <- 3600
+          res <- tryCatch({
+            setTimeLimit(elapsed = timeout, transient = FALSE)
+            res <- biopixR::imgPipe(
+              img1 = img,
+              alpha = alpha_i,
+              sigma = sigma_i,
+              sizeFilter = sizeFilter,
+              lowerlimit = lowerlimit,
+              upperlimit = upperlimit,
+              proximityFilter = proximityFilter,
+              radius = radius
+            )
+            res
+          }, error = function(e) {
+            res <- NULL
+          }, finally = {
+            setTimeLimit(elapsed = Inf)
+          })
+          if (is.null(res)) {
+            if (Rlog == TRUE) {
+              cat(
+                format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+                "Failed to analyze:",
+                md5_result$file[i],
+                "  \n",
+                file = new_script_path,
+                append = TRUE
+              )
+            }
+          }
+
+          file_paths_f <- list.files(path, full.names = FALSE)
+
+          # Ignore created directories and log file
+          file_paths_f <- file_paths_f[!file.info(file_paths_f)$isdir]
+          file_paths_f <-
+            file_paths_f[grep("\\.Rmd$", file_paths_f, invert = TRUE)]
 
           # Save produced data into log_files
           if (Rlog == TRUE) {
             export <- list(data = res,
                            image = cimg_list[i])
-            saveRDS(export, file = paste0(log_path, "log_", i, ".RDS"))
+            saveRDS(export, file = paste0(log_path, "log_", file_paths_f[i], ".RDS"))
           }
 
           # Combining results from the loop with the file information
@@ -304,7 +334,7 @@ path,
           md5_result_row
         }
 
-      stopCluster(cl = my_cluster)
+      parallel::stopCluster(cl = my_cluster)
     } else {
       # doParallel is necessary for parallel processing
       if (Rlog == TRUE) {
@@ -346,22 +376,50 @@ path,
         img <- grayscale(img)
       }
 
-      res <- biopixR::imgPipe(
-        img1 = img,
-        alpha = alpha,
-        sigma = sigma,
-        sizeFilter = sizeFilter,
-        lowerlimit = lowerlimit,
-        upperlimit = upperlimit,
-        proximityFilter = proximityFilter,
-        radius = radius
-      )
+      timeout <- 3600
+      res <- tryCatch({
+        setTimeLimit(elapsed = timeout, transient = FALSE)
+        res <- biopixR::imgPipe(
+          img1 = img,
+          alpha = alpha_i,
+          sigma = sigma_i,
+          sizeFilter = sizeFilter,
+          lowerlimit = lowerlimit,
+          upperlimit = upperlimit,
+          proximityFilter = proximityFilter,
+          radius = radius
+        )
+        res
+      }, error = function(e) {
+        res <- NULL
+      }, finally = {
+        setTimeLimit(elapsed = Inf)
+      })
+      if (is.null(res)) {
+        if (Rlog == TRUE) {
+          cat(
+            format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+            "Failed to analyze:",
+            md5_result$file[i],
+            "  \n",
+            file = new_script_path,
+            append = TRUE
+          )
+        }
+      }
+
+      file_paths_f <- list.files(path, full.names = FALSE)
+
+      # Ignore created directories and log file
+      file_paths_f <- file_paths_f[!file.info(file_paths_f)$isdir]
+      file_paths_f <-
+        file_paths_f[grep("\\.Rmd$", file_paths_f, invert = TRUE)]
 
       # Save produced data into log_files
       if (Rlog == TRUE) {
         export <- list(data = res,
                        image = cimg_list[i])
-        saveRDS(export, file = paste0(log_path, "log_", i, ".RDS"))
+        saveRDS(export, file = paste0(log_path, "log_", file_paths_f[i], ".RDS"))
       }
 
       md5_result[i, c(colnames(res$summary))] <- res$summary

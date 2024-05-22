@@ -37,8 +37,8 @@ objectDetection <- function(img,
                             vis = TRUE) {
   # Assign import
   object_img <- img
-  alpha_i <- alpha
-  sigma_i <- sigma
+  #alpha_i <- alpha
+  #sigma_i <- sigma
 
   # Ensure the image is of type 'cimg', if not, stop the function
   if (class(object_img)[1] != "cimg") {
@@ -56,8 +56,8 @@ objectDetection <- function(img,
 
   # Initialize edge detection parameters
   # If set to 'static', optimization is attempted - testing all combinations
-  if (alpha_i == "static" &
-      sigma_i == "static") {
+  if (alpha == "static" &
+      sigma == "static") {
     # Fitness function
     hayflick <- function(img, alpha, sigma) {
       # Compute shape features based on the image and given parameters
@@ -160,19 +160,27 @@ objectDetection <- function(img,
   }
 
   # If parameters are set to 'interactive', call the interactive detection function
-  if (alpha_i == "interactive" & sigma_i == "interactive") {
+  if (alpha == "interactive" & sigma == "interactive") {
     parameter <- interactive_objectDetection(object_img)
     alpha <- as.numeric(parameter[1])
     sigma <- as.numeric(parameter[2])
   }
 
   # If parameters are set to 'gaussian', perform Gaussian process optimization
-  if (alpha_i == "gaussian" &
-      sigma_i == "gaussian") {
+  if (alpha == "gaussian" &
+      sigma == "gaussian") {
     if (requireNamespace(c("GPareto", "DiceDesign", "DiceKriging"), quietly = TRUE)) {
       hayflick <- function(x) {
         alpha <- x[1]
         sigma <- x[2]
+
+        #result <- tryCatch({
+          # Compute shape features based on the image and given parameters
+        #  property <- shapeFeatures(object_img, alpha, sigma)
+        #  return(property)
+        #}, error = function(e) {
+        #  return(c(Inf, Inf))
+        #})
 
         # Compute shape features based on the image and given parameters
         property <- shapeFeatures(object_img, alpha, sigma)
@@ -198,7 +206,7 @@ objectDetection <- function(img,
         )
 
         # Calculate overall quality score as average of combined statistics
-        quality <- sum(combine) / ncol(combine)
+        quality <- sum(na.omit(t(combine))) / ncol(combine)
 
         # Return both quality and total size as a list
         return(c(quality, -sum(property$size)))
@@ -252,7 +260,7 @@ objectDetection <- function(img,
       min_value <- 0.1  # Starting point for lower boundary search
       max_value <- 1.4   # Starting point for upper boundary search
       step_size <- 0.1  # Increment/Decrement step size
-      timeout <- 5
+      timeout <- 10
 
       # Find the lower and upper boundaries
       lower_bound <- findLowerBound(min_value, max_value, step_size)
@@ -319,7 +327,7 @@ objectDetection <- function(img,
 
   # Apply edge detection to the image using specified alpha and sigma parameters
   edge_img <-
-    edgeDetection(object_img, alpha = alpha, sigma = sigma)
+    edgeDetection(object_img, alpha = as.numeric(alpha), sigma = as.numeric(sigma))
 
   # Label the edges detected in the image to identify distinct regions
   first_lab <- label(edge_img)

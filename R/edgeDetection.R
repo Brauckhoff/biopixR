@@ -228,6 +228,8 @@ edgeDetection <- function(img,
     # Convert the final processed image back to 'cimg' format
     out_cimg <- magick2cimg(thresh_clean_magick)
 
+  } else {
+    stop("High background detected. Please increase the threshold adjustment factor.")
   }
 
   # Final output in pixset format
