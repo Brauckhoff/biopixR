@@ -280,6 +280,7 @@ objectDetection <- function(img,
       if (lowContrast == TRUE) {
         if (requireNamespace(c("imagerExtra"), quietly = TRUE)) {
           object_img <- imagerExtra::SPE(object_img, lamda = 0.1)
+          object_img <- as.cimg(threshold(object_img))
         } else {
           stop(
             format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
