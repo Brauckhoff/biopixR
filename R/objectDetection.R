@@ -6,6 +6,8 @@
 #' @param img image (import by \code{\link[imager]{load.image}})
 #' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian')
 #' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian')
+#' @param lowContrast
+#'
 #' @param vis creates image were object edges (purple) and detected centers (green) are highlighted (TRUE | FALSE)
 #' @returns list of 4 objects:
 #' 1. data frame of labeled region with the central coordinates
@@ -26,6 +28,7 @@
 #' @import data.table
 #' @import imager
 #' @import GPareto
+#' @importFrom imagerExtra SPE
 #' @importFrom stats complete.cases
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
@@ -34,6 +37,7 @@
 objectDetection <- function(img,
                             alpha = 1,
                             sigma = 2,
+                            lowContrast = FALSE,
                             vis = TRUE) {
   # Assign import
   object_img <- img
@@ -169,44 +173,47 @@ objectDetection <- function(img,
   # If parameters are set to 'gaussian', perform Gaussian process optimization
   if (alpha == "gaussian" &
       sigma == "gaussian") {
-    if (requireNamespace(c("GPareto", "DiceDesign", "DiceKriging"), quietly = TRUE)) {
+    if (requireNamespace(c("GPareto"), quietly = TRUE)) {
       hayflick <- function(x) {
-        alpha <- x[1]
-        sigma <- x[2]
+        alpha_h <- x[1]
+        sigma_h <- x[2]
 
-        #result <- tryCatch({
+        property <- tryCatch({
           # Compute shape features based on the image and given parameters
-        #  property <- shapeFeatures(object_img, alpha, sigma)
-        #  return(property)
-        #}, error = function(e) {
-        #  return(c(Inf, Inf))
-        #})
+          property <-
+            shapeFeatures(object_img, alpha = alpha_h, sigma = sigma_h)
+          property
+        }, error = function(e) {
+          return(NULL)
+        })
 
-        # Compute shape features based on the image and given parameters
-        property <- shapeFeatures(object_img, alpha, sigma)
+        if(is.null(property)) {
+          quality <- 2
+          property <- list(size = 0)
+        } else {
+          # Filter rows without missing values
+          df_complete <- property[complete.cases(property),]
+          # Apply a thresholding function to the image
+          t <- threshold(img)
 
-        # Filter rows without missing values
-        df_complete <- property[complete.cases(property),]
-        # Apply a thresholding function to the image
-        t <- threshold(object_img)
+          # Calculate a variety of statistics based on image features
+          combine <- data.frame(
+            area = abs(length(which(t == TRUE)) / sum(property$size) - 1),
+            pixels = length(which(
+              df_complete$size < (mean(df_complete$size) - 0.9 * mean(df_complete$size))
+            )) / mean(df_complete$size),
+            sd_area = sd(df_complete$size) / mean(df_complete$size),
+            sd_perimeter = sd(df_complete$perimeter) / mean(df_complete$perimeter),
+            mean_circularity = mean(abs(df_complete$circularity - 1)),
+            #sd_circularity = sd(df_complete$circularity) / mean(df_complete$circularity),
+            mean_eccentricity = mean(df_complete$eccentricity),
+            #sd_eccentricity = sd(df_complete$eccentricity),
+            sd_radius = sd(df_complete$mean_radius) / mean(df_complete$mean_radius)
+          )
 
-        # Calculate a variety of statistics based on image features
-        combine <- data.frame(
-          area = abs(length(which(t == TRUE)) / sum(property$size) - 1),
-          pixels = length(which(
-            df_complete$size < (mean(df_complete$size) - 0.9 * mean(df_complete$size))
-          )) / mean(df_complete$size),
-          sd_area = sd(df_complete$size) / mean(df_complete$size),
-          sd_perimeter = sd(df_complete$perimeter) / mean(df_complete$perimeter),
-          mean_circularity = mean(abs(df_complete$circularity - 1)),
-          #sd_circularity = sd(df_complete$circularity) / mean(df_complete$circularity),
-          mean_eccentricity = mean(df_complete$eccentricity),
-          #sd_eccentricity = sd(df_complete$eccentricity),
-          sd_radius = sd(df_complete$mean_radius) / mean(df_complete$mean_radius)
-        )
-
-        # Calculate overall quality score as average of combined statistics
-        quality <- sum(na.omit(t(combine))) / ncol(combine)
+          # Calculate overall quality score as average of combined statistics
+          quality <- sum(na.omit(t(combine))) / nrow(na.omit(t(combine)))
+        }
 
         # Return both quality and total size as a list
         return(c(quality, -sum(property$size)))
@@ -238,9 +245,9 @@ objectDetection <- function(img,
       findUpperBound <- function(max_value, min_value, step_size) {
         parameter <- max_value
         while (parameter >= min_value) {
-          tryCatch({
+          result <- tryCatch({
             setTimeLimit(elapsed = timeout, transient = FALSE)
-            edgeDetection(object_img, alpha = parameter, sigma = 1.4)
+            edgeDetection(object_img, alpha = parameter, sigma = 2)
             return(parameter)
           }, error = function(e) {
             return(NULL)
@@ -257,22 +264,33 @@ objectDetection <- function(img,
       }
 
       # Define the range and step size
-      min_value <- 0.1  # Starting point for lower boundary search
-      max_value <- 1.4   # Starting point for upper boundary search
-      step_size <- 0.1  # Increment/Decrement step size
-      timeout <- 10
+      #min_value <- 0.1  # Starting point for lower boundary search
+      #max_value <- 1.4   # Starting point for upper boundary search
+      #step_size <- 0.1  # Increment/Decrement step size
+      #timeout <- 10
 
       # Find the lower and upper boundaries
-      lower_bound <- findLowerBound(min_value, max_value, step_size)
-      upper_bound <- findUpperBound(max_value, min_value, step_size)
+      #lower_bound <- findLowerBound(min_value, max_value, step_size)
+      #upper_bound <- findUpperBound(max_value, min_value, step_size)
 
       # Define bounds for the parameters
-      lower_bounds <- c(alpha = lower_bound, sigma = 0)
-      upper_bounds <- c(alpha = upper_bound, sigma = 1.4)
+      lower_bounds <- c(alpha = 0.1, sigma = 0)
+      upper_bounds <- c(alpha = 1.5, sigma = 2)
+
+      if (lowContrast == TRUE) {
+        if (requireNamespace(c("imagerExtra"), quietly = TRUE)) {
+          object_img <- imagerExtra::SPE(object_img, lamda = 0.1)
+        } else {
+          stop(
+            format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+            " Please install the Package 'imagerExtra' for contrast optimization. \n (install.package('imagerExtra')"
+          )
+        }
+      }
 
       # Perform multi-objective optimization using Gaussian Process models
       results <-
-        easyGParetoptim(
+        GPareto::easyGParetoptim(
           fn = hayflick,
           budget = 20,
           lower = lower_bounds,
@@ -320,14 +338,14 @@ objectDetection <- function(img,
     } else {
       stop(
         format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-        " Please install the Package 'GPareto' & 'DiceDesign' & 'DiceKriging' \n for multi-objective optimization \n (install.package(c('GPareto', 'DiceDesign', 'DiceKriging'))"
+        " Please install the Package 'GPareto' for multi-objective optimization. \n (install.package('GPareto')"
       )
     }
   }
 
   # Apply edge detection to the image using specified alpha and sigma parameters
   edge_img <-
-    edgeDetection(object_img, alpha = as.numeric(alpha), sigma = as.numeric(sigma))
+    edgeDetection(object_img, alpha = alpha, sigma = sigma)
 
   # Label the edges detected in the image to identify distinct regions
   first_lab <- label(edge_img)
@@ -362,6 +380,10 @@ objectDetection <- function(img,
         }
       }
     }
+  }
+
+  if (lowContrast == TRUE) {
+    object_img <- img
   }
 
   if (vis == TRUE) {

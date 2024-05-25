@@ -68,8 +68,12 @@ computeGLCM <-
 #' unlink(temp_dir, recursive = TRUE)
 #' @export
 haralickCluster <- function(path) {
+  # Get full file paths and exclude directories
+  file_paths <- list.files(path, full.names = TRUE)
+  file_paths <- file_paths[!file.info(file_paths)$isdir]
+
   # Load images from the directory specified by the path
-  cimg_list <- load.dir(path = path)
+  cimg_list <- lapply(file_paths, importImage)
 
   # Function to calculate md5 hash of a file, used to check for identical images
   calculatemd5 <- function(file_path) {
@@ -81,10 +85,6 @@ haralickCluster <- function(path) {
   md5sums <- function(file_paths) {
     sapply(file_paths, calculatemd5)
   }
-
-  # Get full file paths and exclude directories
-  file_paths <- list.files(path, full.names = TRUE)
-  file_paths <- file_paths[!file.info(file_paths)$isdir]
 
   # Filter file paths to include only files that are loaded as 'cimg' objects
   correct_files <- basename(file_paths) %in% names(cimg_list)

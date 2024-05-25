@@ -2,12 +2,13 @@
 #'
 #'
 #' @param path directory path to folder with images to be analyzed
-#' @param format ('jpg' / 'png' / 'bmp') uses \code{\link[imager]{load.dir}} or 'tiff' uses \code{\link[magick]{image_read}}
 #' @param parallel processing multiple images at the same time (TRUE | FALSE)
 #' @param backend 'PSOCK' or 'FORK' (see \code{\link[parallel]{makeCluster}})
 #' @param cores number of cores for parallel processing (numeric / 'auto') ('auto' uses 75% of the available cores)
 #' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})
 #' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})
+#' @param lowContrast
+#'
 #' @param sizeFilter applying \code{\link[biopixR]{sizeFilter}} function (default - TRUE)
 #' @param upperlimit highest accepted object size (only needed if sizeFilter = TRUE)
 #' @param lowerlimit smallest accepted object size (when 'auto' both limits are
@@ -43,12 +44,12 @@
 #' }
 #' @export
 scanDir <- function(path,
-                    format = 'jpg',
                     parallel = TRUE,
                     backend = 'PSOCK',
                     cores = 'auto',
                     alpha = 1,
                     sigma = 2,
+                    lowContrast = TRUE,
                     sizeFilter = TRUE,
                     upperlimit = 'auto',
                     lowerlimit = 'auto',
@@ -118,20 +119,14 @@ path,
   }
   printWithTimestamp("Importing images from directory...")
 
-  # Import images via imager for jpg/png/bmp formats
-  if (format == 'jpg' | format == 'png' | format == 'bmp') {
-    cimg_list <- load.dir(path = path)
-  }
+  # Import images with wrapper import function
+  image_files <- list.files(path = path, full.names = TRUE)
+  # Ignore created directories and log file
+  image_files <- image_files[!file.info(image_files)$isdir]
+  image_files <-
+    image_files[grep("\\.Rmd$", image_files, invert = TRUE)]
 
-  # Import images via magick for tiff format
-  if (format == 'tif') {
-    image_files <-
-      list.files(path = path,
-                 pattern = "\\.tif$",
-                 full.names = TRUE)
-    image_list <- lapply(image_files, image_read)
-    cimg_list <- lapply(image_list, magick2cimg)
-  }
+  cimg_list <- lapply(image_files, importImage)
 
   if (Rlog == TRUE) {
     logIt("Checking md5sums...  ")
@@ -150,17 +145,10 @@ path,
     sapply(file_paths, calculatemd5)
   }
 
-  file_paths <- list.files(path, full.names = TRUE)
-
-  # Ignore created directories and log file
-  file_paths <- file_paths[!file.info(file_paths)$isdir]
-  file_paths <-
-    file_paths[grep("\\.Rmd$", file_paths, invert = TRUE)]
-
-  md5_sums <- md5sums(file_paths)
+  md5_sums <- md5sums(image_files)
 
   # Summary of file names and md5 sums
-  md5_result <- data.frame(file = file_paths,
+  md5_result <- data.frame(file = image_files,
                            md5_sum = md5_sums)
 
   duplicate_indices <- duplicated(md5_result$md5_sum)
@@ -248,18 +236,15 @@ path,
       }
       printWithTimestamp("Starting image analysis...")
       # Starting analysis with foreach loop
-
-
-
       md5_result <-
         foreach(
           i = 1:length(cimg_list),
           .combine = rbind,
           .verbose = TRUE,
-          .packages = "biopixR"
+          .packages = c("GPareto", "DiceKriging")
         ) %dopar% {
           if (Rlog == TRUE) {
-            cat(
+            cat("\n  ",
               format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
               "Currently analyzing:",
               md5_result$file[i],
@@ -268,7 +253,7 @@ path,
               append = TRUE
             )
           }
-          #browser()
+          browser()
           message(paste(
             format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
             "Currently analyzing:",
@@ -281,6 +266,7 @@ path,
           if (dim(img)[4] != 1) {
             img <- grayscale(img)
           }
+          devtools::load_all()
 
           # Actual function to be processed
           timeout <- 3600
@@ -303,6 +289,8 @@ path,
             setTimeLimit(elapsed = Inf)
           })
           if (is.null(res)) {
+            res <- data.frame(matrix(NA, nrow = 1, ncol = 7))
+            res <- list(summary = res)
             if (Rlog == TRUE) {
               cat(
                 format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
@@ -315,18 +303,13 @@ path,
             }
           }
 
-          file_paths_f <- list.files(path, full.names = FALSE)
-
-          # Ignore created directories and log file
-          file_paths_f <- file_paths_f[!file.info(file_paths_f)$isdir]
-          file_paths_f <-
-            file_paths_f[grep("\\.Rmd$", file_paths_f, invert = TRUE)]
+          file_names <- tools::file_path_sans_ext(basename(image_files))
 
           # Save produced data into log_files
           if (Rlog == TRUE) {
             export <- list(data = res,
                            image = cimg_list[i])
-            saveRDS(export, file = paste0(log_path, "log_", file_paths_f[i], ".RDS"))
+            saveRDS(export, file = paste0(log_path, "log_", file_names[i], ".RDS"))
           }
 
           # Combining results from the loop with the file information
@@ -408,18 +391,13 @@ path,
         }
       }
 
-      file_paths_f <- list.files(path, full.names = FALSE)
-
-      # Ignore created directories and log file
-      file_paths_f <- file_paths_f[!file.info(file_paths_f)$isdir]
-      file_paths_f <-
-        file_paths_f[grep("\\.Rmd$", file_paths_f, invert = TRUE)]
+      file_names <- tools::file_path_sans_ext(basename(image_files))
 
       # Save produced data into log_files
       if (Rlog == TRUE) {
         export <- list(data = res,
                        image = cimg_list[i])
-        saveRDS(export, file = paste0(log_path, "log_", file_paths_f[i], ".RDS"))
+        saveRDS(export, file = paste0(log_path, "log_", file_names[i], ".RDS"))
       }
 
       md5_result[i, c(colnames(res$summary))] <- res$summary
@@ -459,8 +437,14 @@ target_directory_name <- 'log_files'
 all_directories <- list.dirs(directory_path, recursive = TRUE, full.names = TRUE)
 matching_directories <- all_directories[grep(target_directory_name, all_directories, ignore.case = TRUE)]
 
+file_names <- list.files(directory_path, full.names = TRUE)
+file_names <- file_names[!file.info(file_names)$isdir]
+file_names <-
+  file_names[grep('\\\\.Rmd$', file_names, invert = TRUE)]
+file_names <- tools::file_path_sans_ext(basename(file_names))
+
 for (i in 1:nrow(md5result)) {
-file_path <- file.path(matching_directories, paste0('log_', i, '.RDS'))
+file_path <- file.path(matching_directories, paste0('log_', file_names[i], '.RDS'))
 import <- readRDS(file_path)
 image <- import$image[[1]]
 data <- import$data
