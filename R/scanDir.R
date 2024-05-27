@@ -244,7 +244,7 @@ path,
           .packages = c("GPareto", "DiceKriging")
         ) %dopar% {
           if (Rlog == TRUE) {
-            cat("\n  ",
+            cat("\n",
               format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
               "Currently analyzing:",
               md5_result$file[i],
@@ -253,7 +253,7 @@ path,
               append = TRUE
             )
           }
-          browser()
+          #browser()
           message(paste(
             format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
             "Currently analyzing:",
@@ -272,7 +272,7 @@ path,
           timeout <- 3600
           res <- tryCatch({
             setTimeLimit(elapsed = timeout, transient = FALSE)
-            res <- biopixR::imgPipe(
+            res <- imgPipe(
               img1 = img,
               alpha = alpha_i,
               sigma = sigma_i,

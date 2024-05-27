@@ -140,6 +140,7 @@ sizeFilter <- function(centers,
     # Get cluster numbers of remaining clusters after exclusion
     clus_num <- list()
     for (f in center_df$value) {
+      if (f > length(cluster_size)) {next}
       if (is.null(cluster_size[[f]]) != TRUE) {
         clus_num[f] <- c(f)
       }
