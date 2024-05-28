@@ -4,10 +4,9 @@
 #' labeling, gathering the coordinates and centers of the identified objects.
 #' The edges of detected objects are then highlighted for easy recognition.
 #' @param img image (import by \code{\link[biopixR]{importImage}})
-#' @param method ('edge' / 'threshold')
-#'
-#' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian')
-#' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian')
+#' @param method choose method for object detection ('edge' / 'threshold')
+#' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian') (only needed for 'edge')
+#' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian') (only needed for 'edge')
 #' @param vis creates image were object edges (purple) and detected centers (green) are highlighted (TRUE | FALSE)
 #' @returns list of 4 objects:
 #' 1. data frame of labeled region with the central coordinates
@@ -382,9 +381,21 @@ objectDetection <- function(img,
 
   if(method == 'threshold') {
     if (requireNamespace(c("imagerExtra"), quietly = TRUE)) {
-      spe_img <- imagerExtra::SPE(object_img, lamda = 0.05)
+      spe_img <- imagerExtra::SPE(object_img, lamda = 0.1)
       thresh_spe <- threshold(spe_img)
       coords_spe <- as.data.frame(thresh_spe)
+
+      if(nrow(coords_spe) > (dim(object_img)[1]*dim(object_img)[1]*0.2)){
+        spe_img <- imagerExtra::SPE(object_img, lamda = 0.05)
+        thresh_spe <- threshold(spe_img)
+        coords_spe <- as.data.frame(thresh_spe)
+      }
+
+      if(nrow(coords_spe) > (dim(object_img)[1]*dim(object_img)[1]*0.2)){
+        spe_img <- imagerExtra::SPE(object_img, lamda = 0.01)
+        thresh_spe <- threshold(spe_img)
+        coords_spe <- as.data.frame(thresh_spe)
+      }
 
       thresh_ori <- threshold(object_img)
 
@@ -409,7 +420,6 @@ objectDetection <- function(img,
         DT[, list(mx = mean(x),
                   my = mean(y),
                   size = length(x)), by = value]
-      cluster_size <- grouped_lab_img$size
 
       small_regions <- grouped_lab_img[grouped_lab_img$size < (0.1 * mean(grouped_lab_img$size))]
       large_regions <- grouped_lab_img[grouped_lab_img$size >= (0.1 * mean(grouped_lab_img$size)), ]
@@ -432,7 +442,6 @@ objectDetection <- function(img,
 
         if (closest_distance < distance_threshold) {
           closest_cluster <- large_regions[closest_idx, ]
-          #cat("Merging small region", small_region$value, "into large region", closest_cluster$value, "\n")
 
           # Merge small region into large region
           common_rows$value[common_rows$value == small_regions$value[i]] <- closest_cluster$value
@@ -445,8 +454,11 @@ objectDetection <- function(img,
         DT1[, list(mx = mean(x),
                   my = mean(y),
                   size = length(x)), by = value]
-      df_lab_img <- common_rows
-      edge_coords <- common_rows
+      no_noise <- grouped_lab_img[grouped_lab_img$size >= (0.1 * mean(grouped_lab_img$size))]
+      all_pixels <- common_rows[common_rows$value %in% no_noise$value,]
+      df_lab_img <- all_pixels
+      edge_coords <- all_pixels
+      cluster_size <- no_noise$size
 
     } else {
       stop(

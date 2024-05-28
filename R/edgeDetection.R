@@ -30,11 +30,16 @@ rescueFill <- function(strong, weak) {
                    y = loc$y)
   # Store initial state in out
   out <- v
-
+  # Define a limiter threshold based on 1% of the total number of pixels in the strong matrix
   limiter <- nrow(strong) * ncol(strong) * 0.01
 
+  # Check if the number of starting locations exceeds the limiter threshold
+  if (nrow(df) > limiter) {
+    stop("High background detected. Please increase the threshold adjustment factor.")
+  }
+
   # Stop function if no edges are detected to process (i.e., dataframe is empty)
-  if (nrow(df) == 0 | nrow(df) > limiter) {
+  if (nrow(df) == 0) {
     stop("The parameters cannot be increased any further since no edges could be detected.")
   }
 
@@ -97,7 +102,7 @@ guessKmeans <- function(x) {
 #' thresholds are returned as attributes. The edge detection is based on a
 #' smoothed image gradient with a degree of smoothing set by the sigma
 #' parameter.
-#' @param img input image
+#' @param img image (import by \code{\link[biopixR]{importImage}})
 #' @param t1 threshold for weak edges (if missing, both thresholds are
 #' determined automatically)
 #' @param t2 threshold for strong edges
@@ -109,7 +114,7 @@ guessKmeans <- function(x) {
 #' @import data.table
 #' @importFrom stats kmeans
 #' @examples
-#' edgeDetection(beads) |> plot()
+#' edgeDetection(beads, alpha = 0.5, sigma = 0.5) |> plot()
 #' @references https://CRAN.R-project.org/package=imager
 #' @export
 edgeDetection <- function(img,
@@ -138,7 +143,8 @@ edgeDetection <- function(img,
   # If thresholds are not provided, use k-means to estimate them
   if (missing(t1)) {
     guess <- guessKmeans(mag)
-    t2 <- alpha * guess$t2 # Adjust threshold based on alpha scaling factor
+    t2 <-
+      alpha * guess$t2 # Adjust threshold based on alpha scaling factor
     t1 <- alpha * guess$t1
   }
 
@@ -149,10 +155,6 @@ edgeDetection <- function(img,
   # Fill gaps in detected edges using the rescueFill function
   out <- rescueFill(strong, weak)
 
-  # If the original image was colored, add color channels back to the output
-  if (has.col) {
-    out <- add.colour(out)
-  }
   # Attach calculated thresholds to the output for reference
   attr(out, "thresholds") <- c(t1, t2)
 
@@ -171,15 +173,23 @@ edgeDetection <- function(img,
   diagonalends_cimg <- magick2cimg(mo2_diagonalends)
 
   # Extract end points from detected lines for further processing
+  # Find coordinates of pixels marked as TRUE in 'lineends_cimg'
   end_points <- which(lineends_cimg == TRUE, arr.ind = TRUE)
+
+  # Convert end points to a data frame
   end_points_df <- as.data.frame(end_points)
   colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
 
+  # Define a limiter threshold based on 1% of the total number of pixels in the image
   limiter <- nrow(img) * ncol(img) * 0.01
 
-  if(nrow(end_points_df) < limiter) {
+  # If the number of end points is less than the limiter threshold, process diagonal edges
+  if (nrow(end_points_df) < limiter) {
+    # Find coordinates of pixels marked as TRUE in 'diagonalends_cimg'
     diagonal_edges <-
       which(diagonalends_cimg == TRUE, arr.ind = TRUE)
+
+    # Convert diagonal edges to a data frame
     diagonal_edges_df <- as.data.frame(diagonal_edges)
     colnames(diagonal_edges_df) <- c("x", "y", "dim3", "dim4")
 

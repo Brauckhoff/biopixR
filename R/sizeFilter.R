@@ -1,17 +1,16 @@
 #' Size-based exclusion
 #'
-#' Calculates the size of the objects in an image and discards objects based
+#' Takes the size of the objects in an image and discards objects based
 #' on a lower and an upper size limit.
 #' (Input can be obtained by \code{\link[biopixR]{objectDetection}} function)
 #' @param centers center coordinates of objects (needs to include 'value'
-#' representing the center number)
+#' representing the center number, and the size)
 #' @param coordinates all coordinates of the objects (x|y|value data frame)
 #' @param lowerlimit smallest accepted object size (numeric / 'auto')
 #' @param upperlimit highest accepted object size (numeric / 'auto')
-#' @returns list of 3 objects:
+#' @returns list of 2 objects:
 #' 1. remaining centers after discarding according to size
 #' 2. remaining coordinates after discarding according to size
-#' 3. size of remaining objects
 #' @details
 #' The `sizeFilter()` function is designed to filter detected objects based on
 #' their size, either through automated detection or user-defined limits. The
@@ -24,7 +23,12 @@
 #' @importFrom stats sd
 #' @importFrom stats quantile
 #' @examples
-#' res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
+#' res_objectDetection <- objectDetection(
+#'   beads,
+#'   method = 'edge',
+#'   alpha = 1,
+#'   sigma = 0
+#'   )
 #' res_sizeFilter <- sizeFilter(
 #'   centers = res_objectDetection$centers,
 #'   coordinates = res_objectDetection$coordinates,
@@ -61,21 +65,8 @@ sizeFilter <- function(centers,
 
   # Automated limit calculation
   if (lowerlimit == "auto" & upperlimit == "auto") {
-    # Calculate the size of the detected objects
-    cluster_size <- list()
-    for (c in center_df$value) {
-      for (e in xy_coords$value) {
-        if (c == e) {
-          clus_pxl <- which(xy_coords$value == c)
-          size <- length(clus_pxl)
-          if (is.null(size) != TRUE) {
-            cluster_size[c] <- c(size)
-          }
-        }
-      }
-    }
-
-    data <- unlist(cluster_size)
+    # Extract sizes from center_df
+    data <- center_df$size
 
     # Calculate quartiles
     q1 <- quantile(data, 0.25)
@@ -90,7 +81,7 @@ sizeFilter <- function(centers,
       )
     }
 
-    # Calculate IQR
+    # Calculate Interquartile Range (IQR)
     iqr <- q3 - q1
 
     # Identify non-outliers using the 1.5*IQR rule
@@ -98,81 +89,29 @@ sizeFilter <- function(centers,
       which(data > (q1 - 1.5 * iqr) & data < (q3 + 1.5 * iqr))
 
     # Filter results to include only non-outliers
-    cluster_size <- cluster_size[no_outliers]
     res_centers <- center_df[no_outliers]
 
-    # Extract remaining coordinates
-    cluster <- list()
-    x_coord <- list()
-    y_coord <- list()
-    for (f in seq_along(res_centers$value)) {
-      remaining_pos <- which(xy_coords$value == f)
-      cluster[remaining_pos] <- c(f)
-      x_coord[remaining_pos] <- xy_coords$x[remaining_pos]
-      y_coord[remaining_pos] <- xy_coords$y[remaining_pos]
-    }
-    res_xy_coords <- data.frame(
-      x = unlist(x_coord),
-      y = unlist(y_coord),
-      value = unlist(cluster)
-    )
+    # Extract remaining coordinates based on filtered centers
+    res_xy_coords <-
+      xy_coords[xy_coords$value %in% res_centers$value,]
   }
 
   # Manual limit calculation
-  if (lowerlimit != "auto" &
-      upperlimit != "auto") {
-    # Initialize a list to store cluster sizes
-    # Extract all coordinates of the clusters within the size limits
-    cluster_size <- vector("list", length = nrow(center_df))
-    for (c in center_df$value) {
-      for (e in xy_coords$value) {
-        if (c == e) {
-          clus_pxl <- which(xy_coords$value == c)
-          size <- length(clus_pxl)
-          if (is.null(size) != TRUE &
-              size < upperlimit & size > lowerlimit) {
-            cluster_size[c] <- c(size)
-          }
-        }
-      }
-    }
+  if (lowerlimit != "auto" & upperlimit != "auto") {
+    # Extract sizes from center_df
+    cluster_sizes <- center_df$size
 
-    # Get cluster numbers of remaining clusters after exclusion
-    clus_num <- list()
-    for (f in center_df$value) {
-      if (f > length(cluster_size)) {next}
-      if (is.null(cluster_size[[f]]) != TRUE) {
-        clus_num[f] <- c(f)
-      }
-    }
-
-    # Create a new data frame that contains objects that pass the size-based exclusion
-    cluster <- list()
-    x_coord <- list()
-    y_coord <- list()
-    for (g in unlist(clus_num)) {
-      remaining_pos <- which(xy_coords$value == g)
-      cluster[remaining_pos] <- c(g)
-      x_coord[remaining_pos] <- xy_coords$x[remaining_pos]
-      y_coord[remaining_pos] <- xy_coords$y[remaining_pos]
-    }
-
-    res_xy_coords <- data.frame(
-      x = unlist(x_coord),
-      y = unlist(y_coord),
-      value = unlist(cluster)
-    )
-
-    # Create a data table with remaining center coordinates
-    DT <- data.table(res_xy_coords)
-
-    # Summarize by cluster and calculate center
+    # Filter clusters based on size limits
     res_centers <-
-      DT[, list(mx = mean(x), my = mean(y)), by = value]
+      center_df[cluster_sizes > lowerlimit &
+                  cluster_sizes < upperlimit]
+
+    # Extract remaining coordinates based on filtered clusters
+    res_xy_coords <-
+      xy_coords[xy_coords$value %in% res_centers$value,]
   }
 
-  # Return the filtered centers, coordinates, and sizes as a list
+  # Return the filtered centers (includes size) and coordinates as a list
   out <- list(centers = res_centers,
-              coordinates = res_xy_coords,
-              size = cluster_size)
+              coordinates = res_xy_coords)
 }

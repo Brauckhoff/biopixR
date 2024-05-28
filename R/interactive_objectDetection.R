@@ -12,9 +12,9 @@ print_with_timestamp <- function(msg) {
 
 #' Interactive object detection
 #'
-#' This function uses the objectDetection function to visualize the detected
-#' objects at varying threshold an smoothing parameters.
-#' @param img image (preferred import: \code{\link[imager]{load.image}})
+#' This function uses the \code{\link[biopixR]{objectDetection}} function to
+#' visualize the detected objects at varying threshold an smoothing parameters.
+#' @param img image (import by \code{\link[biopixR]{importImage}})
 #' @param resolution resolution of slider
 #' @param return_param used to define the final parameter values for alpha and
 #' sigma printed in the console (TRUE or FALSE).
@@ -43,7 +43,7 @@ interactive_objectDetection <-
     alpha <- 1
     sigma <- 2
     scale <- 1
-    initial_cimg <- objectDetection(beads, alpha, sigma)
+    initial_cimg <- objectDetection(beads, alpha = alpha, sigma = sigma)
     initial_cimg <- mirror(initial_cimg$marked_beads, axis = "x")
     initial_cimg <- imresize(initial_cimg, scale = scale)
     initial <- cimg2magick(initial_cimg)
@@ -137,7 +137,7 @@ interactive_objectDetection <-
     # update function when sliders are moved
     temp_val <- c(alpha, sigma, scale)
     update_image <- function() {
-      temp_image <- objectDetection(beads, temp_val[1], temp_val[2])
+      temp_image <- objectDetection(beads, alpha = temp_val[1], sigma = temp_val[2])
       temp_image <- mirror(temp_image$marked_beads, axis = "x")
       temp_image <- imresize(temp_image, temp_val[3])
       temp_image <- cimg2magick(temp_image)

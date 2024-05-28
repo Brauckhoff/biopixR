@@ -26,18 +26,17 @@ test_that("sizeFilter", {
 
   expect_equal(
     length(which(res_sizeFilter$coordinates$value == 1)),
-    unlist(res_sizeFilter$size[1])
+    res_sizeFilter$centers$size[1]
   )
   expect_equal(
-    max(res_sizeFilter$coordinates$value),
-    length(res_sizeFilter$size)
+    unique(res_sizeFilter$coordinates$value),
+    res_sizeFilter$centers$value
   )
 
   expect_type(res_sizeFilter, "list")
-  expect_length(res_sizeFilter, 3)
-  expect_equal(length(res_sizeFilter$size), nrow(res_objectDetection$centers))
+  expect_length(res_sizeFilter, 2)
   expect_equal(
-    length(unlist(res_sizeFilter$size)),
+    length(res_sizeFilter$centers$size),
     length(unique(res_sizeFilter$coordinates$value))
   )
 
@@ -48,7 +47,7 @@ test_that("sizeFilter", {
       lowerlimit = "auto",
       upperlimit = 150
     ),
-    regexp = "both limits must be set to 'auto' or selected individually"
+    regexp = paste0(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), " Both limits must be set to 'auto' or selected individually")
   )
   expect_error(
     sizeFilter(res_objectDetection$centers,
@@ -56,14 +55,14 @@ test_that("sizeFilter", {
       lowerlimit = 50,
       upperlimit = "auto"
     ),
-    regexp = "both limits must be set to 'auto' or selected individually"
+    regexp = paste0(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), " Both limits must be set to 'auto' or selected individually")
   )
-  expect_error(
+  expect_warning(
     sizeFilter(res_objectDetection$centers,
       res_objectDetection$coordinates,
       lowerlimit = "auto",
       upperlimit = "auto"
     ),
-    regexp = "detected number of objects is to small for automated detection"
+    regexp = paste0(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), " Number of detected objects should be >50 for automated detection")
   )
 })

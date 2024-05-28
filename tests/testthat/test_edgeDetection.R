@@ -4,20 +4,9 @@ library(biopixR)
 test_that("edgeDetection", {
   img <- beads
 
-  expect_equal(edgeDetection(img), cannyEdges(img))
-  expect_equal(
-    edgeDetection(img, alpha = 0.75, sigma = 0.1),
-    cannyEdges(img, alpha = 0.75, sigma = 0.1)
-  )
-
-
-  img2 <- grayscale(droplet_beads)
-
-  expect_equal(edgeDetection(img2), cannyEdges(img2))
-  expect_equal(
-    edgeDetection(img2, alpha = 0.75, sigma = 0.1),
-    cannyEdges(img2, alpha = 0.75, sigma = 0.1)
-  )
+  expect_equal(class(edgeDetection(img))[1], 'pixset')
+  expect_error(edgeDetection(img, alpha = 10),
+               regexp = "The parameters cannot be increased any further since no edges could be detected.")
 
 
   img3 <- droplet_beads

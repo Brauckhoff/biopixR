@@ -63,9 +63,18 @@ imgPipe <- function(img1 = img,
                     lowerlimit = "auto",
                     proximityFilter = TRUE,
                     radius = "auto") {
+  # Another function to print with timestamp (but directly into log file)
+  logIt <- function(msg) {
+    timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+    cat(timestamp, msg, "\n",
+        file = new_script_path,
+        append = TRUE)
+  }
+
   printWithTimestamp("Starting object detection")
   if (exists("path") == TRUE) {
-    if (exists("new_script_path") == TRUE) {
+    if (file.exists(file.path(path, "log_file.Rmd")) == TRUE) {
+      new_script_path <- file.path(path, "log_file.Rmd")
       logIt("Starting object detection   ")
     }
   }
@@ -219,7 +228,7 @@ imgPipe <- function(img1 = img,
   if (sizeFilter == TRUE) {
     printWithTimestamp("Starting size filtering")
     if (exists("path") == TRUE) {
-      if (exists("new_script_path") == TRUE) {
+      if (file.exists(file.path(path, "log_file.Rmd")) == TRUE) {
         logIt("Starting size filtering   ")
       }
     }
@@ -239,7 +248,7 @@ imgPipe <- function(img1 = img,
   if (proximityFilter == TRUE) {
     printWithTimestamp("Starting proximity filtering")
     if (exists("path") == TRUE) {
-      if (exists("new_script_path") == TRUE) {
+      if (file.exists(file.path(path, "log_file.Rmd")) == TRUE) {
         logIt("Starting proximity filtering   ")
       }
     }
@@ -286,7 +295,7 @@ imgPipe <- function(img1 = img,
 
   printWithTimestamp("Starting feature extraction")
   if (exists("path") == TRUE) {
-    if (exists("new_script_path") == TRUE) {
+    if (file.exists(file.path(path, "log_file.Rmd")) == TRUE) {
       logIt("Starting feature extraction   ")
     }
   }
@@ -386,7 +395,7 @@ imgPipe <- function(img1 = img,
 
   printWithTimestamp("Analysis was successfully completed")
   if (exists("path") == TRUE) {
-    if (exists("new_script_path") == TRUE) {
+    if (file.exists(file.path(path, "log_file.Rmd")) == TRUE) {
       logIt("Analysis was successfully completed   ")
     }
   }
@@ -394,7 +403,7 @@ imgPipe <- function(img1 = img,
   # Add unfiltered centers for visualization in scanDir if path exists
   if (exists("path") == TRUE) {
     unfiltered_centers <- col1_detect$centers
-    res <- c(res, list(unfiltered_centers = unfiltered_centers))
+    res <- c(res, list(unfiltered_centers = unfiltered_centers, coordinates = res_proximityFilter$coordinates))
   }
 
   out <- res

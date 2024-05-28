@@ -24,6 +24,7 @@
 #' @import
 #' @import parallel
 #' @importFrom rmarkdown render
+#' @importFrom tools file_path_sans_ext
 #' @seealso [imgPipe()]
 #' @examples
 #' \donttest{
@@ -362,7 +363,7 @@ path,
       timeout <- 3600
       res <- tryCatch({
         setTimeLimit(elapsed = timeout, transient = FALSE)
-        res <- biopixR::imgPipe(
+        res <- imgPipe(
           img1 = img,
           alpha = alpha_i,
           sigma = sigma_i,
@@ -432,7 +433,7 @@ md5result
 
     cat(
 "```{r, echo=FALSE}
-library(biopixR)
+#library(biopixR)
 target_directory_name <- 'log_files'
 all_directories <- list.dirs(directory_path, recursive = TRUE, full.names = TRUE)
 matching_directories <- all_directories[grep(target_directory_name, all_directories, ignore.case = TRUE)]
@@ -453,6 +454,7 @@ name_i <- name[i]
 plot(image, main = name_i)
 with(data$unfiltered_centers, points(data$unfiltered_centers$mx, data$unfiltered_centers$my, col = 'darkred'))
 with(data$detailed, points(data$detailed$x, data$detailed$y, col = 'darkgreen'))
+#changePixelColor(image, data$coordinates, color = factor(data$coordinates$value), visualize = TRUE)
 }
 ```  \n",
       file = new_script_path,
