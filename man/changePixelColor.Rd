@@ -7,26 +7,40 @@
 changePixelColor(img, coordinates, color = "purple", visualize = FALSE)
 }
 \arguments{
-\item{img}{image (import by \code{\link[imager]{load.image}})}
+\item{img}{image (import by \code{\link[biopixR]{importImage}})}
 
 \item{coordinates}{specifying which pixels to be colored (should
 be a X|Y data frame (first column: X; second column: Y)).}
 
-\item{color}{color with which to replace specified pixels. can be either an
-RGB triplet or one of the colors listed by \code{\link[grDevices]{colors}}.}
+\item{color}{color to be applied to specified pixels:
+\enumerate{
+\item color from the list of colors defined by \code{\link[grDevices]{colors}}
+\item object of class factor
+Could also be an object of class factor
+}}
 
 \item{visualize}{if TRUE the resulting image gets plotted}
 }
 \value{
-'cimg' with changed colors at desired positions and a plot of the 'cimg'
+'cimg' with changed colors at desired positions
 }
 \description{
-Can be used to change the color of specified pixels in an image. The
-coordinates of the pixels are needed to colorize them.
+The function allows the user to alter the color of a specified set of pixels
+within an image. In order to achieve this, the coordinates of the pixels in
+question must be provided.
 }
 \examples{
-coordinates <- objectDetection(beads)
-changePixelColor(beads, coordinates$coordinates)
+coordinates <-
+objectDetection(beads,
+                method = 'edge',
+                alpha = 1,
+                sigma = 0)
+changePixelColor(
+  beads,
+  coordinates$coordinates,
+  color = factor(coordinates$coordinates$value),
+  visualize = TRUE
+)
 }
 \references{
 https://CRAN.R-project.org/package=countcolors

@@ -13,23 +13,23 @@ adaptiveInterpolation(
 )
 }
 \arguments{
-\item{end_points_df}{data frame with the coordinates of all line ends. can
-be obtained with \code{\link[magick]{image_morphology}}.}
+\item{end_points_df}{data frame with the coordinates of all line ends (can
+be obtained with \code{\link[magick]{image_morphology}})}
 
-\item{diagonal_edges_df}{data frame with coordinates of diagonal line ends.
-can also be obtained by \code{\link[magick]{image_morphology}}.}
+\item{diagonal_edges_df}{data frame with coordinates of diagonal line ends
+(can also be obtained by \code{\link[magick]{image_morphology}})}
 
 \item{clean_lab_df}{data of type 'data.frame', containing the x, y and value
-information of every labeled region in an image. (only the edges should be
+information of every labeled region in an image (only the edges should be
 labeled)}
 
 \item{lineends_cimg}{image with dimensions of the image with discontinuous
-edges. just for giving the dimensions of the output matrix.}
+edges (providing the dimensions of the output matrix)}
 
 \item{radius}{maximal radius that should be scanned for another cluster}
 }
 \value{
-binary matrix that can be applied as an overlay, for example with
+Binary matrix that can be applied as an overlay, for example with
 \code{\link[imager]{imager.combine}} to fill the gaps between line ends.
 }
 \description{
@@ -59,7 +59,7 @@ values being changed according to the
 \code{\link[biopixR]{interpolatePixels}} function.
 }
 \examples{
-# creating an artificial binary image
+# Creating an artificial binary image
 mat <- matrix(0, 8, 8)
 mat[3, 1:2] <- 1
 mat[4, 3] <- 1
@@ -67,7 +67,7 @@ mat[7:8, 3] <- 1
 mat[5, 6:8] <- 1
 mat_cimg <- as.cimg(mat)
 
-# preprocessing / LineEnd detection / labeling (done in fillLineGaps())
+# Preprocessing / LineEnd detection / labeling (done in fillLineGaps())
 mat_cimg_m <- mirror(mat_cimg, axis = "x")
 mat_magick <- cimg2magick(mat_cimg)
 lineends <- image_morphology(mat_magick, "HitAndMiss", "LineEnds")
@@ -98,7 +98,7 @@ clean_lab_df <- data.frame(
   value = unlist(alt_value)
 )
 
-# actual function
+# Actual function
 overlay <- adaptiveInterpolation(
   end_points_df,
   diagonal_edges_df,

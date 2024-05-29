@@ -16,9 +16,22 @@ print_with_timestamp <- function(msg) {
 #' visualize the detected objects at varying threshold an smoothing parameters.
 #' @param img image (import by \code{\link[biopixR]{importImage}})
 #' @param resolution resolution of slider
-#' @param return_param used to define the final parameter values for alpha and
-#' sigma printed in the console (TRUE or FALSE).
-#' @returns values of alpha and sigma
+#' @param return_param if TRUE the final parameter values for alpha and
+#' sigma are printed to the console (TRUE | FALSE)
+#' @returns Values of alpha and sigma.
+#' @details
+#' The function provides a graphical user interface (GUI) that allows users to
+#' interactively adjust the parameters for object detection:
+#' \itemize{
+#'   \item \strong{Alpha/Threshold:} Controls the threshold adjustment factor for edge detection.
+#'   \item \strong{Sigma/Smoothing:} Determines the amount of smoothing applied to the image.
+#'   \item \strong{Scale:} Adjusts the scale of the displayed image.
+#' }
+#' The GUI also includes a button to switch between two detection methods:
+#' \itemize{
+#'   \item \strong{Edge Detection:} Utilizes the \code{\link[biopixR]{edgeDetection}} function. The alpha parameter acts as a threshold adjustment factor, and sigma controls the smoothing.
+#'   \item \strong{Threshold Detection:} Applies a simple thresholding method. (No dependency on alpha or sigma!)
+#' }
 #' @import magick
 #' @import imager
 #' @import data.table
@@ -28,66 +41,82 @@ print_with_timestamp <- function(msg) {
 #' \donttest{
 #' if (interactive()) {
 #'   interactive_objectDetection(beads)
-#' }
+#'   }
 #' }
 #' @export
 interactive_objectDetection <-
   function(img,
            resolution = 0.1,
            return_param = FALSE) {
-    # assign imports
+    # Convert the image to the desired format
     image_original <- cimg2magick(img)
-    beads <- img
+    object_img <- img
 
-    # make initial input
+    # Initialize detection parameters
     alpha <- 1
     sigma <- 2
     scale <- 1
-    initial_cimg <- objectDetection(beads, alpha = alpha, sigma = sigma)
-    initial_cimg <- mirror(initial_cimg$marked_beads, axis = "x")
+    method <- "edge"
+
+    # Perform initial object detection
+    initial_cimg <-
+      objectDetection(object_img,
+                      alpha = alpha,
+                      sigma = sigma,
+                      method = method)
+    initial_cimg <- mirror(initial_cimg$marked_objects, axis = "x")
     initial_cimg <- imresize(initial_cimg, scale = scale)
     initial <- cimg2magick(initial_cimg)
 
-    # set variable range
+    # Define parameter ranges for sliders
     range_alpha <- c(0, 3)
     range_sigma <- c(0, 3)
     range_scale <- c(1, 3)
-    length_slider <- as.integer(nrow(beads) * 0.6)
-    if (length_slider < 200) {
-      length_slider <- 200
-    }
+    length_slider <- max(as.integer(nrow(beads) * 0.6), 200)
 
-    # name sliders and create initial temporary image
+    # Set up labels for sliders
     text_label_alpha <- "Alpha/Threshold:"
     text_label_sigma <- "Sigma/Smoothing:"
     text_label_scale <- "Scale:"
+
     quit_waiting <- !is.null(getOption("unit_test_magickGUI"))
     temp <- tempfile(fileext = ".jpg")
     on.exit(unlink(temp), add = TRUE)
     image_write(initial, temp)
     image_tcl <- tkimage.create("photo", "image_tcl", file = temp)
+
+    # Format label digits based on resolution
     label_digits <- -as.integer(log(resolution, 10))
     label_digits <- ifelse(label_digits > 0, label_digits, 0)
     label_template <- sprintf("%%.%df", label_digits)
 
-    # configure widgets
+    # Create GUI window and frames
     win1 <- tktoplevel()
     on.exit(tkdestroy(win1), add = TRUE)
     win1.frame1 <- tkframe(win1)
     win1.frame2 <- tkframe(win1)
     win1.frame3 <- tkframe(win1)
+    win1.frame4 <- tkframe(win1)
     win1.im <- tklabel(win1, image = image_tcl)
+
+    # Create and configure labels
     win1.frame1.label <-
       tklabel(win1.frame1, text = sprintf("%s%s", text_label_alpha, sprintf(label_template, alpha)))
     win1.frame2.label <-
       tklabel(win1.frame2, text = sprintf("%s%s", text_label_sigma, sprintf(label_template, sigma)))
     win1.frame3.label <-
       tklabel(win1.frame3, text = sprintf("%s%s", text_label_scale, sprintf(label_template, scale)))
+    win1.frame4.label <-
+      tklabel(win1.frame4, text = paste("Method: ", method))
+
+    # Initialize slider values
     slider_value_alpha <- tclVar(alpha)
     slider_value_sigma <- tclVar(sigma)
     slider_value_scale <- tclVar(scale)
+
+    # Functions to update slider values
     command_slider_alpha <- function(...) {
-      assign("slider_value_radius", slider_value_alpha, inherits = TRUE)
+      assign("slider_value_alpha", slider_value_alpha, inherits = TRUE)
     }
     command_slider_sigma <- function(...) {
       assign("slider_value_sigma", slider_value_sigma, inherits = TRUE)
@@ -96,7 +125,7 @@ interactive_objectDetection <-
       assign("slider_value_scale", slider_value_scale, inherits = TRUE)
     }
 
-    # configure slider
+    # Create sliders for parameters
     win1.frame1.slider <-
       tkscale(
         win1.frame1,
@@ -134,24 +163,39 @@ interactive_objectDetection <-
         showvalue = 0
       )
 
-    # update function when sliders are moved
+    # Function to update image based on slider values
     temp_val <- c(alpha, sigma, scale)
     update_image <- function() {
-      temp_image <- objectDetection(beads, alpha = temp_val[1], sigma = temp_val[2])
-      temp_image <- mirror(temp_image$marked_beads, axis = "x")
+      temp_image <-
+        objectDetection(object_img,
+                        alpha = temp_val[1],
+                        sigma = temp_val[2],
+                        method = method)
+      temp_image <- mirror(temp_image$marked_objects, axis = "x")
       temp_image <- imresize(temp_image, temp_val[3])
       temp_image <- cimg2magick(temp_image)
       image_write(temp_image, temp)
       image_tcl <- tkimage.create("photo", "image_tcl", file = temp)
       tkconfigure(win1.im, image = image_tcl)
     }
+
+    # Function to handle OK button click
     command_button <- function(...) {
       assign("quit_waiting", TRUE, inherits = TRUE)
     }
 
-    # add image and slider to the GUI
+    # Function to handle method switch button click
+    command_switch_method <- function(...) {
+      method <<- ifelse(method == "edge", "threshold", "edge")
+      tkconfigure(win1.frame4.label, text = paste("Method: ", method))
+      update_image()
+    }
+
+    # Add GUI elements to the window
     win1.button <-
       tkbutton(win1, text = "OK", command = command_button)
+    win1.switch_button <-
+      tkbutton(win1, text = "Switch Method", command = command_switch_method)
     tkpack(win1.im, side = "left")
     tkpack(win1.frame1.label, side = "left", anchor = "c")
     tkpack(win1.frame1.slider, side = "left", anchor = "c")
@@ -162,23 +206,31 @@ interactive_objectDetection <-
     tkpack(win1.frame3.label, side = "left", anchor = "c")
     tkpack(win1.frame3.slider, side = "left", anchor = "c")
     tkpack(win1.frame3, side = "top", anchor = "c")
-
+    tkpack(win1.frame4.label, side = "left", anchor = "c")
+    tkpack(
+      win1.switch_button,
+      side = "top",
+      anchor = "c",
+      pady = 10
+    )
     tkpack(win1.button,
            side = "top",
            anchor = "c",
            pady = 20)
+
     pre_slider_values <-
       c(as.numeric(tclvalue(slider_value_alpha)),
         as.numeric(tclvalue(slider_value_sigma)),
         as.numeric(tclvalue(slider_value_scale)))
+
+    # Handle GUI state and update logic
     if (quit_waiting) {
       wait_test <- TRUE
       while (wait_test) {
         wait_test <- FALSE
         tryCatch({
           tkwm.state(win1)
-        },
-        error = function(e) {
+        }, error = function(e) {
           assign("wait_test", TRUE, inherits = TRUE)
         })
       }
@@ -187,12 +239,11 @@ interactive_objectDetection <-
     }
     tkwm.state(win1, "normal")
 
-    # check if values changed, if values changed update image
+    # If values change - update image
     while (TRUE) {
       tryCatch({
         tkwm.state(win1)
-      },
-      error = function(e) {
+      }, error = function(e) {
         assign("quit_waiting", TRUE, inherits = TRUE)
       })
       if (quit_waiting) {
@@ -204,8 +255,9 @@ interactive_objectDetection <-
           as.numeric(tclvalue(slider_value_sigma)),
           as.numeric(tclvalue(slider_value_scale)))
 
-      # warn if parameter would cause an error and reset values
-      if (class(try(edgeDetection(beads, alpha = temp_val[1], sigma = temp_val[2])))[1] == 'try-error') {
+      # Validate the new parameter values
+      if (class(try(edgeDetection(object_img, alpha = temp_val[1], sigma = temp_val[2]))
+      )[1] == 'try-error') {
         temp_val <-
           c(pre_slider_values[1],
             pre_slider_values[2],
@@ -214,6 +266,7 @@ interactive_objectDetection <-
         tkset(win1.frame2.slider, temp_val[2])
       }
 
+      # Update image if parameter values have changed
       if (any(temp_val != pre_slider_values)) {
         temp_label_alpha <-
           sprintf("%s%s",
@@ -231,12 +284,14 @@ interactive_objectDetection <-
         tkconfigure(win1.frame1.label, text = temp_label_alpha)
         tkconfigure(win1.frame2.label, text = temp_label_sigma)
         tkconfigure(win1.frame3.label, text = temp_label_scale)
+
         print_with_timestamp("Creating new image...")
         update_image()
         print_with_timestamp("Finished processing new variables")
         pre_slider_values <- temp_val
       }
     }
+
     val_res <- pre_slider_values
     names(val_res) <- c("alpha", "sigma", "scale")
     if (return_param == TRUE) {

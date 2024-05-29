@@ -8,7 +8,7 @@ sizeFilter(centers, coordinates, lowerlimit = "auto", upperlimit = "auto")
 }
 \arguments{
 \item{centers}{center coordinates of objects (needs to include 'value'
-representing the center number)}
+representing the center number, and the size)}
 
 \item{coordinates}{all coordinates of the objects (x|y|value data frame)}
 
@@ -17,15 +17,14 @@ representing the center number)}
 \item{upperlimit}{highest accepted object size (numeric / 'auto')}
 }
 \value{
-list of 3 objects:
+list of 2 objects:
 \enumerate{
 \item remaining centers after discarding according to size
 \item remaining coordinates after discarding according to size
-\item size of remaining objects
 }
 }
 \description{
-Calculates the size of the objects in an image and discards objects based
+Takes the size of the objects in an image and discards objects based
 on a lower and an upper size limit.
 (Input can be obtained by \code{\link[biopixR]{objectDetection}} function)
 }
@@ -40,7 +39,12 @@ the objects vary significantly, the automated detection may not be as
 accurate, and manual limit setting is recommended.
 }
 \examples{
-res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
+res_objectDetection <- objectDetection(
+  beads,
+  method = 'edge',
+  alpha = 1,
+  sigma = 0
+  )
 res_sizeFilter <- sizeFilter(
   centers = res_objectDetection$centers,
   coordinates = res_objectDetection$coordinates,

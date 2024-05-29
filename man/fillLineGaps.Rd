@@ -20,14 +20,14 @@ fillLineGaps(
 contours}
 
 \item{objects}{image that contains objects that should be removed before
-before applying the fill algorithm}
+applying the fill algorithm}
 
 \item{threshold}{"in \%" (from \code{\link[imager]{threshold}})}
 
 \item{alpha}{threshold adjustment factor for edge detection
-(from \code{\link[imager]{cannyEdges}})}
+(from \code{\link[biopixR]{edgeDetection}})}
 
-\item{sigma}{smoothing (from \code{\link[imager]{cannyEdges}})}
+\item{sigma}{smoothing (from \code{\link[biopixR]{edgeDetection}})}
 
 \item{radius}{maximal radius that should be scanned for another cluster}
 
@@ -38,7 +38,7 @@ reconnect them to their closest neighbor}
 added pixels in the original image}
 }
 \value{
-image with continuous edges (closed gaps)
+Image with continuous edges (closed gaps).
 }
 \description{
 The function attempts to fill in edge discontinuities in order to enable

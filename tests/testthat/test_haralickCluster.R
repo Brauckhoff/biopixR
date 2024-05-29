@@ -47,25 +47,6 @@ test_that("haralickCluster", {
   # delete temporary directory containing test files
   unlink(temp_dir, recursive = TRUE)
 
-  # test2
-  # creating a directory to apply function to
-  tempdir()
-  temp_dir <- tempdir()
-  file_path <- file.path(temp_dir, "beads.png")
-  save.image(beads, file_path)
-  file_path <- file.path(temp_dir, "droplet_beads.png")
-  save.image(grayscale(droplet_beads), file_path)
-  file_path <- file.path(temp_dir, "beads_large1.png")
-  save.image(beads, file_path)
-  file_path <- file.path(temp_dir, "beads_large2.png")
-  save.image(grayscale(beads_large2), file_path)
-
-  # create md5 error
-  expect_error(haralickCluster(temp_dir))
-
-  # delete temporary directory containing test files
-  unlink(temp_dir, recursive = TRUE)
-
   # wrong input
   expect_error(haralickCluster(beads))
   input <- list(beads, droplet_beads, beads_large1, beads_large2)

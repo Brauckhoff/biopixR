@@ -5,17 +5,17 @@
 #' @param contours image that contains discontinuous lines like edges or
 #' contours
 #' @param objects image that contains objects that should be removed before
-#' before applying the fill algorithm
+#' applying the fill algorithm
 #' @param threshold "in %" (from \code{\link[imager]{threshold}})
 #' @param alpha threshold adjustment factor for edge detection
-#' (from \code{\link[imager]{cannyEdges}})
-#' @param sigma smoothing (from \code{\link[imager]{cannyEdges}})
+#' (from \code{\link[biopixR]{edgeDetection}})
+#' @param sigma smoothing (from \code{\link[biopixR]{edgeDetection}})
 #' @param radius maximal radius that should be scanned for another cluster
 #' @param iterations how many times the algorithm should find line ends and
 #' reconnect them to their closest neighbor
 #' @param visualize if TRUE (default) a plot is displayed highlighting the
 #' added pixels in the original image
-#' @returns image with continuous edges (closed gaps)
+#' @returns Image with continuous edges (closed gaps).
 #' @details
 #' The function pre-processes the image in order to enable the implementation
 #' of the `adaptiveInterpolation()` function. The pre-processing stage
@@ -55,8 +55,8 @@ fillLineGaps <-
     neg_thresh_cimg <- magick2cimg(neg_thresh)
     neg_thresh_m <- mirror(neg_thresh_cimg, axis = "x")
 
-    # Optionally remove unwanted objects (like beads) detected in the image to
-    # improve edge linking
+    # Optionally remove unwanted objects (like micro particles) detected in the
+    # image to improve edge linking
     if (!is.null(objects)) {
       objects_to_del <- objects
       object_coords <- objectDetection(objects_to_del, alpha, sigma)
@@ -176,7 +176,7 @@ fillLineGaps <-
       vis <- add(list(result_m, thresh_clean_cimg))
       vis_col <- add.color(vis)
       to_color <- which(vis_col == 1, arr.ind = TRUE)
-      changePixelColor(neg_thresh_m, to_color)
+      changePixelColor(neg_thresh_m, to_color, visualize = TRUE)
     }
 
     # Return the final processed image

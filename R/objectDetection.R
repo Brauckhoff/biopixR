@@ -1,29 +1,40 @@
 #' Object detection
 #'
-#' This function identifies objects in an image using edge detection and
-#' labeling, gathering the coordinates and centers of the identified objects.
-#' The edges of detected objects are then highlighted for easy recognition.
+#' This function identifies objects in an image using either edge detection or
+#' thresholding methods. It gathers the coordinates and centers of the
+#' identified objects, highlighting the edges or overall coordinates for easy
+#' recognition.
 #' @param img image (import by \code{\link[biopixR]{importImage}})
 #' @param method choose method for object detection ('edge' / 'threshold')
 #' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian') (only needed for 'edge')
 #' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian') (only needed for 'edge')
-#' @param vis creates image were object edges (purple) and detected centers (green) are highlighted (TRUE | FALSE)
-#' @returns list of 4 objects:
-#' 1. data frame of labeled region with the central coordinates
-#' 2. all coordinates that are in labeled regions
-#' 3. size of labeled objects
-#' 4. image were object edges (purple) and detected centers (green) are colored
+#' @param vis creates image were object edges/coordinates (purple) and detected centers (green) are highlighted (TRUE | FALSE)
+#' @returns list of 3 objects:
+#' \itemize{
+#'   \item \code{data.frame} of labeled regions with the central coordinates (including size information)
+#'   \item All coordinates that are in labeled regions
+#'   \item Image where object edges (purple) and detected centers (green) are colored
+#' }
 #' @details
-#' The `objectDetection()` function provides several methods for calculating
-#' the alpha and sigma parameters, which are critical for edge detection:
-#' 1. Input of a Numeric Value:
-#' - Users can directly input numeric values for alpha and sigma, allowing for precise control over the edge detection parameters.
-#' 2. Static Scanning:
-#' - When both alpha and sigma are set to "static", the function systematically tests all possible combinations of these parameters within the range (alpha: 0.1 - 1.4, sigma: 0 - 1.4). This exhaustive search helps identify the optimal parameter values for the given image. (Note: takes a lot of time)
-#' 3. Interactive Selection:
-#' - By setting alpha and sigma to "interactive", a Tcl/Tk graphical user interface (GUI) is opened. This allows users to select the parameters interactively based on visual feedback. This method requires user input for fine-tuning the parameters according to the specific requirements of the image.
-#' 4. Multi-Objective Optimization:
-#' - For advanced parameter optimization, the function \code{\link[GPareto]{GParetoptim}} will be utilize for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
+#' The `objectDetection()` function provides several methods for calculating the alpha and sigma parameters, which are critical for edge detection:
+#' \enumerate{
+#'   \item \textbf{Input of a Numeric Value:}
+#'   \itemize{
+#'     \item Users can directly input numeric values for alpha and sigma, allowing for precise control over the edge detection parameters.
+#'   }
+#'   \item \textbf{Static Scanning:}
+#'   \itemize{
+#'     \item When both alpha and sigma are set to "static", the function systematically tests all possible combinations of these parameters within the range (alpha: 0.1 - 1.5, sigma: 0 - 2). This exhaustive search helps identify the optimal parameter values for the given image. (Note: takes a lot of time)
+#'   }
+#'   \item \textbf{Interactive Selection:}
+#'   \itemize{
+#'     \item By setting alpha and sigma to "interactive", a Tcl/Tk graphical user interface (GUI) is opened. This allows users to select the parameters interactively based on visual feedback. This method requires user input for fine-tuning the parameters according to the specific requirements of the image.
+#'   }
+#'   \item \textbf{Multi-Objective Optimization:}
+#'   \itemize{
+#'     \item For advanced parameter optimization, the function \code{\link[GPareto]{GParetoptim}} will be utilized for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
+#'   }
+#' }
 #' @import data.table
 #' @import imager
 #' @import GPareto
@@ -31,7 +42,10 @@
 #' @importFrom stats complete.cases
 #' @examples
 #' res_objectDetection <- objectDetection(beads, method = 'edge', alpha = 1, sigma = 2)
-#' res_objectDetection$marked_beads |> plot()
+#' res_objectDetection$marked_objects |> plot()
+#'
+#' res_objectDetection <- objectDetection(beads, method = 'threshold')
+#' res_objectDetection$marked_objects |> plot()
 #' @export
 objectDetection <- function(img,
                             method = 'edge',
@@ -40,8 +54,6 @@ objectDetection <- function(img,
                             vis = TRUE) {
   # Assign import
   object_img <- img
-  #alpha_i <- alpha
-  #sigma_i <- sigma
 
   # Ensure the image is of type 'cimg', if not, stop the function
   if (class(object_img)[1] != "cimg") {
@@ -58,19 +70,24 @@ objectDetection <- function(img,
   }
 
   if (method == 'edge') {
-    # Initialize edge detection parameters
+    # Handle numeric input for alpha and sigma
+    if (is.numeric(alpha) & is.numeric(sigma)) {
+      alpha_x <- alpha
+      sigma_x <- sigma
+    }
+
     # If set to 'static', optimization is attempted - testing all combinations
     if (alpha == "static" &
         sigma == "static") {
-      # Fitness function
-      hayflick <- function(img, alpha, sigma) {
+      # Fitness function to evaluate parameter sets
+      hayflick <- function(object_img, alpha_a, sigma_a) {
         # Compute shape features based on the image and given parameters
-        property <- shapeFeatures(img, alpha, sigma)
+        property <- shapeFeatures(object_img, alpha_a, sigma_a)
 
         # Filter rows without missing values
         df_complete <- property[complete.cases(property), ]
         # Apply a thresholding function to the image
-        t <- threshold(img)
+        t <- threshold(object_img)
 
         # Calculate a variety of statistics based on image features
         combine <- data.frame(
@@ -81,9 +98,7 @@ objectDetection <- function(img,
           sd_area = sd(df_complete$size) / mean(df_complete$size),
           sd_perimeter = sd(df_complete$perimeter) / mean(df_complete$perimeter),
           mean_circularity = mean(abs(df_complete$circularity - 1)),
-          #sd_circularity = sd(df_complete$circularity) / mean(df_complete$circularity),
           mean_eccentricity = mean(df_complete$eccentricity),
-          #sd_eccentricity = sd(df_complete$eccentricity),
           sd_radius = sd(df_complete$mean_radius) / mean(df_complete$mean_radius)
         )
 
@@ -96,15 +111,14 @@ objectDetection <- function(img,
       }
 
       # Generate parameter ranges for alpha and sigma
-      alpha_range <- seq(0.1, 1.4, by = 0.1)
-      sigma_range <- seq(0, 1.4, by = 0.1)
+      alpha_range <- seq(0.1, 1.5, by = 0.1)
+      sigma_range <- seq(0, 2, by = 0.1)
 
       # Create a grid of parameter combinations for alpha and sigma
       param_grid <-
         expand.grid(alpha = alpha_range, sigma = sigma_range)
+      n <- nrow(param_grid)  # Number of parameter combinations
 
-      # Assuming param_grid is already defined and is a data.frame
-      n <- nrow(param_grid)
       # Initialize an empty data frame to store results
       results_df <-
         data.frame()
@@ -141,10 +155,8 @@ objectDetection <- function(img,
         fitness <- results_df$quality
       }
 
-      # Store unique fitness scores
+      # Store unique fitness scores and sort them
       u_fitness <- unique(fitness)
-
-      # Sort fitness scores in ascending order
       sorted_res <- sort(u_fitness, decreasing = FALSE)
       sorted_res <- sorted_res[1]
 
@@ -159,15 +171,15 @@ objectDetection <- function(img,
       result_1 <- param_grid[unlist(mylist),]
       result <- result_1
       result <- result[1,]
-      alpha <- result$alpha
-      sigma <- result$sigma
+      alpha_x <- result$alpha
+      sigma_x <- result$sigma
     }
 
     # If parameters are set to 'interactive', call the interactive detection function
     if (alpha == "interactive" & sigma == "interactive") {
       parameter <- interactive_objectDetection(object_img)
-      alpha <- as.numeric(parameter[1])
-      sigma <- as.numeric(parameter[2])
+      alpha_x <- as.numeric(parameter[1])
+      sigma_x <- as.numeric(parameter[2])
     }
 
     # If parameters are set to 'gaussian', perform Gaussian process optimization
@@ -175,13 +187,13 @@ objectDetection <- function(img,
         sigma == "gaussian") {
       if (requireNamespace(c("GPareto"), quietly = TRUE)) {
         hayflick <- function(x) {
-          alpha_h <- x[1]
-          sigma_h <- x[2]
+          alpha_a <- x[1]
+          sigma_a <- x[2]
 
           property <- tryCatch({
             # Compute shape features based on the image and given parameters
             property <-
-              shapeFeatures(object_img, alpha = alpha_h, sigma = sigma_h)
+              shapeFeatures(object_img, alpha = alpha_a, sigma = sigma_a)
             property
           }, error = function(e) {
             return(NULL)
@@ -198,7 +210,9 @@ objectDetection <- function(img,
 
             # Calculate a variety of statistics based on image features
             combine <- data.frame(
-              area = abs(length(which(t == TRUE)) / sum(property$size) - 1),
+              area = abs(length(which(
+                t == TRUE
+              )) / sum(property$size) - 1),
               pixels = length(which(
                 df_complete$size < (
                   mean(df_complete$size) - 0.9 * mean(df_complete$size)
@@ -207,9 +221,7 @@ objectDetection <- function(img,
               sd_area = sd(df_complete$size) / mean(df_complete$size),
               sd_perimeter = sd(df_complete$perimeter) / mean(df_complete$perimeter),
               mean_circularity = mean(abs(df_complete$circularity - 1)),
-              #sd_circularity = sd(df_complete$circularity) / mean(df_complete$circularity),
               mean_eccentricity = mean(df_complete$eccentricity),
-              #sd_eccentricity = sd(df_complete$eccentricity),
               sd_radius = sd(df_complete$mean_radius) / mean(df_complete$mean_radius)
             )
 
@@ -222,75 +234,9 @@ objectDetection <- function(img,
           return(c(quality,-sum(property$size)))
         }
 
-        # Function to find the lower boundary
-        findLowerBound <- function(min_value, max_value, step_size) {
-          parameter <- min_value
-          while (parameter <= max_value) {
-            result <- tryCatch({
-              setTimeLimit(elapsed = timeout, transient = FALSE)
-              edgeDetection(object_img, alpha = parameter, sigma = 0)
-              return(parameter)
-            }, error = function(e) {
-              return(NULL)
-            }, finally = {
-              setTimeLimit(elapsed = Inf)   # Disable the timeout
-            })
-            if (!is.null(result)) {
-              return(result)
-            } else {
-              parameter <- parameter + step_size
-            }
-          }
-          return(NA)  # In case no valid parameter is found within the range
-        }
-
-        # Function to find the upper boundary
-        findUpperBound <- function(max_value, min_value, step_size) {
-          parameter <- max_value
-          while (parameter >= min_value) {
-            result <- tryCatch({
-              setTimeLimit(elapsed = timeout, transient = FALSE)
-              edgeDetection(object_img, alpha = parameter, sigma = 2)
-              return(parameter)
-            }, error = function(e) {
-              return(NULL)
-            }, finally = {
-              setTimeLimit(elapsed = Inf)
-            })
-            if (!is.null(result)) {
-              return(result)
-            } else {
-              parameter <- parameter - step_size
-            }
-          }
-          return(NA)  # In case no valid parameter is found within the range
-        }
-
-        # Define the range and step size
-        #min_value <- 0.1  # Starting point for lower boundary search
-        #max_value <- 1.4   # Starting point for upper boundary search
-        #step_size <- 0.1  # Increment/Decrement step size
-        #timeout <- 10
-
-        # Find the lower and upper boundaries
-        #lower_bound <- findLowerBound(min_value, max_value, step_size)
-        #upper_bound <- findUpperBound(max_value, min_value, step_size)
-
         # Define bounds for the parameters
         lower_bounds <- c(alpha = 0.1, sigma = 0)
         upper_bounds <- c(alpha = 1.5, sigma = 2)
-
-        if (lowContrast == TRUE) {
-          if (requireNamespace(c("imagerExtra"), quietly = TRUE)) {
-            object_img <- imagerExtra::SPE(object_img, lamda = 0.1)
-            object_img <- as.cimg(threshold(object_img))
-          } else {
-            stop(
-              format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-              " Please install the Package 'imagerExtra' for contrast optimization. \n (install.package('imagerExtra')"
-            )
-          }
-        }
 
         # Perform multi-objective optimization using Gaussian Process models
         results <-
@@ -323,7 +269,6 @@ objectDetection <- function(img,
         pareto_front_n[, 2] <- min_max_normalize(pareto_front[, 2])
 
         # Calculate the Euclidean distance from the ideal point
-        # Assuming a minimization problem, the ideal point is (0, 0)
         ideal_point <- c(0, 0)
         distances <-
           apply(pareto_front_n, 1, function(x)
@@ -338,8 +283,8 @@ objectDetection <- function(img,
         knee_point_parameters <- pareto_set[knee_point_index, ]
 
         # Extract optimized parameters
-        alpha <- knee_point_parameters[1]
-        sigma <- knee_point_parameters[2]
+        alpha_x <- knee_point_parameters[1]
+        sigma_x <- knee_point_parameters[2]
 
       } else {
         stop(
@@ -351,7 +296,7 @@ objectDetection <- function(img,
 
     # Apply edge detection to the image using specified alpha and sigma parameters
     edge_img <-
-      edgeDetection(object_img, alpha = alpha, sigma = sigma)
+      edgeDetection(object_img, alpha = alpha_x, sigma = sigma_x)
 
     # Label the edges detected in the image to identify distinct regions
     first_lab <- label(edge_img)
@@ -371,27 +316,29 @@ objectDetection <- function(img,
 
     # Aggregate data to calculate the mean coordinates for each unique
     # label (cluster)
-    # Calculate the size of each cluster, which is used to compute radii
     grouped_lab_img <-
       DT[, list(mx = mean(x),
                 my = mean(y),
                 size = length(x)), by = value]
-    cluster_size <- grouped_lab_img$size
   }
 
-  if(method == 'threshold') {
+  if (method == 'threshold') {
     if (requireNamespace(c("imagerExtra"), quietly = TRUE)) {
+      # Solving Screened Poisson Equation (SPE)
       spe_img <- imagerExtra::SPE(object_img, lamda = 0.1)
       thresh_spe <- threshold(spe_img)
       coords_spe <- as.data.frame(thresh_spe)
 
-      if(nrow(coords_spe) > (dim(object_img)[1]*dim(object_img)[1]*0.2)){
+      # If too many coordinates are detected, reduce lambda
+      if (nrow(coords_spe) > (dim(object_img)[1] * dim(object_img)[1] *
+                              0.2)) {
         spe_img <- imagerExtra::SPE(object_img, lamda = 0.05)
         thresh_spe <- threshold(spe_img)
         coords_spe <- as.data.frame(thresh_spe)
       }
 
-      if(nrow(coords_spe) > (dim(object_img)[1]*dim(object_img)[1]*0.2)){
+      if (nrow(coords_spe) > (dim(object_img)[1] * dim(object_img)[1] *
+                              0.2)) {
         spe_img <- imagerExtra::SPE(object_img, lamda = 0.01)
         thresh_spe <- threshold(spe_img)
         coords_spe <- as.data.frame(thresh_spe)
@@ -421,44 +368,66 @@ objectDetection <- function(img,
                   my = mean(y),
                   size = length(x)), by = value]
 
-      small_regions <- grouped_lab_img[grouped_lab_img$size < (0.1 * mean(grouped_lab_img$size))]
-      large_regions <- grouped_lab_img[grouped_lab_img$size >= (0.1 * mean(grouped_lab_img$size)), ]
+      small_regions <-
+        grouped_lab_img[grouped_lab_img$size < (0.1 * mean(grouped_lab_img$size))]
+      large_regions <-
+        grouped_lab_img[grouped_lab_img$size >= (0.1 * mean(grouped_lab_img$size)), ]
 
       # Function to calculate Euclidean distance
       euclidean_distance <- function(x1, y1, x2, y2) {
-        sqrt((x1 - x2)^2 + (y1 - y2)^2)
+        sqrt((x1 - x2) ^ 2 + (y1 - y2) ^ 2)
       }
 
-      distance_threshold <- 1.5 * sqrt(mean(grouped_lab_img$size) / pi)  # Distance threshold for merging
+      # Distance threshold for merging small regions into large regions
+      distance_threshold <-
+        1.5 * sqrt(mean(grouped_lab_img$size) / pi)  # Distance threshold for merging
 
       # Merge small regions into nearest large regions if within distance threshold
-      for (i in 1:nrow(small_regions)) {
-        small_region <- small_regions[i, ]
-        distances <- mapply(euclidean_distance, small_region$mx, small_region$my, large_regions$mx, large_regions$my)
+      if (nrow(small_regions) != 0) {
+        for (i in 1:nrow(small_regions)) {
+          small_region <- small_regions[i,]
+          distances <-
+            mapply(
+              euclidean_distance,
+              small_region$mx,
+              small_region$my,
+              large_regions$mx,
+              large_regions$my
+            )
 
-        # Find the nearest large region
-        closest_idx <- which.min(distances)
-        closest_distance <- distances[closest_idx]
+          # Find the nearest large region
+          closest_idx <- which.min(distances)
+          closest_distance <- distances[closest_idx]
 
-        if (closest_distance < distance_threshold) {
-          closest_cluster <- large_regions[closest_idx, ]
+          if (closest_distance < distance_threshold) {
+            closest_cluster <- large_regions[closest_idx,]
 
-          # Merge small region into large region
-          common_rows$value[common_rows$value == small_regions$value[i]] <- closest_cluster$value
+            # Merge small region into large region
+            common_rows$value[common_rows$value == small_regions$value[i]] <-
+              closest_cluster$value
 
+          }
         }
       }
 
+      # Aggregate merged data
       DT1 <- data.table(common_rows)
       grouped_lab_img <-
         DT1[, list(mx = mean(x),
-                  my = mean(y),
-                  size = length(x)), by = value]
-      no_noise <- grouped_lab_img[grouped_lab_img$size >= (0.1 * mean(grouped_lab_img$size))]
-      all_pixels <- common_rows[common_rows$value %in% no_noise$value,]
+                   my = mean(y),
+                   size = length(x)), by = value]
+
+      # Discard clusters that are very likely noise (small size clusters)
+      grouped_lab_img <-
+        grouped_lab_img[grouped_lab_img$size >= (0.1 * mean(grouped_lab_img$size))]
+
+      # Get all pixels that are part of significant clusters
+      all_pixels <-
+        common_rows[common_rows$value %in% grouped_lab_img$value,]
+
+      # Assign output variables
       df_lab_img <- all_pixels
       edge_coords <- all_pixels
-      cluster_size <- no_noise$size
 
     } else {
       stop(
@@ -468,11 +437,10 @@ objectDetection <- function(img,
     }
   }
 
-
   if (vis == TRUE) {
-    if(method == 'edge'){
-    # Visualization: Highlight the edges of detected objects
-    edge_coords <- which(edge_img == TRUE, arr.ind = TRUE)
+    if (method == 'edge') {
+      # Get coordinates of detected edges
+      edge_coords <- which(edge_img == TRUE, arr.ind = TRUE)
     }
     # Change the color of the detected edges to purple for visualization
     colored_edge <-
@@ -483,7 +451,7 @@ objectDetection <- function(img,
       grouped_lab_img$mx,
       grouped_lab_img$my,
       radius = (sqrt(mean(
-        unlist(cluster_size)
+        grouped_lab_img$size
       ) / pi) / 2),
       # Compute radius from the area assuming clusters are roughly circular
       color = "darkgreen"   # Circle color
@@ -494,12 +462,8 @@ objectDetection <- function(img,
 
   # Compile all useful information into a single output list
   out <- list(
-    centers = grouped_lab_img,
-    # Centers of clusters
-    coordinates = df_lab_img,
-    # Coordinates of all labeled pixels
-    size = cluster_size,
-    # Sizes of each cluster
-    marked_beads = colored_edge   # Visualized image with marked edges and circles
+    centers = grouped_lab_img,      # Centers of clusters
+    coordinates = df_lab_img,       # Coordinates of all labeled pixels
+    marked_objects = colored_edge   # Visualized image with marked edges and circles
   )
 }

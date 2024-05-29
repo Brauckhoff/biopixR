@@ -7,8 +7,7 @@
 #' the event that the image in question contains an alpha channel, that channel
 #' is omitted.
 #' @param path2file path to file
-#' @returns
-#' an image of class 'cimg'
+#' @returns An image of class 'cimg'.
 #' @import magick
 #' @import imager
 #' @importFrom tools file_ext

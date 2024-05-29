@@ -10,7 +10,7 @@ haralickCluster(path)
 \item{path}{directory path to folder with images to be analyzed}
 }
 \value{
-data frame containing file names, md5sums and cluster number
+Data frame containing file names, md5sums and cluster number.
 }
 \description{
 This function performs k-medoids clustering on images using Haralick

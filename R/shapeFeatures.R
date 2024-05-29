@@ -42,12 +42,12 @@ shapeFeatures <-
 
     # Detect objects using an internal function
     res_objectDetection <-
-      objectDetection(img, alpha = alpha, sigma = sigma, vis = FALSE)
+      objectDetection(img, alpha = alpha, sigma = sigma)
     res_resultAnalytics <-
       resultAnalytics(
         res_objectDetection$coordinates,
         res_objectDetection$coordinates,
-        res_objectDetection$size,
+        res_objectDetection$centers$size,
         img
       )
 

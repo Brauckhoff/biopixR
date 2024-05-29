@@ -7,7 +7,7 @@
 edgeDetection(img, t1, t2, alpha = 1, sigma = 2)
 }
 \arguments{
-\item{img}{input image}
+\item{img}{image (import by \code{\link[biopixR]{importImage}})}
 
 \item{t1}{threshold for weak edges (if missing, both thresholds are
 determined automatically)}
@@ -31,7 +31,7 @@ smoothed image gradient with a degree of smoothing set by the sigma
 parameter.
 }
 \examples{
-edgeDetection(beads) |> plot()
+edgeDetection(beads, alpha = 0.5, sigma = 0.5) |> plot()
 }
 \references{
 https://CRAN.R-project.org/package=imager

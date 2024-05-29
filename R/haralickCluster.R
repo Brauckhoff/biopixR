@@ -46,7 +46,7 @@ computeGLCM <-
 #' images as cluster centers. This approach simplifies texture-based image
 #' analysis and classification.
 #' @param path directory path to folder with images to be analyzed
-#' @returns data frame containing file names, md5sums and cluster number
+#' @returns Data frame containing file names, md5sums and cluster number.
 #' @import imager
 #' @importFrom stats dist
 #' @importFrom cluster pam silhouette
@@ -86,16 +86,13 @@ haralickCluster <- function(path) {
     sapply(file_paths, calculatemd5)
   }
 
-  # Filter file paths to include only files that are loaded as 'cimg' objects
-  correct_files <- basename(file_paths) %in% names(cimg_list)
-  file_paths <- file_paths[correct_files]
-
   # Compute md5 sums of the files
   md5_sums <- md5sums(file_paths)
 
   # Create a summary dataframe of files and their md5 hashes
   md5_result <- data.frame(file = file_paths,
                            md5_sum = md5_sums)
+  rownames(md5_result) <- basename(file_paths)
 
   duplicate_indices <- duplicated(md5_result$md5_sum)
 
@@ -244,7 +241,6 @@ haralickCluster <- function(path) {
   k <- optimal_k  # Number of clusters
   kmeans_result <- pam(scaled_features, k)
 
-  rownames(md5_result) <- NULL
   # Return the final data including file path, md5 sum, and cluster assignment
   out <- cbind(md5_result, cluster = kmeans_result$cluster)
 }

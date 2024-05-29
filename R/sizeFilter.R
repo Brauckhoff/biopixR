@@ -68,10 +68,6 @@ sizeFilter <- function(centers,
     # Extract sizes from center_df
     data <- center_df$size
 
-    # Calculate quartiles
-    q1 <- quantile(data, 0.25)
-    q3 <- quantile(data, 0.75)
-
     # Error handling: Warn if the number of detected objects is less than 50
     if (nrow(center_df) < 50) {
       data |> plot(ylab = "size in px")
@@ -79,7 +75,59 @@ sizeFilter <- function(centers,
         format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
         " Number of detected objects should be >50 for automated detection"
       )
+
+      # Interactive input to handle low number of detected objects
+      user_input <-
+        readline(prompt = "Detected objects are less than 50. \n Would you like to adjust the thresholds and try again? (yes/no) ")
+      if (tolower(user_input) == "no") {
+        # Calculate quartiles
+        q1 <- quantile(data, 0.25)
+        q3 <- quantile(data, 0.75)
+
+        # Calculate Interquartile Range (IQR)
+        iqr <- q3 - q1
+
+        # Identify non-outliers using the 1.5*IQR rule
+        no_outliers <-
+          which(data > (q1 - 1.5 * iqr) & data < (q3 + 1.5 * iqr))
+
+        # Filter results to include only non-outliers
+        res_centers <- center_df[no_outliers]
+
+        # Extract remaining coordinates based on filtered centers
+        res_xy_coords <-
+          xy_coords[xy_coords$value %in% res_centers$value, ]
+
+      } else if (tolower(user_input) == "yes") {
+        # User chose to adjust thresholds, prompt for new limits
+
+        adjustment_input <-
+          readline(prompt = "Please enter new limits as c(lowerlimit, upperlimit): ")
+
+        # Convert the user input string to numeric values
+        adjustment <-
+          as.numeric(unlist(strsplit(
+            gsub("[c()]", "", adjustment_input), ","
+          )))
+
+        # Check if the input is valid
+        if (length(adjustment) != 2 || any(is.na(adjustment))) {
+          cat("Invalid input. Please try again.\n")
+        }
+        # Set new limits based on user input
+        lowerlimit <- adjustment[1]
+        upperlimit <- adjustment[2]
+
+      } else {
+        # User provided invalid input
+        cat("Invalid input. Exiting function.\n")
+        stop("Invalid input. Exiting function.")
+      }
     }
+
+    # Calculate quartiles
+    q1 <- quantile(data, 0.25)
+    q3 <- quantile(data, 0.75)
 
     # Calculate Interquartile Range (IQR)
     iqr <- q3 - q1
@@ -93,7 +141,7 @@ sizeFilter <- function(centers,
 
     # Extract remaining coordinates based on filtered centers
     res_xy_coords <-
-      xy_coords[xy_coords$value %in% res_centers$value,]
+      xy_coords[xy_coords$value %in% res_centers$value, ]
   }
 
   # Manual limit calculation
@@ -108,7 +156,7 @@ sizeFilter <- function(centers,
 
     # Extract remaining coordinates based on filtered clusters
     res_xy_coords <-
-      xy_coords[xy_coords$value %in% res_centers$value,]
+      xy_coords[xy_coords$value %in% res_centers$value, ]
   }
 
   # Return the filtered centers (includes size) and coordinates as a list

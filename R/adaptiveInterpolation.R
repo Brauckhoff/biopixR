@@ -2,17 +2,17 @@
 #'
 #' The function scans an increasing radius around a line end and connects it
 #' with the nearest labeled region.
-#' @param end_points_df data frame with the coordinates of all line ends. can
-#' be obtained with \code{\link[magick]{image_morphology}}.
-#' @param diagonal_edges_df data frame with coordinates of diagonal line ends.
-#' can also be obtained by \code{\link[magick]{image_morphology}}.
+#' @param end_points_df data frame with the coordinates of all line ends (can
+#' be obtained with \code{\link[magick]{image_morphology}})
+#' @param diagonal_edges_df data frame with coordinates of diagonal line ends
+#' (can also be obtained by \code{\link[magick]{image_morphology}})
 #' @param clean_lab_df data of type 'data.frame', containing the x, y and value
-#' information of every labeled region in an image. (only the edges should be
+#' information of every labeled region in an image (only the edges should be
 #' labeled)
 #' @param lineends_cimg image with dimensions of the image with discontinuous
-#' edges. just for giving the dimensions of the output matrix.
+#' edges (providing the dimensions of the output matrix)
 #' @param radius maximal radius that should be scanned for another cluster
-#' @return binary matrix that can be applied as an overlay, for example with
+#' @return Binary matrix that can be applied as an overlay, for example with
 #' \code{\link[imager]{imager.combine}} to fill the gaps between line ends.
 #' @details
 #' This function is designed to be part of the
@@ -36,7 +36,7 @@
 #' values being changed according to the
 #' \code{\link[biopixR]{interpolatePixels}} function.
 #' @examples
-#' # creating an artificial binary image
+#' # Creating an artificial binary image
 #' mat <- matrix(0, 8, 8)
 #' mat[3, 1:2] <- 1
 #' mat[4, 3] <- 1
@@ -44,7 +44,7 @@
 #' mat[5, 6:8] <- 1
 #' mat_cimg <- as.cimg(mat)
 #'
-#' # preprocessing / LineEnd detection / labeling (done in fillLineGaps())
+#' # Preprocessing / LineEnd detection / labeling (done in fillLineGaps())
 #' mat_cimg_m <- mirror(mat_cimg, axis = "x")
 #' mat_magick <- cimg2magick(mat_cimg)
 #' lineends <- image_morphology(mat_magick, "HitAndMiss", "LineEnds")
@@ -75,7 +75,7 @@
 #'   value = unlist(alt_value)
 #' )
 #'
-#' # actual function
+#' # Actual function
 #' overlay <- adaptiveInterpolation(
 #'   end_points_df,
 #'   diagonal_edges_df,
@@ -115,7 +115,7 @@ adaptiveInterpolation <- function(end_points_df,
 
       # Check for diagonal line ends by merging current end point with
       # diagonal_edges_df
-      if (isTRUE(nrow(merge(end_points_df[a,], diagonal_edges_df)) >
+      if (isTRUE(nrow(merge(end_points_df[a, ], diagonal_edges_df)) >
                  0) == TRUE) {
         if (b == 2) {
           # Ignore the cluster of the current end point and the first
@@ -125,16 +125,16 @@ adaptiveInterpolation <- function(end_points_df,
         }
         # Identify connecting positions excluding the ignored clusters
         connector_pos <- which(
-          clean_lab_df[one_for_all,]$value !=
-            clean_lab_df[xy_pos,]$value &
-            clean_lab_df[one_for_all,]$value !=
-            clean_lab_df[dia_ignore,]$value
+          clean_lab_df[one_for_all, ]$value !=
+            clean_lab_df[xy_pos, ]$value &
+            clean_lab_df[one_for_all, ]$value !=
+            clean_lab_df[dia_ignore, ]$value
         )
       } else {
         # Identify connecting positions excluding the cluster of the current
         # end point
-        connector_pos <- which(clean_lab_df[one_for_all,]$value !=
-                                 clean_lab_df[xy_pos,]$value)
+        connector_pos <- which(clean_lab_df[one_for_all, ]$value !=
+                                 clean_lab_df[xy_pos, ]$value)
       }
 
       # Get indices of clusters that can connect to the current end point
@@ -145,8 +145,8 @@ adaptiveInterpolation <- function(end_points_df,
       if (length(connector) != 0) {
         for (c in connector) {
           interpolated_pixels <- interpolatePixels(x, y,
-                                                   clean_lab_df[c,]$x,
-                                                   clean_lab_df[c,]$y)
+                                                   clean_lab_df[c, ]$x,
+                                                   clean_lab_df[c, ]$y)
           # Update the connected_components matrix at the interpolated positions
           connected_components[interpolated_pixels] <- 1
         }

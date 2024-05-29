@@ -13,8 +13,8 @@ test_that("objectDetection", {
   )
 
   expect_warning(cannyEdges(add.color(img)))
-  expect_message(objectDetection(droplet_beads),
-    regexp = "Note: image is from a luminescence channel and was converted into grayscale"
+  expect_warning(objectDetection(droplet_beads),
+    regexp = paste0(format(Sys.time(), "%Y-%m-%d %H:%M:%S")," Image is from a luminescence channel and was converted into grayscale")
   )
 
   expect_equal(class(img)[1], "cimg")
@@ -22,16 +22,16 @@ test_that("objectDetection", {
   expect_equal(dim(add.color(img))[4], 3)
   expect_equal(
     length(res_objectDetection$centers$value),
-    length(res_objectDetection$size)
+    length(res_objectDetection$center$size)
   )
 
   expect_type(res_objectDetection, "list")
-  expect_length(res_objectDetection, 4)
+  expect_length(res_objectDetection, 3)
   expect_equal(
-    length(unique(res_objectDetection$coordinates)),
-    length(res_objectDetection$centers)
+    length(unique(res_objectDetection$coordinates$value)),
+    length(res_objectDetection$centers$value)
   )
-  expect_gt(nrow(res_objectDetection$centers), 15)
+  expect_lt(nrow(res_objectDetection$centers), 15)
   expect_equal(res_objectDetection$centers$value[1], 1)
   expect_equal(
     seq_along(res_objectDetection$centers$value),

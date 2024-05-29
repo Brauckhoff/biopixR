@@ -4,60 +4,58 @@
 \alias{objectDetection}
 \title{Object detection}
 \usage{
-objectDetection(img, alpha = 1, sigma = 2, vis = TRUE)
+objectDetection(img, method = "edge", alpha = 1, sigma = 2, vis = TRUE)
 }
 \arguments{
-\item{img}{image (import by \code{\link[imager]{load.image}})}
+\item{img}{image (import by \code{\link[biopixR]{importImage}})}
 
-\item{alpha}{threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian')}
+\item{method}{choose method for object detection ('edge' / 'threshold')}
 
-\item{sigma}{smoothing (numeric / 'static' / 'interactive' / 'gaussian')}
+\item{alpha}{threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian') (only needed for 'edge')}
 
-\item{vis}{creates image were object edges (purple) and detected centers (green) are highlighted (TRUE | FALSE)}
+\item{sigma}{smoothing (numeric / 'static' / 'interactive' / 'gaussian') (only needed for 'edge')}
+
+\item{vis}{creates image were object edges/coordinates (purple) and detected centers (green) are highlighted (TRUE | FALSE)}
 }
 \value{
-list of 4 objects:
-\enumerate{
-\item data frame of labeled region with the central coordinates
-\item all coordinates that are in labeled regions
-\item size of labeled objects
-\item image were object edges (purple) and detected centers (green) are colored
+list of 3 objects:
+\itemize{
+\item \code{data.frame} of labeled regions with the central coordinates (including size information)
+\item All coordinates that are in labeled regions
+\item Image where object edges (purple) and detected centers (green) are colored
 }
 }
 \description{
-This function identifies objects in an image using edge detection and
-labeling, gathering the coordinates and centers of the identified objects.
-The edges of detected objects are then highlighted for easy recognition.
+This function identifies objects in an image using either edge detection or
+thresholding methods. It gathers the coordinates and centers of the
+identified objects, highlighting the edges or overall coordinates for easy
+recognition.
 }
 \details{
-The \code{objectDetection()} function provides several methods for calculating
-the alpha and sigma parameters, which are critical for edge detection:
+The \code{objectDetection()} function provides several methods for calculating the alpha and sigma parameters, which are critical for edge detection:
 \enumerate{
-\item Input of a Numeric Value:
-}
+\item \textbf{Input of a Numeric Value:}
 \itemize{
 \item Users can directly input numeric values for alpha and sigma, allowing for precise control over the edge detection parameters.
 }
-\enumerate{
-\item Static Scanning:
-}
+\item \textbf{Static Scanning:}
 \itemize{
-\item When both alpha and sigma are set to "static", the function systematically tests all possible combinations of these parameters within the range (alpha: 0.1 - 1.4, sigma: 0 - 1.4). This exhaustive search helps identify the optimal parameter values for the given image. (Note: takes a lot of time)
+\item When both alpha and sigma are set to "static", the function systematically tests all possible combinations of these parameters within the range (alpha: 0.1 - 1.5, sigma: 0 - 2). This exhaustive search helps identify the optimal parameter values for the given image. (Note: takes a lot of time)
 }
-\enumerate{
-\item Interactive Selection:
-}
+\item \textbf{Interactive Selection:}
 \itemize{
 \item By setting alpha and sigma to "interactive", a Tcl/Tk graphical user interface (GUI) is opened. This allows users to select the parameters interactively based on visual feedback. This method requires user input for fine-tuning the parameters according to the specific requirements of the image.
 }
-\enumerate{
-\item Multi-Objective Optimization:
-}
+\item \textbf{Multi-Objective Optimization:}
 \itemize{
-\item For advanced parameter optimization, the function \code{\link[GPareto]{GParetoptim}} will be utilize for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
+\item For advanced parameter optimization, the function \code{\link[GPareto]{GParetoptim}} will be utilized for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
+}
 }
 }
 \examples{
-res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
-res_objectDetection$marked_beads |> plot()
+res_objectDetection <- objectDetection(beads, method = 'edge', alpha = 1, sigma = 2)
+res_objectDetection$marked_objects |> plot()
+
+res_objectDetection <- objectDetection(beads, method = 'threshold')
+res_objectDetection$marked_objects |> plot()
 }
