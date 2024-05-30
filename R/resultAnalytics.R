@@ -1,16 +1,24 @@
-#' Result Extraction and Summary
+#' Result Calculation and Summary
 #'
 #' This function summarizes the data obtained by previous functions:
 #' \code{\link[biopixR]{objectDetection}}, \code{\link[biopixR]{proximityFilter}}
 #' or \code{\link[biopixR]{sizeFilter}}. Extracts information like amount,
-#' intensity, size and density.
-#' @param unfiltered all coordinates from every object before applying filter functions
+#' intensity, size and density of the objects present in the image.
+#' @param img image (import by \code{\link[biopixR]{importImage}})
 #' @param coordinates all filtered coordinates of the objects (x|y|value data frame)
-#' @param size size of the objects
-#' @param img image (import by \code{\link[imager]{load.image}})
+#' @param unfiltered all coordinates from every object before applying filter functions
 #' @returns list of 2 objects:
-#' 1. summary of all the objects in the image
-#' 2. detailed information about every single object
+#' \itemize{
+#'   \item \code{summary}: A summary of all the objects in the image.
+#'   \item \code{detailed}: Detailed information about every single object.
+#' }
+#' @details
+#' The `resultAnalytics` function provides comprehensive summary of objects
+#' detected in an image:
+#' \describe{
+#'   \item{Summary}{Generates a summary of all detected objects, including the total number of objects, their mean size, size standard deviation, mean intensity, intensity standard deviation, estimated rejected objects, and coverage.}
+#'   \item{Detailed Object Information}{Provides detailed information for each object, including size, mean intensity, intensity standard deviation, and coordinates.}
+#' }
 #' @import data.table
 #' @seealso [objectDetection()], [sizeFilter()], [proximityFilter()]
 #' @examples
@@ -26,11 +34,11 @@
 #'   radius = "auto"
 #'   )
 #' res_resultAnalytics <- resultAnalytics(
-#'   unfiltered = res_objectDetection$coordinates,
 #'   coordinates = res_proximityFilter$coordinates,
-#'   size = res_proximityFilter$size,
+#'   unfiltered = res_objectDetection$coordinates,
 #'   img = beads
 #'   )
+#' print(res_resultAnalytics$summary)
 #' plot(beads)
 #' with(
 #'   res_objectDetection$centers,
@@ -51,24 +59,22 @@
 #'     )
 #'   )
 #' @export
-resultAnalytics <- function(unfiltered,
+resultAnalytics <- function(img,
                             coordinates,
-                            size,
-                            img) {
+                            unfiltered = NULL) {
   # Binding for global variables
-  intensity <- cluster <- NULL
+  intensity <- NULL
 
   # Assign input arguments to local variables
-  all_coords <- unfiltered
   xy_coords <- coordinates
-  cluster_size <- size
-  pic <- img
+  all_coords <- unfiltered
+  object_img <- img
 
   # Include intensity values of pixels from remaining clusters in a data frame
   for (h in 1:nrow(xy_coords)) {
     x <- xy_coords$x[h]
     y <- xy_coords$y[h]
-    int <- as.array(pic)[x, y, ,]
+    int <- as.array(object_img)[x, y, , ]
     xy_coords$intensity[h] <- c(int)
   }
 
@@ -78,25 +84,21 @@ resultAnalytics <- function(unfiltered,
     x = mean(x),
     y = mean(y),
     intensity = mean(intensity),
-    sd_intensity = sd(intensity)
+    sd_intensity = sd(intensity),
+    size = length(x)
   ),
   by = value]
-
-  # Adapt size according to remaining coordinates if necessary
-  if (length(cluster_size) != nrow(intense)) {
-    cluster_size <- unlist(cluster_size[intense$value])
-  }
 
   # Approximate the number of discarded pixels
   # Calculate the number of true coordinates
   amount_true <- nrow(all_coords)
   dis_count <-
-    round(amount_true / mean(unlist(size)) - nrow(intense))
+    round(amount_true / mean(intense$size) - nrow(intense))
 
   # Summary for every passing objects
   res_df_long <- data.frame(
     objectnumber = intense$value,
-    size = unlist(cluster_size),
+    size = intense$size,
     intensity = intense$intensity,
     sd_intensity = intense$sd_intensity,
     x = intense$x,
@@ -106,11 +108,11 @@ resultAnalytics <- function(unfiltered,
   # Summary of res_df_long / whole image
   result <- data.frame(
     number_of_objects = nrow(intense),
-    mean_size = mean(unlist(cluster_size)),
-    sd_size = sd(unlist(cluster_size)),
+    mean_size = mean(intense$size),
+    sd_size = sd(intense$size),
     mean_intensity = mean(xy_coords$intensity),
     sd_intensity = sd(xy_coords$intensity),
-    estimated_rejected = dis_count,
+    estimated_rejected = ifelse(length(dis_count) == 0, 0, dis_count),
     coverage = sum(res_df_long$size) / (width(img) * height(img))
   )
 

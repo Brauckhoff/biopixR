@@ -34,19 +34,19 @@ recognition.
 \details{
 The \code{objectDetection()} function provides several methods for calculating the alpha and sigma parameters, which are critical for edge detection:
 \enumerate{
-\item \textbf{Input of a Numeric Value:}
+\item \strong{Input of a Numeric Value:}
 \itemize{
 \item Users can directly input numeric values for alpha and sigma, allowing for precise control over the edge detection parameters.
 }
-\item \textbf{Static Scanning:}
+\item \strong{Static Scanning:}
 \itemize{
 \item When both alpha and sigma are set to "static", the function systematically tests all possible combinations of these parameters within the range (alpha: 0.1 - 1.5, sigma: 0 - 2). This exhaustive search helps identify the optimal parameter values for the given image. (Note: takes a lot of time)
 }
-\item \textbf{Interactive Selection:}
+\item \strong{Interactive Selection:}
 \itemize{
 \item By setting alpha and sigma to "interactive", a Tcl/Tk graphical user interface (GUI) is opened. This allows users to select the parameters interactively based on visual feedback. This method requires user input for fine-tuning the parameters according to the specific requirements of the image.
 }
-\item \textbf{Multi-Objective Optimization:}
+\item \strong{Multi-Objective Optimization:}
 \itemize{
 \item For advanced parameter optimization, the function \code{\link[GPareto]{GParetoptim}} will be utilized for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
 }

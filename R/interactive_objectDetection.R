@@ -108,6 +108,8 @@ interactive_objectDetection <-
       tklabel(win1.frame3, text = sprintf("%s%s", text_label_scale, sprintf(label_template, scale)))
     win1.frame4.label <-
       tklabel(win1.frame4, text = paste("Method: ", method))
+    win1.method_status <-
+      tklabel(win1, text = paste("Current method in use: ", method))
 
     # Initialize slider values
     slider_value_alpha <- tclVar(alpha)
@@ -188,6 +190,7 @@ interactive_objectDetection <-
     command_switch_method <- function(...) {
       method <<- ifelse(method == "edge", "threshold", "edge")
       tkconfigure(win1.frame4.label, text = paste("Method: ", method))
+      tkconfigure(win1.method_status, text = paste("Current method in use: ", method))
       update_image()
     }
 
@@ -213,15 +216,20 @@ interactive_objectDetection <-
       anchor = "c",
       pady = 10
     )
+    tkpack(
+      win1.method_status,
+      side = "top",
+      anchor = "c",
+      pady = 5
+    )
     tkpack(win1.button,
            side = "top",
            anchor = "c",
            pady = 20)
 
-    pre_slider_values <-
-      c(as.numeric(tclvalue(slider_value_alpha)),
-        as.numeric(tclvalue(slider_value_sigma)),
-        as.numeric(tclvalue(slider_value_scale)))
+    pre_slider_values <- c(as.numeric(tclvalue(slider_value_alpha)),
+                           as.numeric(tclvalue(slider_value_sigma)),
+                           as.numeric(tclvalue(slider_value_scale)))
 
     # Handle GUI state and update logic
     if (quit_waiting) {
@@ -250,14 +258,12 @@ interactive_objectDetection <-
         break
       }
 
-      temp_val <-
-        c(as.numeric(tclvalue(slider_value_alpha)),
-          as.numeric(tclvalue(slider_value_sigma)),
-          as.numeric(tclvalue(slider_value_scale)))
+      temp_val <- c(as.numeric(tclvalue(slider_value_alpha)),
+                    as.numeric(tclvalue(slider_value_sigma)),
+                    as.numeric(tclvalue(slider_value_scale)))
 
       # Validate the new parameter values
-      if (class(try(edgeDetection(object_img, alpha = temp_val[1], sigma = temp_val[2]))
-      )[1] == 'try-error') {
+      if (class(try(edgeDetection(object_img, alpha = temp_val[1], sigma = temp_val[2])))[1] == 'try-error') {
         temp_val <-
           c(pre_slider_values[1],
             pre_slider_values[2],

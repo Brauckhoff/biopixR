@@ -8,23 +8,24 @@ printWithTimestamp <- function(msg) {
 #'
 #' This function serves as a pipeline that integrates tools for complete
 #' start-to-finish image analysis. It enables the handling of images from
-#' different channels, for example the analysis of dual-color microbeads.
+#' different channels, for example the analysis of dual-color micro particles.
 #' This approach simplifies the workflow, providing a straightforward method to
 #' analyze complex image data.
-#' @param img1 image (import by \code{\link[imager]{load.image}})
+#' @param img1 image (import by \code{\link[biopixR]{importImage}})
 #' @param color1 name of color in img1
-#' @param img2 image (import by \code{\link[imager]{load.image}})
+#' @param img2 image (import by \code{\link[biopixR]{importImage}})
 #' @param color2 name of color in img2
-#' @param img3 image (import by \code{\link[imager]{load.image}})
+#' @param img3 image (import by \code{\link[biopixR]{importImage}})
 #' @param color3 name of color in img3
+#' @param method choose method for object detection ('edge' / 'threshold') (from \code{\link[biopixR]{objectDetection}})
 #' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})
 #' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})
-#' @param sizeFilter applying \code{\link[biopixR]{sizeFilter}} function (default - TRUE)
+#' @param sizeFilter applying \code{\link[biopixR]{sizeFilter}} function (default - FALSE)
 #' @param upperlimit highest accepted object size (only needed if
 #' sizeFilter = TRUE)
 #' @param lowerlimit smallest accepted object size (when 'auto' both limits are
 #' calculated by using the IQR)
-#' @param proximityFilter applying \code{\link[biopixR]{proximityFilter}} function (default - TRUE)
+#' @param proximityFilter applying \code{\link[biopixR]{proximityFilter}} function (default - FALSE)
 #' @param radius distance from one center in which no other centers
 #' are allowed (in pixels) (only needed if proximityFilter = TRUE)
 #' @returns list of 3 to 4 objects:
@@ -33,7 +34,7 @@ printWithTimestamp <- function(msg) {
 #' 3. (optional) result for every individual color
 #' 4. unfiltered coordinates of img1
 #' @import data.table
-#' @seealso [objectDetection()] [sizeFilter()] [proximityFilter()] [resultAnalytics()] [shapeFeatures()]
+#' @seealso [objectDetection()], [sizeFilter()], [proximityFilter()], [resultAnalytics()]
 #' @examples
 #' result <- imgPipe(beads,
 #'   alpha = 1, sigma = 2, upperlimit = 150,
@@ -56,12 +57,13 @@ imgPipe <- function(img1 = img,
                     color2 = "color2",
                     img3 = NULL,
                     color3 = "color3",
+                    method = 'edge',
                     alpha = 1,
                     sigma = 2,
-                    sizeFilter = TRUE,
+                    sizeFilter = FALSE,
                     upperlimit = "auto",
                     lowerlimit = "auto",
-                    proximityFilter = TRUE,
+                    proximityFilter = FALSE,
                     radius = "auto") {
   # Another function to print with timestamp (but directly into log file)
   logIt <- function(msg) {

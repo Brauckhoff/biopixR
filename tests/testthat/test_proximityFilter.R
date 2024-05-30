@@ -22,13 +22,9 @@ test_that("proximityFilter", {
   expect_error(proximityFilter(img))
 
   expect_type(res_proximityFilter, "list")
-  expect_length(res_proximityFilter, 3)
+  expect_length(res_proximityFilter, 2)
   expect_equal(class(res_proximityFilter$coordinates), "data.frame")
 
-  expect_equal(
-    length(res_proximityFilter$centers$value),
-    length(res_proximityFilter$size)
-  )
   expect_equal(
     unique(res_proximityFilter$coordinates$value),
     res_proximityFilter$centers$value

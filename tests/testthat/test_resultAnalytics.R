@@ -16,7 +16,6 @@ test_that("resultAnalytics", {
     resultAnalytics(
       unfiltered = res_objectDetection$coordinates,
       coordinates = res_sizeFilter$coordinates,
-      res_sizeFilter$size,
       img = beads
     )
 
@@ -25,7 +24,7 @@ test_that("resultAnalytics", {
     nrow(res_sizeFilter$coordinates)
   )
   expect_equal(
-    length(res_resultAnalytics$detailed$beadnumber),
+    length(res_resultAnalytics$detailed$objectnumber),
     length(unique(res_sizeFilter$coordinates$value))
   )
 
@@ -34,11 +33,11 @@ test_that("resultAnalytics", {
   expect_s3_class(res_resultAnalytics$summary, "data.frame")
   expect_s3_class(res_resultAnalytics$detailed, "data.frame")
   expect_equal(
-    res_resultAnalytics$summary$number_of_beads,
-    length(unlist(res_sizeFilter$size))
+    res_resultAnalytics$summary$number_of_objects,
+    length(unlist(res_sizeFilter$centers$size))
   )
   expect_equal(
-    res_resultAnalytics$summary$number_of_beads,
+    res_resultAnalytics$summary$number_of_objects,
     nrow(res_resultAnalytics$detailed)
   )
   expect_equal(

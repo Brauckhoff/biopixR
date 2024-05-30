@@ -5,10 +5,9 @@
 #' @param parallel processing multiple images at the same time (TRUE | FALSE)
 #' @param backend 'PSOCK' or 'FORK' (see \code{\link[parallel]{makeCluster}})
 #' @param cores number of cores for parallel processing (numeric / 'auto') ('auto' uses 75% of the available cores)
+#' @param method choose method for object detection ('edge' / 'threshold') (from \code{\link[biopixR]{objectDetection}})
 #' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})
 #' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})
-#' @param lowContrast
-#'
 #' @param sizeFilter applying \code{\link[biopixR]{sizeFilter}} function (default - TRUE)
 #' @param upperlimit highest accepted object size (only needed if sizeFilter = TRUE)
 #' @param lowerlimit smallest accepted object size (when 'auto' both limits are
@@ -25,7 +24,7 @@
 #' @import parallel
 #' @importFrom rmarkdown render
 #' @importFrom tools file_path_sans_ext
-#' @seealso [imgPipe()]
+#' @seealso [imgPipe()], [objectDetection()], [sizeFilter()], [proximityFilter()], [resultAnalytics()]
 #' @examples
 #' \donttest{
 #' if (interactive()) {
@@ -48,6 +47,7 @@ scanDir <- function(path,
                     parallel = TRUE,
                     backend = 'PSOCK',
                     cores = 'auto',
+                    method = 'edge',
                     alpha = 1,
                     sigma = 2,
                     lowContrast = TRUE,

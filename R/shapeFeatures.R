@@ -1,4 +1,4 @@
-#' Extraction of shape features
+#' Extraction of Shape Features
 #'
 #' This function analyzes the objects detected in an image and calculates
 #' distinct shape characteristics for each object, such as circularity,
@@ -12,16 +12,15 @@
 #' @param xdim x-dimension for the SOM-grid (grid = hexagonal)
 #' @param ydim y-dimension for the SOM-grid (xdim * ydim = number of neurons)
 #' @param visualize visualizes the groups computed by SOM
-#' @returns
-#' data frame containing detailed information about every single bead
+#' @returns \code{data.frame} containing detailed information about every single object
 #' @import data.table
+#' @seealso [objectDetection()], [resultAnalytics()]
 #' @examples
 #' shapeFeatures(
 #'   beads,
 #'   alpha = 1,
-#'   sigma = 2,
+#'   sigma = 0,
 #'   SOM = TRUE,
-#'   parallel = FALSE,
 #'   visualize = TRUE
 #' )
 #' @export
@@ -32,93 +31,95 @@ shapeFeatures <-
            xdim = 2,
            ydim = 1,
            SOM = FALSE,
-           parallel = FALSE,
            visualize = FALSE) {
+    # Assign input image to a variable
+    object_img <- img
+
     # Convert to grayscale if the image is not already in grayscale
-    if (dim(img)[4] != 1) {
+    if (dim(object_img)[4] != 1) {
       warning("Running edge detector on luminance channel")
-      img <- grayscale(img)
+      object_img <- grayscale(object_img)
     }
 
-    # Detect objects using an internal function
+    # Detect objects in the image using the internal objectDetection function
     res_objectDetection <-
-      objectDetection(img, alpha = alpha, sigma = sigma)
+      objectDetection(object_img, alpha = alpha, sigma = sigma)
+
+    # Analyze the results of object detection
     res_resultAnalytics <-
-      resultAnalytics(
-        res_objectDetection$coordinates,
-        res_objectDetection$coordinates,
-        res_objectDetection$centers$size,
-        img
-      )
+      resultAnalytics(res_objectDetection$coordinates,
+                      img = object_img)
 
     # Extract feature: area
     area <- res_resultAnalytics$detailed$size
 
     # Extract feature: perimeter
-    edge_img <- edgeDetection(img, alpha = alpha, sigma = sigma)
-
+    edge_img <-
+      edgeDetection(object_img, alpha = alpha, sigma = sigma)
     unique_labels <- unique(res_objectDetection$coordinates$value)
-    # Coordinates of labeled objects
     object_coords <- res_objectDetection$coordinates
 
-    # Assign each coordinate a TRUE/FALSE value indicating whether the pixel is
-    # part of the edge
-    for (i in 1:nrow(res_objectDetection$coordinates)) {
-      x <- res_objectDetection$coordinates$x[i]
-      y <- res_objectDetection$coordinates$y[i]
-      t_edge <- edge_img[x, y, 1, 1]
-      res_objectDetection$coordinates$edge[i] <- t_edge
-    }
+    # Vectorized operation to assign TRUE/FALSE values indicating whether the pixel is part of the edge
+    object_coords$edge <-
+      edge_img[cbind(object_coords$x, object_coords$y, 1, 1)]
+
+    # Ensure the result is logical (TRUE/FALSE)
+    object_coords$edge <- object_coords$edge == 1
 
     # Collect all pixels that are part of the edge and create a data frame
-    pos_true <- which(res_objectDetection$coordinates$edge == TRUE)
-    df_edges <- res_objectDetection$coordinates[pos_true,]
+    df_edges <- object_coords[object_coords$edge == TRUE, ]
 
     # Calculate perimeter by grouping by each value and counting the number of
     # pixels in each object's contour
     DT <- as.data.table(df_edges)
     DT_peri <- DT[, list(perimeter = length(x)), by = value]
+
     perimeter <- DT_peri$perimeter
 
     # Extract feature: radius
     # Get center coordinates
     center <-
-      cbind(res_resultAnalytics$detailed$x,
-            res_resultAnalytics$detailed$y)
+      as.data.table(res_resultAnalytics$detailed[, c("x", "y")])
 
-    distances <- data.frame(matrix(ncol = 2, nrow = nrow(center)))
+    # Convert df_edges to data.table for efficiency
+    setDT(df_edges)
+
+    # Initialize a data.table to store the radius metrics
+    distances <- data.table(
+      mean_radius = numeric(nrow(center)),
+      sd_radius = numeric(nrow(center)),
+      max_radius = numeric(nrow(center)),
+      min_radius = numeric(nrow(center))
+    )
+
+    # Calculate distances using vectorized operations
     for (i in 1:nrow(center)) {
-      pos_edge <- which(df_edges$value == i)
+      pos_edge <- df_edges[value == i, .(x, y)]
 
-      # Calculate the distance from each edge pixel to the center coordinate
-      # Formula for the Euclidean distance
-      distance <-
-        sqrt((df_edges$x[pos_edge] - center[i, 1]) ^ 2 +
-               (df_edges$y[pos_edge] - center[i, 2]) ^ 2)
-      min_radius <- min(distance)
-      max_radius <- max(distance)
-      mean_radius <- mean(c(min_radius, max_radius))
-      sd_radius <- sd(c(min_radius, max_radius))
+      # Calculate the Euclidean distances from the center to each edge pixel
+      distances_i <-
+        sqrt((pos_edge$x - center$x[i]) ^ 2 + (pos_edge$y - center$y[i]) ^ 2)
 
-      distances[i, 1] <- mean_radius
-      distances[i, 2] <- sd_radius
-      distances[i, 3] <- max_radius
-      distances[i, 4] <- min_radius
+      distances[i, mean_radius := mean(distances_i)]
+      distances[i, sd_radius := sd(distances_i)]
+      distances[i, max_radius := max(distances_i)]
+      distances[i, min_radius := min(distances_i)]
     }
 
     # Extract feature: eccentricity
     eccentricity <-
-      (distances[, 3] - distances[, 4]) / (distances[, 3] + distances[, 4])
+      (distances$max_radius - distances$min_radius) / (distances$max_radius + distances$min_radius)
 
     # Extract feature: circularity
     circularity <- (4 * pi * area) / perimeter ^ 2
 
     # Extract feature: aspect ratio
-    aspect_ratio <- (2 * distances[, 3]) / (2 * distances[, 4])
+    aspect_ratio <-
+      (2 * distances$max_radius) / (2 * distances$min_radius)
 
     # Assign results to variables
-    mean_radius <- distances$X1
-    sd_radius <- distances$X2
+    mean_radius <- distances$mean_radius
+    sd_radius <- distances$sd_radius
     intensity <- res_resultAnalytics$detailed$intensity
 
     # Combine features into a data frame
@@ -155,14 +156,17 @@ shapeFeatures <-
             alpha = c(0.05, 0.01),
             keep.data = TRUE
           )
+
+        # Add identified class to resulting data frame
         res_resultAnalytics$detailed$class <- som_model$unit.classif
 
+        # Combine resulting data frame with shape features
         res_resultAnalytics$detailed <-
           cbind(res_resultAnalytics$detailed, features[, 3:8])
 
         # If visualize is TRUE, plot the image and the detected points
         if (visualize == TRUE) {
-          img |> plot()
+          object_img |> plot()
           with(
             res_resultAnalytics$detailed,
             points(
