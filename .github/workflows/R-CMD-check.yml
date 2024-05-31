@@ -61,7 +61,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install imagemagick
-          R -e "install.packages(c('imager', 'igraph', dependencies=TRUE))"
+          R -e "install.packages(c('imager', 'imagerExtra', 'igraph', dependencies=TRUE))"
           
 
       - name: Install pandoc on MacOS
