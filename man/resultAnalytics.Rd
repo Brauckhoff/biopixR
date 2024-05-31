@@ -4,14 +4,14 @@
 \alias{resultAnalytics}
 \title{Result Calculation and Summary}
 \usage{
-resultAnalytics(coordinates, unfiltered = NULL, img)
+resultAnalytics(img, coordinates, unfiltered = NULL)
 }
 \arguments{
+\item{img}{image (import by \code{\link[biopixR]{importImage}})}
+
 \item{coordinates}{all filtered coordinates of the objects (x|y|value data frame)}
 
 \item{unfiltered}{all coordinates from every object before applying filter functions}
-
-\item{img}{image (import by \code{\link[biopixR]{importImage}})}
 }
 \value{
 list of 2 objects:

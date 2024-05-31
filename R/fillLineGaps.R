@@ -63,7 +63,7 @@ fillLineGaps <-
       thresh_array <- as.array(neg_thresh_m)
 
       # Erase objects from the image by setting their coordinates to zero
-      for (i in 1:nrow(object_coords$coordinates)) {
+      for (i in seq_len(nrow(object_coords$coordinates))) {
         thresh_array[object_coords$coordinates[i, 1],
                      object_coords$coordinates[i, 2], 1, 1] <- 0
       }
@@ -114,7 +114,7 @@ fillLineGaps <-
       alt_y <- list()
       alt_value <- list()
       if (i == 1) {
-        for (g in 1:nrow(df_lab)) {
+        for (g in seq_len(nrow(df_lab))) {
           # droplets_array <- as.array(droplets)
           if (thresh_clean_m[df_lab$x[g], df_lab$y[g], 1, 1] == 1) {
             alt_x[g] <- df_lab$x[g]
@@ -123,7 +123,7 @@ fillLineGaps <-
           }
         }
       } else {
-        for (g in 1:nrow(df_lab)) {
+        for (g in seq_len(nrow(df_lab))) {
           # droplets_array <- as.array(droplets)
           if (out_cimg[df_lab$x[g], df_lab$y[g], 1, 1] == 1) {
             alt_x[g] <- df_lab$x[g]

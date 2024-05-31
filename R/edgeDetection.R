@@ -44,7 +44,7 @@ rescueFill <- function(strong, weak) {
   }
 
   # Loop through each row in dataframe to process each edge starting point
-  for (r in 1:nrow(df)) {
+  for (r in seq_len(nrow(df))) {
     # Apply bucket fill algorithm to current location, updating out matrix
     out <-
       bucketfill(
@@ -202,7 +202,7 @@ edgeDetection <- function(img,
     alt_x <- list()
     alt_y <- list()
     alt_value <- list()
-    for (g in 1:nrow(df_lab)) {
+    for (g in seq_len(nrow(df_lab))) {
       # droplets_array <- as.array(droplets)
       if (out_cimg[df_lab$x[g], df_lab$y[g], 1, 1] == 1) {
         alt_x[g] <- df_lab$x[g]

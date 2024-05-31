@@ -54,7 +54,7 @@ proximityFilter <- function(centers,
     # Function to calculate distances and filter too-close objects
     proximityCalc <- function(xy_coords, center_df, radius) {
       xy_edit <- xy_coords
-      for (j in 1:nrow(center_df)) {
+      for (j in seq_len(nrow(center_df))) {
         x <- center_df$mx[j]
         y <- center_df$my[j]
 
@@ -114,7 +114,7 @@ proximityFilter <- function(centers,
     # Function to calculate distances and filter too-close objects
     proximityCalc <- function(xy_coords, center_df, radius) {
       xy_edit <- xy_coords
-      for (j in 1:nrow(center_df)) {
+      for (j in seq_len(nrow(center_df))) {
         x <- center_df$mx[j]
         y <- center_df$my[j]
 

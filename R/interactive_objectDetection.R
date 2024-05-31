@@ -298,8 +298,8 @@ interactive_objectDetection <-
       }
     }
 
-    val_res <- pre_slider_values
-    names(val_res) <- c("alpha", "sigma", "scale")
+    val_res <- c(pre_slider_values, method = method)
+    names(val_res) <- c("alpha", "sigma", "scale", "method")
     if (return_param == TRUE) {
       return(val_res)
     }

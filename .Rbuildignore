@@ -6,7 +6,6 @@
 notebook*
 ^Meta$
 ^joss$
-^R/scanDir\.R$
 ^vignettes/detailed$
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$

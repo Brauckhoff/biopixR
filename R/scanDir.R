@@ -1,26 +1,38 @@
-#' Directory Analysis
+#' Scan Directory for Image Analysis
 #'
-#'
+#' This function scans a specified directory, imports images, and performs various analyses
+#' including object detection, size filtering, and proximity filtering. Optionally, it can
+#' perform these tasks in parallel and log the process.
 #' @param path directory path to folder with images to be analyzed
-#' @param parallel processing multiple images at the same time (TRUE | FALSE)
+#' @param parallel processing multiple images at the same time (default - FALSE)
 #' @param backend 'PSOCK' or 'FORK' (see \code{\link[parallel]{makeCluster}})
 #' @param cores number of cores for parallel processing (numeric / 'auto') ('auto' uses 75% of the available cores)
-#' @param method choose method for object detection ('edge' / 'threshold') (from \code{\link[biopixR]{objectDetection}})
-#' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})
-#' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})
-#' @param sizeFilter applying \code{\link[biopixR]{sizeFilter}} function (default - TRUE)
+#' @param method choose method for object detection ('edge' / 'threshold')
+#' (from \code{\link[biopixR]{objectDetection}})
+#' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian')
+#' (from \code{\link[biopixR]{objectDetection}})
+#' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian')
+#' (from \code{\link[biopixR]{objectDetection}})
+#' @param sizeFilter applying \code{\link[biopixR]{sizeFilter}} function (default - FALSE)
 #' @param upperlimit highest accepted object size (only needed if sizeFilter = TRUE)
 #' @param lowerlimit smallest accepted object size (when 'auto' both limits are
 #' calculated by using the IQR)
-#' @param proximityFilter applying \code{\link[biopixR]{proximityFilter}} function (default - TRUE)
+#' @param proximityFilter applying \code{\link[biopixR]{proximityFilter}} function (default - FALSE)
 #' @param radius distance from one center in which no other centers
 #' are allowed (in pixels) (only needed if proximityFilter = TRUE)
-#' @param Rlog creates a log markdown document, summarizing the results (TRUE | FALSE)
-#' @returns
-#'
+#' @param Rlog creates a log markdown document, summarizing the results (default - FALSE)
+#' @returns \code{data.frame} summarizing each analyzed image, including details such as the number of objects, average size and intensity, estimated rejections, and coverage.
 #' @details
-#'
-#' @import
+#' The function scans a specified directory for image files, imports them,
+#' and performs analysis using designated methods. The function is capable of
+#' parallel processing, utilizing multiple cores to accelerate computation.
+#' Additionally, it is able to log the results into an R Markdown file.
+#' Duplicate images are identified through the use of MD5 sums. In addition a
+#' variety of filtering options are available to refine the analysis. If
+#' logging is enabled, the results can be saved and rendered into a report.
+#' When `Rlog = TRUE`, an R Markdown file and a CSV file are generated in the
+#' current directory. More detailed information on individual results,
+#' can be accessed through saved RDS files.
 #' @import parallel
 #' @importFrom rmarkdown render
 #' @importFrom tools file_path_sans_ext
@@ -43,27 +55,26 @@
 #' }
 #' }
 #' @export
-scanDir <- function(path,
-                    parallel = TRUE,
-                    backend = 'PSOCK',
-                    cores = 'auto',
-                    method = 'edge',
-                    alpha = 1,
-                    sigma = 2,
-                    lowContrast = TRUE,
-                    sizeFilter = TRUE,
-                    upperlimit = 'auto',
-                    lowerlimit = 'auto',
-                    proximityFilter = TRUE,
-                    radius = 'auto',
-                    Rlog = TRUE) {
+scanDir <- function(path,                    # Path to the directory to scan
+                    parallel = FALSE,        # Whether to run in parallel
+                    backend = 'PSOCK',       # Backend for parallel processing
+                    cores = 'auto',          # Number of cores to use
+                    method = 'edge',         # Method for image processing
+                    alpha = 1,               # Alpha parameter for 'edge'
+                    sigma = 2,               # Sigma parameter for 'edge'
+                    sizeFilter = FALSE,      # Whether to apply size filter
+                    upperlimit = 'auto',     # Upper limit for size filter
+                    lowerlimit = 'auto',     # Lower limit for size filter
+                    proximityFilter = FALSE, # Whether to apply proximity filter
+                    radius = 'auto',         # Radius for proximity filter
+                    Rlog = FALSE) {          # Whether to log the process to a file
   # Function to print a message with a timestamp
   printWithTimestamp <- function(msg) {
     timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
     message(paste(timestamp, msg))
   }
 
-  # Another function to print with timestamp (but directly into log file)
+  # Function to log a message with a timestamp to the log file
   logIt <- function(msg) {
     timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
     cat(timestamp, msg, "\n",
@@ -71,7 +82,7 @@ scanDir <- function(path,
         append = TRUE)
   }
 
-  # Creating log
+  # Create log file if Rlog is TRUE
   if (Rlog == TRUE) {
     # Create path of log_file
     desired_location <- path
@@ -81,7 +92,7 @@ scanDir <- function(path,
     # Create .rmd log file at input path
     file.edit(new_script_path)
 
-    # Writing into the log.rmd (do not use styler on this part!!!)
+    # Writing initial content to the log file (do not use styler on this part!!!)
     cat(
 "---
 title: 'scanDir log file'
@@ -100,18 +111,8 @@ path,
 
     # Creating folder for log files containing results
     log_path <- file.path(desired_location, "log_files")
-
-    # Create directory for log files
     dir.create(log_path)
-
     log_path <- file.path(desired_location, "log_files/")
-
-    #optimize:
-    #if (file.exists(new_directory)) {
-    #  print("Directory created successfully.")
-    #} else {
-    #  print("Failed to create directory.")
-    #}
   }
 
   # Printing steps to console and log file
@@ -120,41 +121,39 @@ path,
   }
   printWithTimestamp("Importing images from directory...")
 
-  # Import images with wrapper import function
+  # Import images from the specified directory
   image_files <- list.files(path = path, full.names = TRUE)
-  # Ignore created directories and log file
-  image_files <- image_files[!file.info(image_files)$isdir]
+  image_files <- image_files[!file.info(image_files)$isdir]   # Exclude directories
   image_files <-
-    image_files[grep("\\.Rmd$", image_files, invert = TRUE)]
+    image_files[grep("\\.Rmd$", image_files, invert = TRUE)]  # Exclude log files
 
-  cimg_list <- lapply(image_files, importImage)
+  cimg_list <- lapply(image_files, importImage)   # Import images
 
+  # Log and print checking md5sums step
   if (Rlog == TRUE) {
     logIt("Checking md5sums...  ")
   }
   printWithTimestamp("Checking md5sums...")
 
-  # Checking directory for identical images using md5 sums
-  # Function to calculate md5sum
+  # Function to calculate md5sum of a file
   calculatemd5 <- function(file_path) {
     md5_hash <- tools::md5sum(file_path)
     return(md5_hash)
   }
 
-  # Applying md5sum calculation function to all files in directory
+  # Calculate md5sums for all image files
   md5sums <- function(file_paths) {
     sapply(file_paths, calculatemd5)
   }
 
   md5_sums <- md5sums(image_files)
 
-  # Summary of file names and md5 sums
+  # Create a data frame of file names and md5sums
   md5_result <- data.frame(file = image_files,
                            md5_sum = md5_sums)
-
   duplicate_indices <- duplicated(md5_result$md5_sum)
 
-  # Error if md5 sums appear more than once
+  # Error handling for duplicate md5sums
   if (length(unique(duplicate_indices)) > 1) {
     duplicate_entries <- md5_result[duplicate_indices, ]
     if (Rlog == TRUE) {
@@ -178,27 +177,23 @@ path,
   alpha_i <- alpha
   sigma_i <- sigma
 
-  # With parallel processing
+  # Parallel processing section
   if (parallel == TRUE) {
     if (requireNamespace("doParallel", quietly = TRUE)) {
-      # Creating parallel backend
+      # Log and print creating parallel backend step
       if (Rlog == TRUE) {
         logIt("Creating parallel backend...  ")
       }
       printWithTimestamp("Creating parallel backend...")
 
+      # Detect and set number of cores
       if (cores == 'auto') {
         n_cores <- round(parallel::detectCores() * 0.75)
-
         my_cluster <- parallel::makeCluster(n_cores,
-                                  type = backend)
-
+                                            type = backend)
         doParallel::registerDoParallel(cl = my_cluster)
-
-      }
-
-      if (cores != 'auto') {
-        if (is.numeric(cores) != TRUE) {
+      } else {
+        if (!is.numeric(cores)) {
           if (Rlog == TRUE) {
             logIt("Error: Number of cores needs to be numeric.  ")
           }
@@ -212,7 +207,7 @@ path,
         registerDoParallel(cl = my_cluster)
       }
 
-      # Giving information about the cores used
+      # Log and print information about cores used
       if (Rlog == TRUE) {
         cat(
           format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
@@ -232,11 +227,13 @@ path,
         )
       )
 
+      # Log and print starting image analysis step
       if (Rlog == TRUE) {
         logIt("Starting image analysis...  ")
       }
       printWithTimestamp("Starting image analysis...")
-      # Starting analysis with foreach loop
+
+      # Analyze images in parallel
       md5_result <-
         foreach(
           i = 1:length(cimg_list),
@@ -267,9 +264,8 @@ path,
           if (dim(img)[4] != 1) {
             img <- grayscale(img)
           }
-          devtools::load_all()
 
-          # Actual function to be processed
+          # Analyze the image with a timeout
           timeout <- 3600
           res <- tryCatch({
             setTimeLimit(elapsed = timeout, transient = FALSE)
@@ -289,6 +285,8 @@ path,
           }, finally = {
             setTimeLimit(elapsed = Inf)
           })
+
+          # Handle failed analysis
           if (is.null(res)) {
             res <- data.frame(matrix(NA, nrow = 1, ncol = 7))
             res <- list(summary = res)
@@ -306,21 +304,23 @@ path,
 
           file_names <- tools::file_path_sans_ext(basename(image_files))
 
-          # Save produced data into log_files
+          # Save data and image to log files
           if (Rlog == TRUE) {
             export <- list(data = res,
                            image = cimg_list[i])
             saveRDS(export, file = paste0(log_path, "log_", file_names[i], ".RDS"))
           }
 
-          # Combining results from the loop with the file information
+          # Combine results
           md5_result_row <- cbind(md5_result[i, ], res$summary)
           md5_result_row
+          rownames(md5_result_row) <- file_names
         }
 
+      # Stop the parallel cluster
       parallel::stopCluster(cl = my_cluster)
     } else {
-      # doParallel is necessary for parallel processing
+      # Handle missing doParallel package
       if (Rlog == TRUE) {
         logIt(
           "Error: Please install the Package 'doParallel' for parallel processing \n (install.package('doparallel')  "
@@ -333,7 +333,7 @@ path,
     }
   }
 
-  # Without parallel processing
+  # Sequential processing section
   if (parallel == FALSE) {
     for (i in seq_along(cimg_list)) {
       if (Rlog == TRUE) {
@@ -352,7 +352,6 @@ path,
         md5_result$file[i]
       ))
 
-      # Actual function to be processed
       img <- cimg_list[[i]]
 
       # Convert image to grayscale if not already
@@ -360,6 +359,7 @@ path,
         img <- grayscale(img)
       }
 
+      # Analyze the image with a timeout
       timeout <- 3600
       res <- tryCatch({
         setTimeLimit(elapsed = timeout, transient = FALSE)
@@ -379,6 +379,8 @@ path,
       }, finally = {
         setTimeLimit(elapsed = Inf)
       })
+
+      # Handle failed analysis
       if (is.null(res)) {
         if (Rlog == TRUE) {
           cat(
@@ -394,18 +396,20 @@ path,
 
       file_names <- tools::file_path_sans_ext(basename(image_files))
 
-      # Save produced data into log_files
+      # Save data and image to log files
       if (Rlog == TRUE) {
         export <- list(data = res,
                        image = cimg_list[i])
         saveRDS(export, file = paste0(log_path, "log_", file_names[i], ".RDS"))
       }
 
+      # Combine results
       md5_result[i, c(colnames(res$summary))] <- res$summary
+      rownames(md5_result) <- file_names
     }
   }
 
-  # Render log file
+  # Render log file if Rlog is TRUE
   if (Rlog == TRUE) {
     # Save md5result
     saveRDS(md5_result, file = paste0(log_path, "result.RDS"))
@@ -444,7 +448,7 @@ file_names <-
   file_names[grep('\\\\.Rmd$', file_names, invert = TRUE)]
 file_names <- tools::file_path_sans_ext(basename(file_names))
 
-for (i in 1:nrow(md5result)) {
+for (i in seq_len(nrow(md5result))) {
 file_path <- file.path(matching_directories, paste0('log_', file_names[i], '.RDS'))
 import <- readRDS(file_path)
 image <- import$image[[1]]

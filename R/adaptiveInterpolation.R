@@ -62,7 +62,7 @@
 #' alt_x <- list()
 #' alt_y <- list()
 #' alt_value <- list()
-#' for (g in 1:nrow(df_lab)) {
+#' for (g in seq_len(nrow(df_lab))) {
 #'   if (mat_cimg_m[df_lab$x[g], df_lab$y[g], 1, 1] == 1) {
 #'     alt_x[g] <- df_lab$x[g]
 #'     alt_y[g] <- df_lab$y[g]
@@ -95,7 +95,7 @@ adaptiveInterpolation <- function(end_points_df,
                                  ncol = ncol(lineends_cimg))
 
   # Iterate over all end points specified in the end_points_df data frame
-  for (a in 1:nrow(end_points_df)) {
+  for (a in seq_len(nrow(end_points_df))) {
     x <- end_points_df$x[a]
     y <- end_points_df$y[a]
 

@@ -35,6 +35,6 @@ test_that("objectDetection", {
   expect_equal(res_objectDetection$centers$value[1], 1)
   expect_equal(
     seq_along(res_objectDetection$centers$value),
-    1:nrow(res_objectDetection$centers)
+    seq_len(nrow(res_objectDetection$centers))
   )
 })

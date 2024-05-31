@@ -2,7 +2,7 @@
 % Please edit documentation in R/shapeFeatures.R
 \name{shapeFeatures}
 \alias{shapeFeatures}
-\title{Extraction of shape features}
+\title{Extraction of Shape Features}
 \usage{
 shapeFeatures(
   img,
@@ -11,7 +11,6 @@ shapeFeatures(
   xdim = 2,
   ydim = 1,
   SOM = FALSE,
-  parallel = FALSE,
   visualize = FALSE
 )
 }
@@ -32,7 +31,7 @@ the detected objects}
 \item{visualize}{visualizes the groups computed by SOM}
 }
 \value{
-data frame containing detailed information about every single bead
+\code{data.frame} containing detailed information about every single object
 }
 \description{
 This function analyzes the objects detected in an image and calculates
@@ -44,9 +43,11 @@ be grouped using a Self-Organizing Map (SOM) from the 'Kohonen' package.
 shapeFeatures(
   beads,
   alpha = 1,
-  sigma = 2,
+  sigma = 0,
   SOM = TRUE,
-  parallel = FALSE,
   visualize = TRUE
 )
+}
+\seealso{
+\code{\link[=objectDetection]{objectDetection()}}, \code{\link[=resultAnalytics]{resultAnalytics()}}
 }

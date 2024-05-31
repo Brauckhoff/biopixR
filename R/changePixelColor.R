@@ -83,7 +83,7 @@ changePixelColor <-
     }
 
     # Apply the new color to the specified pixels
-    for (i in 1:nrow(coordinates)) {
+    for (i in seq_len(nrow(coordinates))) {
       if (exists("color_factor")) {
         color <- colors_rgb[[as.character(color_factor[i])]]
       }

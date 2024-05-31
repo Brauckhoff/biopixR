@@ -28,7 +28,7 @@
 #'   }
 #'   \item \strong{Interactive Selection:}
 #'   \itemize{
-#'     \item By setting alpha and sigma to "interactive", a Tcl/Tk graphical user interface (GUI) is opened. This allows users to select the parameters interactively based on visual feedback. This method requires user input for fine-tuning the parameters according to the specific requirements of the image.
+#'     \item Setting the alpha and sigma values to "interactive" initiates a Tcl/Tk graphical user interface (GUI). This interface allows users to adjust the parameters interactively, based on visual feedback. To achieve optimal results, the user must input the necessary adjustments to align the parameters with the specific requirements of the image. The user can also switch between the methods during the execution of the function through the interface.
 #'   }
 #'   \item \strong{Multi-Objective Optimization:}
 #'   \itemize{
@@ -178,6 +178,7 @@ objectDetection <- function(img,
       parameter <- interactive_objectDetection(object_img)
       alpha_x <- as.numeric(parameter[1])
       sigma_x <- as.numeric(parameter[2])
+      method <- parameter[4]
     }
 
     # If parameters are set to 'gaussian', perform Gaussian process optimization
@@ -382,7 +383,7 @@ objectDetection <- function(img,
 
       # Merge small regions into nearest large regions if within distance threshold
       if (nrow(small_regions) != 0) {
-        for (i in 1:nrow(small_regions)) {
+        for (i in seq_len(nrow(small_regions))) {
           small_region <- small_regions[i,]
           distances <-
             mapply(

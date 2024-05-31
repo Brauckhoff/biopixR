@@ -11,64 +11,72 @@ imgPipe(
   color2 = "color2",
   img3 = NULL,
   color3 = "color3",
+  method = "edge",
   alpha = 1,
   sigma = 2,
-  sizeFilter = TRUE,
+  sizeFilter = FALSE,
   upperlimit = "auto",
   lowerlimit = "auto",
-  proximityFilter = TRUE,
+  proximityFilter = FALSE,
   radius = "auto"
 )
 }
 \arguments{
-\item{img1}{image (import by \code{\link[imager]{load.image}})}
+\item{img1}{image (import by \code{\link[biopixR]{importImage}})}
 
 \item{color1}{name of color in img1}
 
-\item{img2}{image (import by \code{\link[imager]{load.image}})}
+\item{img2}{image (import by \code{\link[biopixR]{importImage}})}
 
 \item{color2}{name of color in img2}
 
-\item{img3}{image (import by \code{\link[imager]{load.image}})}
+\item{img3}{image (import by \code{\link[biopixR]{importImage}})}
 
 \item{color3}{name of color in img3}
 
-\item{alpha}{threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})}
+\item{method}{choose method for object detection ('edge' / 'threshold')
+(from \code{\link[biopixR]{objectDetection}})}
 
-\item{sigma}{smoothing (numeric / 'static' / 'interactive' / 'gaussian') (from \code{\link[biopixR]{objectDetection}})}
+\item{alpha}{threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian')
+(from \code{\link[biopixR]{objectDetection}})}
 
-\item{sizeFilter}{applying \code{\link[biopixR]{sizeFilter}} function (default - TRUE)}
+\item{sigma}{smoothing (numeric / 'static' / 'interactive' / 'gaussian')
+(from \code{\link[biopixR]{objectDetection}})}
 
-\item{upperlimit}{highest accepted object size (only needed if
-sizeFilter = TRUE)}
+\item{sizeFilter}{applying \code{\link[biopixR]{sizeFilter}} function (default - FALSE)}
+
+\item{upperlimit}{highest accepted object size (only needed if sizeFilter = TRUE)}
 
 \item{lowerlimit}{smallest accepted object size (when 'auto' both limits are
 calculated by using the IQR)}
 
-\item{proximityFilter}{applying \code{\link[biopixR]{proximityFilter}} function (default - TRUE)}
+\item{proximityFilter}{applying \code{\link[biopixR]{proximityFilter}} function (default - FALSE)}
 
-\item{radius}{distance from one center in which no other centers
+\item{radius}{distance from one object in which no other centers
 are allowed (in pixels) (only needed if proximityFilter = TRUE)}
 }
 \value{
-list of 3 to 4 objects:
-\enumerate{
+list of 2 to 3 objects:
+\itemize{
 \item summary of all the objects in the image
 \item detailed information about every single object
 \item (optional) result for every individual color
-\item unfiltered coordinates of img1
 }
 }
 \description{
 This function serves as a pipeline that integrates tools for complete
 start-to-finish image analysis. It enables the handling of images from
-different channels, for example the analysis of dual-color microbeads.
+different channels, for example the analysis of dual-color micro particles.
 This approach simplifies the workflow, providing a straightforward method to
 analyze complex image data.
 }
 \examples{
-result <- imgPipe(beads,
-  alpha = 1, sigma = 2, upperlimit = 150,
+result <- imgPipe(
+  beads,
+  alpha = 1,
+  sigma = 2,
+  sizeFilter = TRUE,
+  upperlimit = 150,
   lowerlimit = 50
   )
 plot(beads)
@@ -83,5 +91,5 @@ with(
   )
 }
 \seealso{
-\code{\link[=objectDetection]{objectDetection()}} \code{\link[=sizeFilter]{sizeFilter()}} \code{\link[=proximityFilter]{proximityFilter()}} \code{\link[=resultAnalytics]{resultAnalytics()}} \code{\link[=shapeFeatures]{shapeFeatures()}}
+\code{\link[=objectDetection]{objectDetection()}}, \code{\link[=sizeFilter]{sizeFilter()}}, \code{\link[=proximityFilter]{proximityFilter()}}, \code{\link[=resultAnalytics]{resultAnalytics()}}
 }

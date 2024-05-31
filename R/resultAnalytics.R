@@ -71,7 +71,7 @@ resultAnalytics <- function(img,
   object_img <- img
 
   # Include intensity values of pixels from remaining clusters in a data frame
-  for (h in 1:nrow(xy_coords)) {
+  for (h in seq_len(nrow(xy_coords))) {
     x <- xy_coords$x[h]
     y <- xy_coords$y[h]
     int <- as.array(object_img)[x, y, , ]

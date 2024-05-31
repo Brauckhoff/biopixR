@@ -116,8 +116,8 @@ haralickCluster <- function(path) {
 
     # Contrast
     contrast <- 0
-    for (i in 1:nrow(glcm)) {
-      for (j in 1:ncol(glcm)) {
+    for (i in seq_len(nrow(glcm))) {
+      for (j in seq_len(ncol(glcm))) {
         contrast <- contrast + (i - j) ^ 2 * glcm[i, j]
       }
     }
@@ -139,8 +139,8 @@ haralickCluster <- function(path) {
       glcm
     )) - mu_y) ^ 2 * p_y))
 
-    for (i in 1:nrow(glcm)) {
-      for (j in 1:ncol(glcm)) {
+    for (i in seq_len(nrow(glcm))) {
+      for (j in seq_len(ncol(glcm))) {
         numerator <- numerator + (i - mu_x) * (j - mu_y) * glcm[i, j]
       }
     }
@@ -150,8 +150,8 @@ haralickCluster <- function(path) {
     # Sum of Squares: Variance
     mean <- sum(1:(nrow(glcm)) %*% glcm)
     variance <- 0
-    for (i in 1:nrow(glcm)) {
-      for (j in 1:ncol(glcm)) {
+    for (i in seq_len(nrow(glcm))) {
+      for (j in seq_len(ncol(glcm))) {
         variance <- variance + ((i - mean) ^ 2) * glcm[i, j]
       }
     }
@@ -159,8 +159,8 @@ haralickCluster <- function(path) {
 
     # Inverse Difference Moment
     IDM <- 0
-    for (i in 1:nrow(glcm)) {
-      for (j in 1:ncol(glcm)) {
+    for (i in seq_len(nrow(glcm))) {
+      for (j in seq_len(ncol(glcm))) {
         IDM <- IDM + (1 / (1 + (i - j) ^ 2)) * glcm[i, j]
       }
     }
