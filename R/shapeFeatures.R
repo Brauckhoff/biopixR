@@ -94,7 +94,7 @@ shapeFeatures <-
 
     # Calculate distances using vectorized operations
     for (i in seq_len(nrow(center))) {
-      pos_edge <- df_edges[value == i, .(x, y)]
+      pos_edge <- df_edges[value == i, list(x, y)]
 
       # Calculate the Euclidean distances from the center to each edge pixel
       distances_i <-

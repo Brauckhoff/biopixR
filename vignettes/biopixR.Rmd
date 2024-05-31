@@ -73,7 +73,7 @@ and characterization of the microbeads within the biopixR package.
 
 ```{r objectDetection}
 res_objectDetection <-
-  objectDetection(beads, alpha = 1, sigma = 2)
+  objectDetection(beads, method = 'edge', alpha = 1, sigma = 0)
 ```
 
 This function generates a list of objects. Let's examine the specific outcomes
@@ -115,7 +115,7 @@ microbead image and assess whether the outcome aligns with our expectations.
 changePixelColor(
   beads,
   res_objectDetection$coordinates,
-  color = "purple",
+  color = factor(res_objectDetection$coordinates$value),
   visualize = TRUE
 )
 ```
@@ -139,7 +139,7 @@ smoothing factor (sigma). Sometimes, smoothing is necessary to improve the
 recognition of complete objects and prevent the marking of fragmented edges.
 
 ```{r visualization_3}
-res_objectDetection$marked_beads |> plot()
+res_objectDetection$marked_objects |> plot()
 ```
 
 Nonetheless, a crucial differentiation occurs in obtaining the highlighted
@@ -162,12 +162,12 @@ in cases of insufficient detected objects, the function will issue a warning and
 generate a size distribution.
 
 ```{r, error=TRUE}
-res_sizeFilter <- sizeFilter(
-  centers = res_objectDetection$centers,
-  coordinates = res_objectDetection$coordinates,
-  lowerlimit = "auto",
-  upperlimit = "auto"
-)
+#res_sizeFilter <- sizeFilter(
+#  centers = res_objectDetection$centers,
+#  coordinates = res_objectDetection$coordinates,
+#  lowerlimit = "auto",
+#  upperlimit = "auto"
+#)
 ```
 
 As shown by the size distribution, there two larger objects (doublet - size:
@@ -277,11 +277,9 @@ approximately two-thirds.
 ```{r}
 result <-
   resultAnalytics(
-    unfiltered = res_objectDetection$coordinates,
-    coordinates = res_proximityFilter$coordinates,
-    size = res_proximityFilter$size,
     img = beads,
-    parallel = FALSE
+    coordinates = res_proximityFilter$coordinates,
+    unfiltered = res_objectDetection$coordinates
   )
 result$detailed
 ```
@@ -314,11 +312,8 @@ unfiltered results available from the image.
 ```{r}
 result_proximityFilter <-
   resultAnalytics(
-    unfiltered = res_objectDetection$coordinates,
-    coordinates = res_objectDetection$coordinates,
-    size = res_objectDetection$size,
     img = beads,
-    parallel = FALSE
+    coordinates = res_objectDetection$coordinates
   )
 
 result_proximityFilter$detailed
@@ -355,11 +350,9 @@ text(
 ```{r}
 result_sizeFilter <-
   resultAnalytics(
-    unfiltered = res_objectDetection$coordinates,
-    coordinates = ind_sizeFilter$coordinates,
-    size = ind_sizeFilter$size,
     img = beads,
-    parallel = FALSE
+    coordinates = ind_sizeFilter$coordinates,
+    unfiltered = res_objectDetection$coordinates
   )
 
 result_sizeFilter$detailed
@@ -400,11 +393,9 @@ so both the doublet and its neighboring microbead are rejected by the filter.
 ```{r}
 result_proximityFilter <-
   resultAnalytics(
-    unfiltered = res_objectDetection$coordinates,
-    coordinates = ind_proximityFilter$coordinates,
-    size = ind_proximityFilter$size,
     img = beads,
-    parallel = FALSE
+    coordinates = ind_proximityFilter$coordinates,
+    unfiltered = res_objectDetection$coordinates
   )
 
 result_proximityFilter$detailed

@@ -12,13 +12,13 @@
 #' @import imager
 #' @importFrom tools file_ext
 #' @examples
-#' tempdir()
-#' temp_dir <- tempdir()
-#' file_path <- file.path(temp_dir, "beads.png")
-#' save.image(beads, file_path)
-#' img <- importImage(file_path)
+#' path2img <- system.file("images/beads_large1.bmp", package = 'biopixR')
+#' img <- importImage(path2img)
 #' img |> plot()
-#' unlink(temp_dir, recursive = TRUE)
+#'
+#' path2img <- system.file("images/beads_large2.png", package = 'biopixR')
+#' img <- importImage(path2img)
+#' img |> plot()
 #' @export
 importImage <- function(path2file) {
   # Extract the file extension and convert it to lowercase

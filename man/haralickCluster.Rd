@@ -21,19 +21,9 @@ images as cluster centers. This approach simplifies texture-based image
 analysis and classification.
 }
 \examples{
-tempdir()
-temp_dir <- tempdir()
-file_path <- file.path(temp_dir, "beads.png")
-save.image(beads, file_path)
-file_path <- file.path(temp_dir, "droplet_beads.png")
-save.image(grayscale(droplet_beads), file_path)
-file_path <- file.path(temp_dir, "beads_large1.png")
-save.image(beads_large1, file_path)
-file_path <- file.path(temp_dir, "beads_large2.png")
-save.image(grayscale(beads_large2), file_path)
-result <- haralickCluster(temp_dir)
-result
-unlink(temp_dir, recursive = TRUE)
+path2dir <- system.file("images", package = 'biopixR')
+result <- haralickCluster(path2dir)
+print(result)
 }
 \references{
 https://cran.r-project.org/package=radiomics

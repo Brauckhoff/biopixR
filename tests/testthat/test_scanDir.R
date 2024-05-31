@@ -3,7 +3,7 @@ library(biopixR)
 
 
 test_that("scanDir", {
-  imgs_path <- file.path("inst/images")
+  imgs_path <- system.file("images", package = 'biopixR')
 
   result <- scanDir(imgs_path,
                     method = "edge")
@@ -32,4 +32,26 @@ test_that("scanDir", {
 
   expect_no_error(scanDir(imgs_path,
                           method = "threshold"))
+  expect_no_error(scanDir(imgs_path,
+                          method = "threshold",
+                          parallel = TRUE))
+  expect_no_error(scanDir(imgs_path,
+                          method = "gaussian",
+                          parallel = TRUE))
+  expect_equal(
+    scanDir(
+      imgs_path,
+      method = "edge",
+      alpha = 1,
+      sigma = 0,
+      parallel = TRUE
+    ),
+    scanDir(
+      imgs_path,
+      method = "edge",
+      alpha = 1,
+      sigma = 0,
+      parallel = FALSE
+    )
+  )
 })

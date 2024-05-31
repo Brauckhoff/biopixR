@@ -75,19 +75,9 @@ can be accessed through saved RDS files.
 \examples{
 \donttest{
 if (interactive()) {
-  tempdir()
-  temp_dir <- tempdir()
-  file_path <- file.path(temp_dir, "beads.png")
-  save.image(beads, file_path)
-  file_path <- file.path(temp_dir, "droplet_beads.png")
-  save.image(grayscale(droplet_beads), file_path)
-  file_path <- file.path(temp_dir, "beads_large1.png")
-  save.image(beads_large1, file_path)
-  file_path <- file.path(temp_dir, "beads_large2.png")
-  save.image(grayscale(beads_large2), file_path)
-  scanDir(temp_dir, alpha = 'interactive', sigma = 'interactive')
-  unlink(temp_dir, recursive = TRUE)
-}
+  path2dir <- system.file("images", package = 'biopixR')
+  scanDir(path2dir, alpha = 'interactive', sigma = 'interactive')
+  }
 }
 }
 \seealso{

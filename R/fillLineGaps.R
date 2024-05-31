@@ -59,7 +59,8 @@ fillLineGaps <-
     # image to improve edge linking
     if (!is.null(objects)) {
       objects_to_del <- objects
-      object_coords <- objectDetection(objects_to_del, alpha, sigma)
+      object_coords <-
+        objectDetection(objects_to_del, alpha = alpha, sigma = sigma)
       thresh_array <- as.array(neg_thresh_m)
 
       # Erase objects from the image by setting their coordinates to zero

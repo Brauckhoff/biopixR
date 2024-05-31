@@ -53,19 +53,9 @@ computeGLCM <-
 #' @importFrom tools md5sum
 #' @references https://cran.r-project.org/package=radiomics
 #' @examples
-#' tempdir()
-#' temp_dir <- tempdir()
-#' file_path <- file.path(temp_dir, "beads.png")
-#' save.image(beads, file_path)
-#' file_path <- file.path(temp_dir, "droplet_beads.png")
-#' save.image(grayscale(droplet_beads), file_path)
-#' file_path <- file.path(temp_dir, "beads_large1.png")
-#' save.image(beads_large1, file_path)
-#' file_path <- file.path(temp_dir, "beads_large2.png")
-#' save.image(grayscale(beads_large2), file_path)
-#' result <- haralickCluster(temp_dir)
-#' result
-#' unlink(temp_dir, recursive = TRUE)
+#' path2dir <- system.file("images", package = 'biopixR')
+#' result <- haralickCluster(path2dir)
+#' print(result)
 #' @export
 haralickCluster <- function(path) {
   # Get full file paths and exclude directories
@@ -198,6 +188,17 @@ haralickCluster <- function(path) {
     haralick_features <- computeHaralickFeatures(glcm)
     return(haralick_features)
   }
+
+  # Function to check and convert to grayscale if necessary
+  convert2Grayscale <- function(img) {
+    if (spectrum(img) > 1) {  # Check if the image has more than one channel (color image)
+      img <- grayscale(img)  # Convert to grayscale
+    }
+    img
+  }
+
+  # Apply the function to each cimg object in the list
+  cimg_list <- lapply(cimg_list, convert2Grayscale)
 
   # Process each image to extract features
   features_list <- lapply(cimg_list, extractFeatures)

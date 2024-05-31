@@ -3,23 +3,14 @@ library(biopixR)
 
 test_that("haralickCluster", {
   # with not existing directory
-  expect_error(haralickCluster(temp_dir))
+  expect_error(haralickCluster(path2dir))
 
   # test1
   df <- data.frame(file = rep(NA, 4),
                    md5_sum = rep(NA, 4),
                    cluster = rep(NA, 4))
   # creating a directory to apply function to
-  tempdir()
-  temp_dir <- tempdir()
-  file_path <- file.path(temp_dir, "beads.png")
-  save.image(beads, file_path)
-  file_path <- file.path(temp_dir, "droplet_beads.png")
-  save.image(grayscale(droplet_beads), file_path)
-  file_path <- file.path(temp_dir, "beads_large1.png")
-  save.image(beads_large1, file_path)
-  file_path <- file.path(temp_dir, "beads_large2.png")
-  save.image(grayscale(beads_large2), file_path)
+  path2dir <- system.file("images", package = 'biopixR')
 
   calculatemd5 <- function(y) {
     md5_hash <- tools::md5sum(y)
@@ -31,7 +22,7 @@ test_that("haralickCluster", {
     sapply(x, calculatemd5)
   }
 
-  all_items <- list.files(path = temp_dir, full.names = TRUE, recursive = FALSE)
+  all_items <- list.files(path = path2dir, full.names = TRUE, recursive = FALSE)
   files_only <- all_items[!file.info(all_items)$isdir]
   df[, 1] <- files_only
   df[, 2] <- md5sums(files_only)
@@ -39,13 +30,10 @@ test_that("haralickCluster", {
   df[, 3] <- as.integer(df$cluster)
   rownames(df) <- basename(files_only)
 
-  expect_no_error(haralickCluster(temp_dir))
+  expect_no_error(haralickCluster(path2dir))
 
-  result <- haralickCluster(temp_dir)
+  result <- haralickCluster(path2dir)
   expect_equal(result, df)
-
-  # delete temporary directory containing test files
-  unlink(temp_dir, recursive = TRUE)
 
   # wrong input
   expect_error(haralickCluster(beads))

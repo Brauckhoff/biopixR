@@ -34,25 +34,15 @@
 #' current directory. More detailed information on individual results,
 #' can be accessed through saved RDS files.
 #' @import parallel
-#' @importFrom rmarkdown render
 #' @importFrom tools file_path_sans_ext
+#' @importFrom utils file.edit write.csv
 #' @seealso [imgPipe()], [objectDetection()], [sizeFilter()], [proximityFilter()], [resultAnalytics()]
 #' @examples
 #' \donttest{
 #' if (interactive()) {
-#'   tempdir()
-#'   temp_dir <- tempdir()
-#'   file_path <- file.path(temp_dir, "beads.png")
-#'   save.image(beads, file_path)
-#'   file_path <- file.path(temp_dir, "droplet_beads.png")
-#'   save.image(grayscale(droplet_beads), file_path)
-#'   file_path <- file.path(temp_dir, "beads_large1.png")
-#'   save.image(beads_large1, file_path)
-#'   file_path <- file.path(temp_dir, "beads_large2.png")
-#'   save.image(grayscale(beads_large2), file_path)
-#'   scanDir(temp_dir, alpha = 'interactive', sigma = 'interactive')
-#'   unlink(temp_dir, recursive = TRUE)
-#' }
+#'   path2dir <- system.file("images", package = 'biopixR')
+#'   scanDir(path2dir, alpha = 'interactive', sigma = 'interactive')
+#'   }
 #' }
 #' @export
 scanDir <- function(path,                    # Path to the directory to scan
@@ -84,6 +74,17 @@ scanDir <- function(path,                    # Path to the directory to scan
 
   # Create log file if Rlog is TRUE
   if (Rlog == TRUE) {
+    if (requireNamespace("rmarkdown", quietly = TRUE)) {
+    } else {
+      # Handle missing rmarkdown package
+      logIt(
+        "Error: Please install the Package 'rmarkdown' for log file creation \n (install.package('rmarkdown')  "
+      )
+      stop(
+        format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+        " Please install the Package 'rmarkdown' for log file creation \n (install.package('rmarkdown')"
+      )
+    }
     # Create path of log_file
     desired_location <- path
     log_file <- "log_file.Rmd"
@@ -179,7 +180,7 @@ path,
 
   # Parallel processing section
   if (parallel == TRUE) {
-    if (requireNamespace("doParallel", quietly = TRUE)) {
+    if (requireNamespace(c("doParallel", "foreach"), quietly = TRUE)) {
       # Log and print creating parallel backend step
       if (Rlog == TRUE) {
         logIt("Creating parallel backend...  ")
@@ -239,7 +240,7 @@ path,
           i = 1:length(cimg_list),
           .combine = rbind,
           .verbose = TRUE,
-          .packages = c("GPareto", "DiceKriging")
+          .packages = c("GPareto", "imager")
         ) %dopar% {
           if (Rlog == TRUE) {
             cat("\n",
@@ -251,7 +252,7 @@ path,
               append = TRUE
             )
           }
-          #browser()
+
           message(paste(
             format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
             "Currently analyzing:",
@@ -265,12 +266,15 @@ path,
             img <- grayscale(img)
           }
 
+          #devtools::load_all()
+
           # Analyze the image with a timeout
           timeout <- 3600
           res <- tryCatch({
             setTimeLimit(elapsed = timeout, transient = FALSE)
             res <- imgPipe(
               img1 = img,
+              method = method,
               alpha = alpha_i,
               sigma = sigma_i,
               sizeFilter = sizeFilter,
@@ -313,8 +317,8 @@ path,
 
           # Combine results
           md5_result_row <- cbind(md5_result[i, ], res$summary)
+          rownames(md5_result_row) <- file_names[i]
           md5_result_row
-          rownames(md5_result_row) <- file_names
         }
 
       # Stop the parallel cluster
@@ -323,12 +327,12 @@ path,
       # Handle missing doParallel package
       if (Rlog == TRUE) {
         logIt(
-          "Error: Please install the Package 'doParallel' for parallel processing \n (install.package('doparallel')  "
+          "Error: Please install the Package 'doParallel' & 'foreach' for parallel processing \n (install.package(c('doparallel', 'foreach'))  "
         )
       }
       stop(
         format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-        " Please install the Package 'doParallel' for parallel processing \n (install.package('doparallel')"
+        " Please install the Package 'doParallel' & 'foreach' for parallel processing \n (install.package(c('doparallel', 'foreach'))"
       )
     }
   }
@@ -365,6 +369,7 @@ path,
         setTimeLimit(elapsed = timeout, transient = FALSE)
         res <- imgPipe(
           img1 = img,
+          method = method,
           alpha = alpha_i,
           sigma = sigma_i,
           sizeFilter = sizeFilter,

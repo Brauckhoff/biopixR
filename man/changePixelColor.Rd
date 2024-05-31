@@ -13,11 +13,11 @@ changePixelColor(img, coordinates, color = "purple", visualize = FALSE)
 be a X|Y data frame (first column: X; second column: Y)).}
 
 \item{color}{color to be applied to specified pixels:
-\enumerate{
+\itemize{
 \item color from the list of colors defined by \code{\link[grDevices]{colors}}
 \item object of class factor
-Could also be an object of class factor
-}}
+}
+Could also be an object of class factor}
 
 \item{visualize}{if TRUE the resulting image gets plotted}
 }
