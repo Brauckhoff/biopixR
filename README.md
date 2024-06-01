@@ -126,10 +126,9 @@ In conclusion, obtaining meaningful information from the filtered dataset is ess
 ```{r}
 result <-
   resultAnalytics(
-    unfiltered = res_objectDetection$coordinates,
+    img = beads,
     coordinates = res_proximityFilter$coordinates,
-    size = res_proximityFilter$size,
-    img = beads
+    unfiltered = res_objectDetection$coordinates
   )
 
 result$detailed

@@ -10,7 +10,7 @@ changePixelColor(img, coordinates, color = "purple", visualize = FALSE)
 \item{img}{image (import by \code{\link[biopixR]{importImage}})}
 
 \item{coordinates}{specifying which pixels to be colored (should
-be a X|Y data frame).}
+be a x|y data frame).}
 
 \item{color}{color to be applied to specified pixels:
 \itemize{
@@ -22,7 +22,7 @@ Could also be an object of class 'factor'.}
 \item{visualize}{if TRUE the resulting image gets plotted}
 }
 \value{
-object of class 'cimg' with changed colors at desired positions.
+Object of class 'cimg' with changed colors at desired positions.
 }
 \description{
 The function allows the user to alter the color of a specified set of pixels

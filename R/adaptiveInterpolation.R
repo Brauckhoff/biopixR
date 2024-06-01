@@ -2,15 +2,15 @@
 #'
 #' The function scans an increasing radius around a line end and connects it
 #' with the nearest labeled region.
-#' @param end_points_df \code{data.frame} with the coordinates of all line ends (can
-#' be obtained with \code{\link[magick]{image_morphology}})
+#' @param end_points_df \code{data.frame} with the coordinates of all line ends
+#' (can be obtained by using \code{\link[magick]{image_morphology}})
 #' @param diagonal_edges_df \code{data.frame} with coordinates of diagonal line ends
-#' (can also be obtained by \code{\link[magick]{image_morphology}})
+#' (can also be obtained by using \code{\link[magick]{image_morphology}})
 #' @param clean_lab_df data of type \code{data.frame}, containing the x, y and value
 #' information of every labeled region in an image (only the edges should be
 #' labeled)
-#' @param lineends_cimg image with dimensions of the image with discontinuous
-#' edges (providing the dimensions of the output matrix)
+#' @param img image providing the dimensions of the output matrix
+#' (import by \code{\link[biopixR]{importImage}})
 #' @param radius maximal radius that should be scanned for another cluster
 #' @return Binary matrix that can be applied as an overlay, for example with
 #' \code{\link[imager]{imager.combine}} to fill the gaps between line ends.
@@ -87,12 +87,12 @@
 adaptiveInterpolation <- function(end_points_df,
                                   diagonal_edges_df,
                                   clean_lab_df,
-                                  lineends_cimg,
+                                  img,
                                   radius = 5) {
   # Initialize a matrix to represent the image, filled with zeros (background)
   connected_components <- matrix(0,
-                                 nrow = nrow(lineends_cimg),
-                                 ncol = ncol(lineends_cimg))
+                                 nrow = nrow(img),
+                                 ncol = ncol(img))
 
   # Iterate over all end points specified in the end_points_df data frame
   for (a in seq_len(nrow(end_points_df))) {

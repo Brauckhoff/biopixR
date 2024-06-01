@@ -8,7 +8,7 @@ adaptiveInterpolation(
   end_points_df,
   diagonal_edges_df,
   clean_lab_df,
-  lineends_cimg,
+  img,
   radius = 5
 )
 }
@@ -23,8 +23,8 @@ be obtained with \code{\link[magick]{image_morphology}})}
 information of every labeled region in an image (only the edges should be
 labeled)}
 
-\item{lineends_cimg}{image with dimensions of the image with discontinuous
-edges (providing the dimensions of the output matrix)}
+\item{img}{image providing the dimensions of the output matrix
+(import by \code{\link[biopixR]{importImage}})}
 
 \item{radius}{maximal radius that should be scanned for another cluster}
 }

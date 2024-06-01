@@ -5,8 +5,10 @@
 #' eccentricity, radius, and perimeter. The resulting shape attributes can then
 #' be grouped using a Self-Organizing Map (SOM) from the 'Kohonen' package.
 #' @param img image (import by \code{\link[imager]{load.image}})
-#' @param alpha threshold adjustment factor (from \code{\link[biopixR]{objectDetection}})
-#' @param sigma smoothing (from \code{\link[biopixR]{objectDetection}})
+#' @param alpha threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian')
+#' (from \code{\link[biopixR]{objectDetection}})
+#' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian')
+#' (from \code{\link[biopixR]{objectDetection}})
 #' @param SOM if TRUE runs SOM algorithm on extracted shape features, grouping
 #' the detected objects
 #' @param xdim x-dimension for the SOM-grid (grid = hexagonal)

@@ -17,9 +17,11 @@ shapeFeatures(
 \arguments{
 \item{img}{image (import by \code{\link[imager]{load.image}})}
 
-\item{alpha}{threshold adjustment factor (from \code{\link[biopixR]{objectDetection}})}
+\item{alpha}{threshold adjustment factor (numeric / 'static' / 'interactive' / 'gaussian')
+(from \code{\link[biopixR]{objectDetection}})}
 
-\item{sigma}{smoothing (from \code{\link[biopixR]{objectDetection}})}
+\item{sigma}{smoothing (numeric / 'static' / 'interactive' / 'gaussian')
+(from \code{\link[biopixR]{objectDetection}})}
 
 \item{xdim}{x-dimension for the SOM-grid (grid = hexagonal)}
 

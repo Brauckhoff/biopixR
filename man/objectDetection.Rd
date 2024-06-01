@@ -32,7 +32,9 @@ identified objects, highlighting the edges or overall coordinates for easy
 recognition.
 }
 \details{
-The \code{objectDetection()} function provides several methods for calculating the alpha and sigma parameters, which are critical for edge detection:
+The \code{\link[biopixR]{objectDetection}} function provides several methods
+for calculating the alpha and sigma parameters, which are critical for edge
+detection:
 \enumerate{
 \item \strong{Input of a Numeric Value:}
 \itemize{

@@ -16,7 +16,9 @@
 #'   \item Image where object edges/coordinates (purple) and detected centers (green) are colored.
 #' }
 #' @details
-#' The `objectDetection()` function provides several methods for calculating the alpha and sigma parameters, which are critical for edge detection:
+#' The \code{\link[biopixR]{objectDetection}} function provides several methods
+#' for calculating the alpha and sigma parameters, which are critical for edge
+#' detection:
 #' \enumerate{
 #'   \item \strong{Input of a Numeric Value:}
 #'   \itemize{

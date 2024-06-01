@@ -5,7 +5,7 @@
 #' question must be provided.
 #' @param img image (import by \code{\link[biopixR]{importImage}})
 #' @param coordinates specifying which pixels to be colored (should
-#' be a X|Y data frame).
+#' be a x|y data frame).
 #' @param color color to be applied to specified pixels:
 #' \itemize{
 #'   \item color from the list of colors defined by \code{\link[grDevices]{colors}}
@@ -13,7 +13,7 @@
 #' }
 #' Could also be an object of class 'factor'.
 #' @param visualize if TRUE the resulting image gets plotted
-#' @returns object of class 'cimg' with changed colors at desired positions.
+#' @returns Object of class 'cimg' with changed colors at desired positions.
 #' @import imager
 #' @importFrom grDevices col2rgb rainbow
 #' @importFrom stats na.omit setNames

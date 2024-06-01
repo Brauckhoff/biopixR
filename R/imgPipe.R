@@ -44,9 +44,9 @@ logIt <- function(msg) {
 #' are allowed (in pixels) (only needed if proximityFilter = TRUE)
 #' @returns list of 2 to 3 objects:
 #' \itemize{
-#'   \item summary of all the objects in the image
-#'   \item detailed information about every single object
-#'   \item (optional) result for every individual color
+#'   \item Summary of all the objects in the image.
+#'   \item Detailed information about every single object.
+#'   \item (optional) Result for every individual color.
 #' }
 #' @import data.table
 #' @seealso [objectDetection()], [sizeFilter()], [proximityFilter()], [resultAnalytics()]
