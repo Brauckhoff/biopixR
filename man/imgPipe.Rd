@@ -80,6 +80,8 @@ result <- imgPipe(
   upperlimit = 150,
   lowerlimit = 50
   )
+
+# Highlight remaining microparticles
 plot(beads)
 with(
   result$detailed,

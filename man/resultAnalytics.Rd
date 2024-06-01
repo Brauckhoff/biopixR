@@ -41,7 +41,9 @@ summary of objects detected in an image:
 }
 }
 \examples{
-res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
+res_objectDetection <- objectDetection(beads,
+                                       alpha = 1,
+                                       sigma = 0)
 res_sizeFilter <- sizeFilter(
   res_objectDetection$centers,
   res_objectDetection$coordinates,

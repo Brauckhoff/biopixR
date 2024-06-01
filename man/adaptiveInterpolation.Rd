@@ -13,11 +13,11 @@ adaptiveInterpolation(
 )
 }
 \arguments{
-\item{end_points_df}{\code{data.frame} with the coordinates of all line ends (can
-be obtained with \code{\link[magick]{image_morphology}})}
+\item{end_points_df}{\code{data.frame} with the coordinates of all line ends
+(can be obtained by using \code{\link[magick]{image_morphology}})}
 
 \item{diagonal_edges_df}{\code{data.frame} with coordinates of diagonal line ends
-(can also be obtained by \code{\link[magick]{image_morphology}})}
+(can also be obtained by using \code{\link[magick]{image_morphology}})}
 
 \item{clean_lab_df}{data of type \code{data.frame}, containing the x, y and value
 information of every labeled region in an image (only the edges should be
@@ -66,6 +66,7 @@ mat[4, 3] <- 1
 mat[7:8, 3] <- 1
 mat[5, 6:8] <- 1
 mat_cimg <- as.cimg(mat)
+plot(mat_cimg)
 
 # Preprocessing / LineEnd detection / labeling (done in fillLineGaps())
 mat_cimg_m <- mirror(mat_cimg, axis = "x")

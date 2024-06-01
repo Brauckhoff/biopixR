@@ -43,6 +43,7 @@
 #' mat[7:8, 3] <- 1
 #' mat[5, 6:8] <- 1
 #' mat_cimg <- as.cimg(mat)
+#' plot(mat_cimg)
 #'
 #' # Preprocessing / LineEnd detection / labeling (done in fillLineGaps())
 #' mat_cimg_m <- mirror(mat_cimg, axis = "x")

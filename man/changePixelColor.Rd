@@ -16,8 +16,7 @@ be a x|y data frame).}
 \itemize{
 \item color from the list of colors defined by \code{\link[grDevices]{colors}}
 \item object of class factor
-}
-Could also be an object of class 'factor'.}
+}}
 
 \item{visualize}{if TRUE the resulting image gets plotted}
 }
@@ -31,10 +30,10 @@ question must be provided.
 }
 \examples{
 coordinates <-
-objectDetection(beads,
-                method = 'edge',
-                alpha = 1,
-                sigma = 0)
+  objectDetection(beads,
+                  method = 'edge',
+                  alpha = 1,
+                  sigma = 0)
 changePixelColor(
   beads,
   coordinates$coordinates,

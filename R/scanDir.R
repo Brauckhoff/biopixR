@@ -43,7 +43,8 @@ globalVariables(c('registerDoParallel', 'getDoParWorkers', '%dopar%', 'foreach')
 #' \donttest{
 #' if (interactive()) {
 #'   path2dir <- system.file("images", package = 'biopixR')
-#'   scanDir(path2dir, alpha = 'interactive', sigma = 'interactive')
+#'   results <- scanDir(path2dir, alpha = 'interactive', sigma = 'interactive')
+#'   print(results)
 #'   }
 #' }
 #' @export

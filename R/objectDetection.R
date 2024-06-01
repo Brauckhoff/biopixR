@@ -41,10 +41,14 @@
 #' @import imager
 #' @importFrom stats complete.cases
 #' @examples
-#' res_objectDetection <- objectDetection(beads, method = 'edge', alpha = 1, sigma = 2)
+#' res_objectDetection <- objectDetection(beads,
+#'                                        method = 'edge',
+#'                                        alpha = 1,
+#'                                        sigma = 0)
 #' res_objectDetection$marked_objects |> plot()
 #'
-#' res_objectDetection <- objectDetection(beads, method = 'threshold')
+#' res_objectDetection <- objectDetection(beads,
+#'                                        method = 'threshold')
 #' res_objectDetection$marked_objects |> plot()
 #' @export
 objectDetection <- function(img,

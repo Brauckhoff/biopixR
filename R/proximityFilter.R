@@ -27,7 +27,9 @@
 #' with one radius covering the object and an additional radius creating the
 #' area of exclusion.
 #' @examples
-#' res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
+#' res_objectDetection <- objectDetection(beads,
+#'                                        alpha = 1,
+#'                                        sigma = 0)
 #' res_proximityFilter <- proximityFilter(
 #'   res_objectDetection$centers,
 #'   res_objectDetection$coordinates,

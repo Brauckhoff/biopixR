@@ -8,11 +8,16 @@
 #' @returns
 #' Matrix containing the coordinates to connect the two input points.
 #' @examples
+#' # Simulate two points in a matrix
 #' test <- matrix(0, 4, 4)
 #' test[1, 1] <- 1
 #' test[3, 4] <- 1
+#' as.cimg(test) |> plot()
+#'
+#' # Connect them with each other
 #' link <- interpolatePixels(1, 1, 3, 4)
 #' test[link] <- 1
+#' as.cimg(test) |> plot()
 #' @export
 interpolatePixels <- function(row1, col1, row2, col2) {
   # Calculate the maximum number of points required for interpolation between

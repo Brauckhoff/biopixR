@@ -22,9 +22,14 @@ Matrix containing the coordinates to connect the two input points.
 Connects two points in a matrix, array, or an image.
 }
 \examples{
+# Simulate two points in a matrix
 test <- matrix(0, 4, 4)
 test[1, 1] <- 1
 test[3, 4] <- 1
+as.cimg(test) |> plot()
+
+# Connect them with each other
 link <- interpolatePixels(1, 1, 3, 4)
 test[link] <- 1
+as.cimg(test) |> plot()
 }

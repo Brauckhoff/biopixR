@@ -11,7 +11,6 @@
 #'   \item color from the list of colors defined by \code{\link[grDevices]{colors}}
 #'   \item object of class factor
 #' }
-#' Could also be an object of class 'factor'.
 #' @param visualize if TRUE the resulting image gets plotted
 #' @returns Object of class 'cimg' with changed colors at desired positions.
 #' @import imager
@@ -19,10 +18,10 @@
 #' @importFrom stats na.omit setNames
 #' @examples
 #' coordinates <-
-#' objectDetection(beads,
-#'                 method = 'edge',
-#'                 alpha = 1,
-#'                 sigma = 0)
+#'   objectDetection(beads,
+#'                   method = 'edge',
+#'                   alpha = 1,
+#'                   sigma = 0)
 #' changePixelColor(
 #'   beads,
 #'   coordinates$coordinates,

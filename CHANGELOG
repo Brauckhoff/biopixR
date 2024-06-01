@@ -1,5 +1,8 @@
 # Next version
 
+# 1.0.0
+- improved examples
+
 # 0.2.6
 - pre release for 1.0.0
 - new functions: importImage and scanDir
