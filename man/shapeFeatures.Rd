@@ -31,7 +31,7 @@ the detected objects}
 \item{visualize}{visualizes the groups computed by SOM}
 }
 \value{
-\code{data.frame} containing detailed information about every single object
+\code{data.frame} containing detailed information about every single object.
 }
 \description{
 This function analyzes the objects detected in an image and calculates
@@ -49,5 +49,5 @@ shapeFeatures(
 )
 }
 \seealso{
-\code{\link[=objectDetection]{objectDetection()}}, \code{\link[=resultAnalytics]{resultAnalytics()}}
+\code{\link[=objectDetection]{objectDetection()}}, \code{\link[=resultAnalytics]{resultAnalytics()}}, \code{\link[kohonen]{som}}
 }

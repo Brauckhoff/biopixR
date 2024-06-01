@@ -22,7 +22,7 @@ determined automatically)}
 Object of class 'cimg', displaying detected edges.
 }
 \description{
-Adapted code from the 'imager' \code{\link[imager]{cannyEdges}}) function
+Adapted code from the 'imager' \code{\link[imager]{cannyEdges}} function
 without the usage of 'dplyr' and 'purrr'. If the threshold parameters are
 missing, they are determined automatically using a k-means heuristic. Use
 the alpha parameter to adjust the automatic thresholds up or down. The

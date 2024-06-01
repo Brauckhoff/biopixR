@@ -1,5 +1,14 @@
 # Next version
 
+# 0.2.6
+- pre release for 1.0.0
+- new functions: importImage and scanDir
+- Updates include:
+	- new features in objectDetection: automated calculation of parameters, different methods to choose from
+	- implementing updates from objectDetection to the Tcl/Tk interface
+	- rewrite sizeFilter, proximityFilter and resultAnalytics: faster computation through vectorization, easier input/output
+	- overall improved documentation
+
 # 0.2.5
 - Update function: resultAnalytics
 - added new functions: haralickCluster and shapeFeatures

@@ -20,9 +20,9 @@ objectDetection(img, method = "edge", alpha = 1, sigma = 2, vis = TRUE)
 \value{
 list of 3 objects:
 \itemize{
-\item \code{data.frame} of labeled regions with the central coordinates (including size information)
-\item All coordinates that are in labeled regions
-\item Image where object edges (purple) and detected centers (green) are colored
+\item \code{data.frame} of labeled regions with the central coordinates (including size information).
+\item All coordinates that are in labeled regions.
+\item Image where object edges/coordinates (purple) and detected centers (green) are colored.
 }
 }
 \description{
@@ -44,11 +44,11 @@ The \code{objectDetection()} function provides several methods for calculating t
 }
 \item \strong{Interactive Selection:}
 \itemize{
-\item Setting the alpha and sigma values to "interactive" initiates a Tcl/Tk graphical user interface (GUI). This interface allows users to adjust the parameters interactively, based on visual feedback. To achieve optimal results, the user must input the necessary adjustments to align the parameters with the specific requirements of the image. The user can also switch between the methods during the execution of the function through the interface.
+\item Setting the alpha and sigma values to "interactive" initiates a Tcl/Tk graphical user interface (GUI). This interface allows users to adjust the parameters interactively, based on visual feedback. To achieve optimal results, the user must input the necessary adjustments to align the parameters with the specific requirements of the image. The user can also switch between the methods through the interface.
 }
 \item \strong{Multi-Objective Optimization:}
 \itemize{
-\item For advanced parameter optimization, the function \code{\link[GPareto]{GParetoptim}} will be utilized for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
+\item For advanced parameter optimization, the function \code{\link[GPareto]{easyGParetoptim}} will be utilized for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
 }
 }
 }

@@ -42,8 +42,7 @@ scanDir(
 
 \item{upperlimit}{highest accepted object size (only needed if sizeFilter = TRUE)}
 
-\item{lowerlimit}{smallest accepted object size (when 'auto' both limits are
-calculated by using the IQR)}
+\item{lowerlimit}{smallest accepted object size (numeric / 'auto')}
 
 \item{proximityFilter}{applying \code{\link[biopixR]{proximityFilter}} function (default - FALSE)}
 

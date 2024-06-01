@@ -13,24 +13,24 @@ print_with_timestamp <- function(msg) {
 #' Interactive object detection
 #'
 #' This function uses the \code{\link[biopixR]{objectDetection}} function to
-#' visualize the detected objects at varying threshold an smoothing parameters.
+#' visualize the detected objects at varying input parameters.
 #' @param img image (import by \code{\link[biopixR]{importImage}})
 #' @param resolution resolution of slider
 #' @param return_param if TRUE the final parameter values for alpha and
 #' sigma are printed to the console (TRUE | FALSE)
-#' @returns Values of alpha and sigma.
+#' @returns Values of alpha, sigma and the applied method.
 #' @details
 #' The function provides a graphical user interface (GUI) that allows users to
 #' interactively adjust the parameters for object detection:
 #' \itemize{
-#'   \item \strong{Alpha/Threshold:} Controls the threshold adjustment factor for edge detection.
-#'   \item \strong{Sigma/Smoothing:} Determines the amount of smoothing applied to the image.
+#'   \item \strong{Alpha:} Controls the threshold adjustment factor for edge detection.
+#'   \item \strong{Sigma:} Determines the amount of smoothing applied to the image.
 #'   \item \strong{Scale:} Adjusts the scale of the displayed image.
 #' }
 #' The GUI also includes a button to switch between two detection methods:
 #' \itemize{
 #'   \item \strong{Edge Detection:} Utilizes the \code{\link[biopixR]{edgeDetection}} function. The alpha parameter acts as a threshold adjustment factor, and sigma controls the smoothing.
-#'   \item \strong{Threshold Detection:} Applies a simple thresholding method. (No dependency on alpha or sigma!)
+#'   \item \strong{Threshold Detection:} Applies a thresholding method, utilizing \code{\link[imagerExtra]{SPE}} for background reduction and the \code{\link[imager]{threshold}} function. (No dependency on alpha or sigma!)
 #' }
 #' @import magick
 #' @import imager
@@ -72,7 +72,7 @@ interactive_objectDetection <-
     range_alpha <- c(0, 3)
     range_sigma <- c(0, 3)
     range_scale <- c(1, 3)
-    length_slider <- max(as.integer(nrow(beads) * 0.6), 200)
+    length_slider <- max(as.integer(nrow(object_img) * 0.6), 200)
 
     # Set up labels for sliders
     text_label_alpha <- "Alpha/Threshold:"

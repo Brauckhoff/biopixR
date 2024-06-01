@@ -13,11 +13,17 @@
 #'   \item \code{detailed}: Detailed information about every single object.
 #' }
 #' @details
-#' The `resultAnalytics` function provides comprehensive summary of objects
-#' detected in an image:
-#' \describe{
-#'   \item{Summary}{Generates a summary of all detected objects, including the total number of objects, their mean size, size standard deviation, mean intensity, intensity standard deviation, estimated rejected objects, and coverage.}
-#'   \item{Detailed Object Information}{Provides detailed information for each object, including size, mean intensity, intensity standard deviation, and coordinates.}
+#' The \code{\link[biopixR]{resultAnalytics}} function provides comprehensive
+#' summary of objects detected in an image:
+#' \enumerate{
+#'   \item \strong{Summary}
+#'   \itemize{
+#'     \item Generates a summary of all detected objects, including the total number of objects, their mean size, size standard deviation, mean intensity, intensity standard deviation, estimated rejected objects, and coverage.
+#'   }
+#'   \item \strong{Detailed Object Information}
+#'   \itemize{
+#'     \item Provides detailed information for each object, including size, mean intensity, intensity standard deviation, and coordinates.
+#'   }
 #' }
 #' @import data.table
 #' @seealso [objectDetection()], [sizeFilter()], [proximityFilter()]

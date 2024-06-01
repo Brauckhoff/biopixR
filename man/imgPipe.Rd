@@ -45,10 +45,11 @@ imgPipe(
 
 \item{sizeFilter}{applying \code{\link[biopixR]{sizeFilter}} function (default - FALSE)}
 
-\item{upperlimit}{highest accepted object size (only needed if sizeFilter = TRUE)}
+\item{upperlimit}{highest accepted object size (numeric / 'auto')
+(only needed if sizeFilter = TRUE)}
 
-\item{lowerlimit}{smallest accepted object size (when 'auto' both limits are
-calculated by using the IQR)}
+\item{lowerlimit}{smallest accepted object size (numeric / 'auto')
+(only needed if sizeFilter = TRUE)}
 
 \item{proximityFilter}{applying \code{\link[biopixR]{proximityFilter}} function (default - FALSE)}
 

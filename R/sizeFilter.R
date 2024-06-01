@@ -3,23 +3,24 @@
 #' Takes the size of the objects in an image and discards objects based
 #' on a lower and an upper size limit.
 #' (Input can be obtained by \code{\link[biopixR]{objectDetection}} function)
-#' @param centers center coordinates of objects (needs to include 'value'
-#' representing the center number, and the size)
+#' @param centers center coordinates of objects (value|mx|my|size data frame)
 #' @param coordinates all coordinates of the objects (x|y|value data frame)
 #' @param lowerlimit smallest accepted object size (numeric / 'auto')
 #' @param upperlimit highest accepted object size (numeric / 'auto')
 #' @returns list of 2 objects:
-#' 1. remaining centers after discarding according to size
-#' 2. remaining coordinates after discarding according to size
+#' \itemize{
+#'   \item Remaining centers after discarding according to size.
+#'   \item Remaining coordinates after discarding according to size.
+#' }
 #' @details
-#' The `sizeFilter()` function is designed to filter detected objects based on
-#' their size, either through automated detection or user-defined limits. The
-#' automated detection of size limits uses the 1.5*IQR method to identify and
-#' remove outliers. This approach is most effective when dealing with a large
-#' number of objects, (typically more than 50), and when the sizes of the
-#' objects are relatively uniform. For smaller samples or when the sizes of
-#' the objects vary significantly, the automated detection may not be as
-#' accurate, and manual limit setting is recommended.
+#' The \code{\link[biopixR]{sizeFilter}} function is designed to filter
+#' detected objects based on their size, either through automated detection or
+#' user-defined limits. The automated detection of size limits uses the 1.5*IQR
+#' method to identify and remove outliers. This approach is most effective when
+#' dealing with a large number of objects, (typically more than 50), and when
+#' the sizes of the objects are relatively uniform. For smaller samples or when
+#' the sizes of the objects vary significantly, the automated detection may not
+#' be as accurate, and manual limit setting is recommended.
 #' @importFrom stats sd
 #' @importFrom stats quantile
 #' @examples

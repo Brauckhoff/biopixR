@@ -12,18 +12,20 @@
 #' the area of exclusion (default 2)
 #' @returns list of 2 objects:
 #' \itemize{
-#'   \item center coordinates of remaining objects
-#'   \item all coordinates of remaining objects
+#'   \item Center coordinates of remaining objects.
+#'   \item All coordinates of remaining objects.
 #' }
 #' @details
-#' The automated radius calculation in the `proximityFilter()` function is based
-#' on the presumption of circular-shaped objects. The radius is calculated using
-#' the formula \deqn{\sqrt{\frac{A}{\pi}}}{sqrt(A/pi)}, where A is the area of
-#' the detected objects. The function will exclude objects that are too close
-#' by extending the calculated radius by one radius length beyond the assumed
-#' circle, effectively doubling the radius to create an exclusion zone.
-#' Therefore the elongation factor is set to 2 by default, with one radius
-#' covering the object and an additional radius creating the area of exclusion.
+#' The automated radius calculation in the \code{\link[biopixR]{proximityFilter}}
+#' function is based on the presumption of circular-shaped objects. The radius
+#' is calculated using the following formula:
+#' \deqn{\sqrt{\frac{A}{\pi}}}{sqrt(A/pi)}
+#' where A is the area of the detected objects. The function will exclude
+#' objects that are too close by extending the calculated radius by one radius
+#' length beyond the assumed circle, effectively doubling the radius to create
+#' an exclusion zone. Therefore the elongation factor is set to 2 by default,
+#' with one radius covering the object and an additional radius creating the
+#' area of exclusion.
 #' @examples
 #' res_objectDetection <- objectDetection(beads, alpha = 1, sigma = 2)
 #' res_proximityFilter <- proximityFilter(

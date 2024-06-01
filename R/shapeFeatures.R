@@ -12,9 +12,9 @@
 #' @param xdim x-dimension for the SOM-grid (grid = hexagonal)
 #' @param ydim y-dimension for the SOM-grid (xdim * ydim = number of neurons)
 #' @param visualize visualizes the groups computed by SOM
-#' @returns \code{data.frame} containing detailed information about every single object
+#' @returns \code{data.frame} containing detailed information about every single object.
 #' @import data.table
-#' @seealso [objectDetection()], [resultAnalytics()]
+#' @seealso [objectDetection()], [resultAnalytics()], \code{\link[kohonen]{som}}
 #' @examples
 #' shapeFeatures(
 #'   beads,
@@ -32,6 +32,9 @@ shapeFeatures <-
            ydim = 1,
            SOM = FALSE,
            visualize = FALSE) {
+    # Binding for global variables
+    min_radius <- max_radius <- NULL
+
     # Assign input image to a variable
     object_img <- img
 

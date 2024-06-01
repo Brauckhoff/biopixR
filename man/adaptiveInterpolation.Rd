@@ -13,13 +13,13 @@ adaptiveInterpolation(
 )
 }
 \arguments{
-\item{end_points_df}{data frame with the coordinates of all line ends (can
+\item{end_points_df}{\code{data.frame} with the coordinates of all line ends (can
 be obtained with \code{\link[magick]{image_morphology}})}
 
-\item{diagonal_edges_df}{data frame with coordinates of diagonal line ends
+\item{diagonal_edges_df}{\code{data.frame} with coordinates of diagonal line ends
 (can also be obtained by \code{\link[magick]{image_morphology}})}
 
-\item{clean_lab_df}{data of type 'data.frame', containing the x, y and value
+\item{clean_lab_df}{data of type \code{data.frame}, containing the x, y and value
 information of every labeled region in an image (only the edges should be
 labeled)}
 

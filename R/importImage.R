@@ -2,10 +2,9 @@
 #'
 #' This function is a wrapper to the \code{\link[imager]{load.image}} and
 #' \code{\link[magick]{image_read}} functions, and imports an image file and
-#' returns the image as a 'cimg' object. The following formats are supported:
-#' The following file formats are supported: TIFF, PNG, JPG/JPEG, and BMP. In
-#' the event that the image in question contains an alpha channel, that channel
-#' is omitted.
+#' returns the image as a 'cimg' object. The following file formats are
+#' supported: TIFF, PNG, JPG/JPEG, and BMP. In the event that the image in
+#' question contains an alpha channel, that channel is omitted.
 #' @param path2file path to file
 #' @returns An image of class 'cimg'.
 #' @import magick

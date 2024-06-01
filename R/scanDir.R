@@ -1,3 +1,6 @@
+# Declaring global variables to avoid R CMD check notes
+globalVariables(c('registerDoParallel', 'getDoParWorkers', '%dopar%', 'foreach'))
+
 #' Scan Directory for Image Analysis
 #'
 #' This function scans a specified directory, imports images, and performs various analyses
@@ -15,8 +18,7 @@
 #' (from \code{\link[biopixR]{objectDetection}})
 #' @param sizeFilter applying \code{\link[biopixR]{sizeFilter}} function (default - FALSE)
 #' @param upperlimit highest accepted object size (only needed if sizeFilter = TRUE)
-#' @param lowerlimit smallest accepted object size (when 'auto' both limits are
-#' calculated by using the IQR)
+#' @param lowerlimit smallest accepted object size (numeric / 'auto')
 #' @param proximityFilter applying \code{\link[biopixR]{proximityFilter}} function (default - FALSE)
 #' @param radius distance from one center in which no other centers
 #' are allowed (in pixels) (only needed if proximityFilter = TRUE)

@@ -1,3 +1,6 @@
+# Declaring global variables to avoid R CMD check notes
+globalVariables(c('path', 'objectnumber', 'size', 'new_script_path'))
+
 # Function to print a message with a timestamp
 printWithTimestamp <- function(msg) {
   timestamp <- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
@@ -32,9 +35,10 @@ logIt <- function(msg) {
 #' @param sigma smoothing (numeric / 'static' / 'interactive' / 'gaussian')
 #' (from \code{\link[biopixR]{objectDetection}})
 #' @param sizeFilter applying \code{\link[biopixR]{sizeFilter}} function (default - FALSE)
-#' @param upperlimit highest accepted object size (only needed if sizeFilter = TRUE)
-#' @param lowerlimit smallest accepted object size (when 'auto' both limits are
-#' calculated by using the IQR)
+#' @param upperlimit highest accepted object size (numeric / 'auto')
+#' (only needed if sizeFilter = TRUE)
+#' @param lowerlimit smallest accepted object size (numeric / 'auto')
+#' (only needed if sizeFilter = TRUE)
 #' @param proximityFilter applying \code{\link[biopixR]{proximityFilter}} function (default - FALSE)
 #' @param radius distance from one object in which no other centers
 #' are allowed (in pixels) (only needed if proximityFilter = TRUE)

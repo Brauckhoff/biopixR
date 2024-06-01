@@ -10,7 +10,7 @@ haralickCluster(path)
 \item{path}{directory path to folder with images to be analyzed}
 }
 \value{
-Data frame containing file names, md5sums and cluster number.
+\code{data.frame} containing file names, md5sums and cluster number.
 }
 \description{
 This function performs k-medoids clustering on images using Haralick
@@ -21,9 +21,11 @@ images as cluster centers. This approach simplifies texture-based image
 analysis and classification.
 }
 \examples{
-path2dir <- system.file("images", package = 'biopixR')
-result <- haralickCluster(path2dir)
-print(result)
+\donttest{
+  path2dir <- system.file("images", package = 'biopixR')
+  result <- haralickCluster(path2dir)
+  print(result)
+}
 }
 \references{
 https://cran.r-project.org/package=radiomics

@@ -46,16 +46,18 @@ computeGLCM <-
 #' images as cluster centers. This approach simplifies texture-based image
 #' analysis and classification.
 #' @param path directory path to folder with images to be analyzed
-#' @returns Data frame containing file names, md5sums and cluster number.
+#' @returns \code{data.frame} containing file names, md5sums and cluster number.
 #' @import imager
 #' @importFrom stats dist
 #' @importFrom cluster pam silhouette
 #' @importFrom tools md5sum
 #' @references https://cran.r-project.org/package=radiomics
 #' @examples
-#' path2dir <- system.file("images", package = 'biopixR')
-#' result <- haralickCluster(path2dir)
-#' print(result)
+#' \donttest{
+#'   path2dir <- system.file("images", package = 'biopixR')
+#'   result <- haralickCluster(path2dir)
+#'   print(result)
+#' }
 #' @export
 haralickCluster <- function(path) {
   # Get full file paths and exclude directories

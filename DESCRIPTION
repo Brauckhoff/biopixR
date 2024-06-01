@@ -1,9 +1,9 @@
 Package: biopixR
 Title: Extracting Insights from Biological Images
-Version: 0.2.5
+Version: 0.2.6
 Authors@R: 
     c(person("Tim", "Brauckhoff", 
-    email = "Tim.Brauckhoff@b-tu.de", 
+    email = "brauctile@disroot.org", 
     role = c("aut", "cre"),
     comment = c(ORCID = "0009-0002-0142-7017")),
     person("Stefan", "Roediger",

@@ -11,9 +11,9 @@
 #' @param vis creates image were object edges/coordinates (purple) and detected centers (green) are highlighted (TRUE | FALSE)
 #' @returns list of 3 objects:
 #' \itemize{
-#'   \item \code{data.frame} of labeled regions with the central coordinates (including size information)
-#'   \item All coordinates that are in labeled regions
-#'   \item Image where object edges (purple) and detected centers (green) are colored
+#'   \item \code{data.frame} of labeled regions with the central coordinates (including size information).
+#'   \item All coordinates that are in labeled regions.
+#'   \item Image where object edges/coordinates (purple) and detected centers (green) are colored.
 #' }
 #' @details
 #' The `objectDetection()` function provides several methods for calculating the alpha and sigma parameters, which are critical for edge detection:
@@ -28,11 +28,11 @@
 #'   }
 #'   \item \strong{Interactive Selection:}
 #'   \itemize{
-#'     \item Setting the alpha and sigma values to "interactive" initiates a Tcl/Tk graphical user interface (GUI). This interface allows users to adjust the parameters interactively, based on visual feedback. To achieve optimal results, the user must input the necessary adjustments to align the parameters with the specific requirements of the image. The user can also switch between the methods during the execution of the function through the interface.
+#'     \item Setting the alpha and sigma values to "interactive" initiates a Tcl/Tk graphical user interface (GUI). This interface allows users to adjust the parameters interactively, based on visual feedback. To achieve optimal results, the user must input the necessary adjustments to align the parameters with the specific requirements of the image. The user can also switch between the methods through the interface.
 #'   }
 #'   \item \strong{Multi-Objective Optimization:}
 #'   \itemize{
-#'     \item For advanced parameter optimization, the function \code{\link[GPareto]{GParetoptim}} will be utilized for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
+#'     \item For advanced parameter optimization, the function \code{\link[GPareto]{easyGParetoptim}} will be utilized for multi-objective optimization using Gaussian process models. This method leverages the 'GPareto' package to perform the optimization. It involves building Gaussian Process models for each objective and running the optimization to find the best parameter values.
 #'   }
 #' }
 #' @import data.table
@@ -78,7 +78,7 @@ objectDetection <- function(img,
     if (alpha == "static" &
         sigma == "static") {
       # Fitness function to evaluate parameter sets
-      hayflick <- function(object_img, alpha_a, sigma_a) {
+      staticHayflick <- function(object_img, alpha_a, sigma_a) {
         # Compute shape features based on the image and given parameters
         property <- shapeFeatures(object_img, alpha_a, sigma_a)
 
@@ -126,7 +126,7 @@ objectDetection <- function(img,
         row <- param_grid[b, ]
         # Call the hayflick function and handle errors
         res_main <- tryCatch({
-          hayflick(object_img, row$alpha, row$sigma)
+          staticHayflick(object_img, row$alpha, row$sigma)
         }, error = function(error_condition) {
           return(list(NA, NA))  # Ensure the list has two NAs to match expected structure
         })
@@ -185,7 +185,7 @@ objectDetection <- function(img,
     if (alpha == "gaussian" &
         sigma == "gaussian") {
       if (requireNamespace(c("GPareto"), quietly = TRUE)) {
-        hayflick <- function(x) {
+        gaussianHayflick <- function(x) {
           alpha_a <- x[1]
           sigma_a <- x[2]
 
@@ -240,7 +240,7 @@ objectDetection <- function(img,
         # Perform multi-objective optimization using Gaussian Process models
         results <-
           GPareto::easyGParetoptim(
-            fn = hayflick,
+            fn = gaussianHayflick,
             budget = 20,
             lower = lower_bounds,
             upper = upper_bounds

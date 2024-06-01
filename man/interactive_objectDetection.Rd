@@ -15,24 +15,24 @@ interactive_objectDetection(img, resolution = 0.1, return_param = FALSE)
 sigma are printed to the console (TRUE | FALSE)}
 }
 \value{
-Values of alpha and sigma.
+Values of alpha, sigma and the applied method.
 }
 \description{
 This function uses the \code{\link[biopixR]{objectDetection}} function to
-visualize the detected objects at varying threshold an smoothing parameters.
+visualize the detected objects at varying input parameters.
 }
 \details{
 The function provides a graphical user interface (GUI) that allows users to
 interactively adjust the parameters for object detection:
 \itemize{
-\item \strong{Alpha/Threshold:} Controls the threshold adjustment factor for edge detection.
-\item \strong{Sigma/Smoothing:} Determines the amount of smoothing applied to the image.
+\item \strong{Alpha:} Controls the threshold adjustment factor for edge detection.
+\item \strong{Sigma:} Determines the amount of smoothing applied to the image.
 \item \strong{Scale:} Adjusts the scale of the displayed image.
 }
 The GUI also includes a button to switch between two detection methods:
 \itemize{
 \item \strong{Edge Detection:} Utilizes the \code{\link[biopixR]{edgeDetection}} function. The alpha parameter acts as a threshold adjustment factor, and sigma controls the smoothing.
-\item \strong{Threshold Detection:} Applies a simple thresholding method. (No dependency on alpha or sigma!)
+\item \strong{Threshold Detection:} Applies a thresholding method, utilizing \code{\link[imagerExtra]{SPE}} for background reduction and the \code{\link[imager]{threshold}} function. (No dependency on alpha or sigma!)
 }
 }
 \examples{

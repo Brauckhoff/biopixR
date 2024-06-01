@@ -2,11 +2,11 @@
 #'
 #' The function scans an increasing radius around a line end and connects it
 #' with the nearest labeled region.
-#' @param end_points_df data frame with the coordinates of all line ends (can
+#' @param end_points_df \code{data.frame} with the coordinates of all line ends (can
 #' be obtained with \code{\link[magick]{image_morphology}})
-#' @param diagonal_edges_df data frame with coordinates of diagonal line ends
+#' @param diagonal_edges_df \code{data.frame} with coordinates of diagonal line ends
 #' (can also be obtained by \code{\link[magick]{image_morphology}})
-#' @param clean_lab_df data of type 'data.frame', containing the x, y and value
+#' @param clean_lab_df data of type \code{data.frame}, containing the x, y and value
 #' information of every labeled region in an image (only the edges should be
 #' labeled)
 #' @param lineends_cimg image with dimensions of the image with discontinuous
