@@ -1,31 +1,39 @@
 ---
 title: 'biopixR: Extracting Insights from Biological Images'
 tags:
-  - R
-  - bioimages
-  - bioinformatics
-  - microparticles
-  - high-throughput
-  - reproducible research
+- R
+- bioimages
+- bioinformatics
+- microparticles
+- "high-throughput"
+- reproducible research
 date: "24 April 2024"
-affiliations:
-  - name: BTU Cottbus–Senftenberg, Faculty Environment and Natural Sciences, Senftenberg, Germany
-    index: 1
-  - name: The City of Paris Industrial Physics and Chemistry Higher Educational Institution, Paris, France
-    index: 2
-  - name: BTU Cottbus–Senftenberg, Faculty of Health Brandenburg, Senftenberg, Germany
-    index: 3
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 authors:
-  - name: Tim Brauckhoff
-    orcid: 0009-0002-0142-7017
-    affiliation: 1
-  - name: Coline Kieffer
-    affiliation: 2
-  - name: Stefan Rödiger^[Corresponding author]
-    orcid: 0000-0002-1441-6512
-    affiliation: 1, 3
+- name: Tim Brauckhoff
+  orcid: "0009-0002-0142-7017"
+  affiliation: 1
+- name: Coline Kieffer
+  affiliation: 2
+- name: Stefan Rödiger^[Corresponding author]
+  orcid: "0000-0002-1441-6512"
+  affiliation: 1, 3
 bibliography: paper.bib
+affiliations:
+- name: BTU Cottbus–Senftenberg, Faculty Environment and Natural Sciences, Senftenberg,
+    Germany
+  index: 1
+- name: The City of Paris Industrial Physics and Chemistry Higher Educational Institution,
+    Paris, France
+  index: 2
+- name: BTU Cottbus–Senftenberg, Faculty of Health Brandenburg, Senftenberg, Germany
+  index: 3
 ---
+
+
 
 # Summary
 
@@ -75,14 +83,6 @@ like fluorescence intensity, size, and shape enables the encoding of beads
 [@Zhang_2019]. This capability makes it possible to differentiate between
 populations, thus significantly enhancing the scope for multiplexing.
 
-text1 | text2 | text3 
---- | --- | ---
-A | B | C
-D | E | F
-G | H | I
-
-**to do: add image**
-
 Bead-based ePCR assays, like other bead-based assays, are often analyzed using
 fluorescence activated cell sorting (FACS) [@Fraser_2015]. However, this
 software could enable the analysis of bead-based ePCR through imaging
@@ -114,6 +114,8 @@ reliability.
 
 ## Functions
 
+![Dependency graph of the functions present in the `biopixR` package. Showing the levels of complexity by showing the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package from @foodwebr (package version 0.1.1, RStudio 2023.09.0+463, R 4.3.2 on Linux, Ubuntu 22.04.3 LTS).\linebreak](fig_2.png)
+
 The `biopixR` package in R is intended for analyzing bioimage data, with a
 specific focus on the analysis and characterization of bead microparticles. The
 package provides tools for image preprocessing, segmentation, feature
@@ -130,6 +132,7 @@ shape-related information from detected objects and grouping them using the SOM
 function. This latter function serves as a comprehensive pipeline for image
 analysis, offering a variety of selectable functions:
 
+* `importImage()`, a wrapper import function combining the `imager` [@imager] and `magick` [@magick] packages.
 * `edgeDetection()`, a combination of a Canny edge detector and gap filling [@imager],
 * `objectDetection()`, detects objects in an image by identifying their coordinates,
 * `sizeFilter()`, eliminates objects that exceed or fall below a certain size threshold,
@@ -141,9 +144,9 @@ allowing for high-throughput analysis. Making feature extraction and image
 clustering easily accessible:
 
 * `haralickCluster()`, extracts Haralick features and cluster using PAM (Partitioning Around Medoids) [@Haralick_1973; @radiomics; @cluster],
-* `scanDir()`, utilizing the pipline for whole directory analysis (under development).
+* `scanDir()`, utilizing the pipeline for whole directory analysis (under development).
 
-The `fillLineGaps()` algorthim, along with helper functions:
+The `fillLineGaps()` algorithm, along with helper functions:
 
 * `interpolatePixels()`, calculates the coordinates required to connect two given points,
 * `adaptiveInterpolation()`, searches a given radius surrounding a line end for contours and connects them,
@@ -158,8 +161,7 @@ in the package's vignette.
 
 The function `interactive_objectDetection()` initiates a graphical user
 interface (GUI) that utilizes the Tcl/Tk framework [@tcltk], enabling users to
-adjust the threshold and smoothing settings of the image
-(\\autoref{fig:fig\_1}).
+adjust the threshold and smoothing settings of the image.
 
 ![Graphical User Interface for interactive parameter selection. The function `interactive_objectDetection()` provides a simple interface with sliders to adjust threshold, smoothing, and scale. It highlights object contours in purple and centers in green for easy visualization. A) In this example, the GUI was used in RKWard (0.7.5z+0.7.6+devel3, Linux, TUXEDO OS 2, [@rodiger_rkward_2012]). With fewer commands, an image can be imported and analyzed. B) The `plot()` function displays the false-color image as a preview. In this figure, cells with DNA damage (similar to @Roediger_2018) are visible. C) Loading the biopixR package in the R console shows additional information such as loaded libraries and the number of CPU threads (n = 20, parallel processing). D) The rendering process is displayed on the console, including timestamps and current state.](fig_1.png)
 

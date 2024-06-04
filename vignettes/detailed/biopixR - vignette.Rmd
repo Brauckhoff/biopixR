@@ -36,6 +36,41 @@ options(digits = 3)
 knitr::include_graphics("Figures/final_logo.png")
 ```
 
+```{r eval=FALSE}
+par(mfrow = c(1, 2))
+
+img <- importImage("tim_242602_c_s6c1+2+3m3.tif")
+plot(img)
+text(c(50), c(60), c("A"), col = "darkred", cex = 6)
+
+img_g <- img[, , , 2]
+cimg_g <- as.cimg(img_g)
+
+detected <-
+  objectDetection(cimg_g,
+                  method = 'edge',
+                  alpha = 1.3,
+                  sigma = 0)
+colored_objects <-
+  changePixelColor(z,
+                   r$coordinates,
+                   color = factor(r$coordinates$value),
+                   vis = FALSE)
+
+plot(colored_objects)
+text(c(50), c(60), c("B"), col = "darkred", cex = 6)
+```
+
+```{r}
+knitr::include_graphics("Figures/fig1_DSB_analysis.png")
+```
+
+
+
+
+
+
+
 # Aims of the `biopixR` package
 
 # Introduction to Object Quantification in Biological Images
