@@ -33,13 +33,13 @@ options(digits = 3)
 ```
 
 ```{r}
-knitr::include_graphics("Figures/final_logo.png")
+knitr::include_graphics("figures/fig0_logo.png")
 ```
 
 ```{r eval=FALSE}
 par(mfrow = c(1, 2))
 
-img <- importImage("tim_242602_c_s6c1+2+3m3.tif")
+img <- importImage("figures/tim_242602_c_s6c1+2+3m3.tif")
 plot(img)
 text(c(50), c(60), c("A"), col = "darkred", cex = 6)
 
@@ -62,10 +62,40 @@ text(c(50), c(60), c("B"), col = "darkred", cex = 6)
 ```
 
 ```{r}
-knitr::include_graphics("Figures/fig1_DSB_analysis.png")
+knitr::include_graphics("figures/fig1_DSB_analysis.png")
 ```
 
 
+```{r}
+library(imager)
+
+circ <- importImage("figures/fig3_analysis_circ.png")
+circ <- grayscale(circ)
+
+test <- shapeFeatures(circ) 
+
+```
+
+```{r, echo=FALSE}
+seven <- test[6, 2:12]
+six <- test[7, 2:12]
+
+test[6, 2:12] <- six
+test[7, 2:12] <- seven
+```
+
+```{r}
+knitr::include_graphics("figures/fig2_circularity.png")
+```
+
+```{r, eval=FALSE}
+library(foodwebr)
+foodweb(biopixR::imgPipe) |> plot()
+```
+
+```{r, echo=FALSE}
+knitr::include_graphics("figures/fig4_dependency.png")
+```
 
 
 
@@ -141,6 +171,8 @@ following link:
 
 ### Quantification of Microbeads with Function of the `biopixR` package
 
+### `importImage()`
+
 ### `objectDetection()` Function to Quantify Microbeads in an Image
 
 ### Dealing with Autofluorescence and Clotting with `sizeFilter()` and `proximityFilter()`
@@ -173,14 +205,7 @@ following link:
 # Case study for the Application of the `biopixR` package
 
 
-```{r}
-library(imager)
 
-circ <- load.image("Figures/analysis_circularity3.png")
-
-test <- biopixR::shapeFeatures(grayscale(circ), sigma = 2)
-
-```
 
 # Getting started
 

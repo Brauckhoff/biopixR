@@ -5,7 +5,7 @@ tags:
 - bioimages
 - bioinformatics
 - microparticles
-- "high-throughput"
+- batch processing
 - reproducible research
 date: "24 April 2024"
 output:
@@ -93,7 +93,7 @@ water [@Ding_2020]. It could also be used in microbead-based drug delivery
 systems to facilitate real-time detection and localization [@Bannerman_2016].
 
 Therefore, the `biopixR` package for `R` is needed, as it automates the
-evaluation process and enables high-throughput analysis directly from images,
+evaluation process and enables medium-throughput analysis directly from images,
 simplifying analytical procedures and opening up new experimental possibilities.
 
 # Software engineering
@@ -119,7 +119,7 @@ reliability.
 The `biopixR` package in R is intended for analyzing bioimage data, with a
 specific focus on the analysis and characterization of bead microparticles. The
 package provides tools for image preprocessing, segmentation, feature
-extraction, and visualization. It supports automation for high-throughput
+extraction, and visualization. It supports automation for medium-throughput
 analysis, utilizing algorithms to identify spherical objects, extract their
 features, and implement interactive tools for threshold and smoothing factor
 selection. Furthermore, it offers features for removing clumped or closely
@@ -140,7 +140,7 @@ analysis, offering a variety of selectable functions:
 * `resultAnalytics()`, summarizes the extracted features in a clear and concise manner.
 
 The `biopixR` package includes functions for analyzing entire directories,
-allowing for high-throughput analysis. Making feature extraction and image
+allowing for medium-throughput analysis. Making feature extraction and image
 clustering easily accessible:
 
 * `haralickCluster()`, extracts Haralick features and cluster using PAM (Partitioning Around Medoids) [@Haralick_1973; @radiomics; @cluster],
@@ -159,15 +159,25 @@ in the package's vignette.
 
 ## Graphical User Interface:
 
-The function `interactive_objectDetection()` initiates a graphical user
-interface (GUI) that utilizes the Tcl/Tk framework [@tcltk], enabling users to
-adjust the threshold and smoothing settings of the image.
+In this section, we aim to provide a concise outlook of the `biopixR` package,
+emphasizing its broader applicability beyond microbead detection. The `biopixR`
+package is adaptable and can be utilized in any research field where the
+identification of distinct objects in images can be achieved through the use of
+a Canny edge detector or thresholding. This encompasses research areas such as
+foci detection, microplastic, and plant seeds. The automation methods employed
+in `biopixR` are predicated on the assumption of circular objects, rendering it
+particularly well-suited for the detection, quantification, and extraction of
+useful information from circular objects within images. Another integrated tool
+is an interactive function that assists the user in selecting the optimal input
+for their analysis. The function `interactive_objectDetection()` initiates a
+graphical user interface (GUI) that utilizes the Tcl/Tk framework [@tcltk],
+enabling users to adjust the threshold and smoothing settings of the image.
 
 ![Graphical User Interface for interactive parameter selection. The function `interactive_objectDetection()` provides a simple interface with sliders to adjust threshold, smoothing, and scale. It highlights object contours in purple and centers in green for easy visualization. A) In this example, the GUI was used in RKWard (0.7.5z+0.7.6+devel3, Linux, TUXEDO OS 2, [@rodiger_rkward_2012]). With fewer commands, an image can be imported and analyzed. B) The `plot()` function displays the false-color image as a preview. In this figure, cells with DNA damage (similar to @Roediger_2018) are visible. C) Loading the biopixR package in the R console shows additional information such as loaded libraries and the number of CPU threads (n = 20, parallel processing). D) The rendering process is displayed on the console, including timestamps and current state.](fig_1.png)
 
 # Current status and outlook
 
-The `biopixR` package was released on 
+The `biopixR` package was first released on 
 CRAN in March 2024. To ensure code quality, we employed various methodologies, 
 including [Continuous Integration](https://github.com/Brauckhoff/biopixR/blob/main/.github/workflows/R-CMD-check.yml)
 (CI), unit testing [@testthat], adherence to naming conventions
@@ -183,7 +193,8 @@ capabilities to identify DNA damage, particularly in the form of foci.
 
 # Funding
 
-The study was funded in part by the project Rubin: NeuroMiR (03RU1U051A, federal ministry of eduction and research, Germany).
+The study was funded in part by the project Rubin: NeuroMiR (03RU1U051A, federal
+ministry of eduction and research, Germany).
 
 # References
 
