@@ -42,7 +42,13 @@ algorithm for edge detection based on the Canny algorithm. The `biopixR`
 package provides a function with which users can use object detection and 
 the filter function in a pipeline function. Both canny edge detection and 
 thresholding can be parameterized via an interactive user interface using 
-Tcl\Tk. Moreover, `biopixR` offers unique datasets of microbead images and 
+Tcl\Tk. The package provides a function for the clustering of objects 
+within an image according to the individual shape features using 
+Self-Organizing-Maps (SOM). For circular objects, the threshold and smoothing 
+parameter for objects detection can be calculated automatcally using 
+Gaussian process regression models (Kriging models).
+
+Moreover, `biopixR` offers unique datasets of microbead images and 
 microbeads in water-oil emulsions. It is designed for medium-throughput 
 analysis and generates log files to track the analytical process in detail. 
 Core functionality of `biopixR` was used in a recent study 
@@ -136,7 +142,7 @@ devtools::install_github("Brauckhoff/biopixR")
 
 ## Functions
 
-![Dependency graph of the functions present in the `biopixR` package. Showing the levels of complexity by showing the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package from @foodwebr (package version 0.1.1, RStudio 2023.09.0+463, R 4.3.2 on Linux, Ubuntu 22.04.3 LTS).\linebreak](fig_2.png)
+![Dependency graph of the functions present in the `biopixR` package. Showing the levels of complexity by showing the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package from @foodwebr (package version 0.1.1, RStudio 2023.09.0+463, R 4.3.2 on Linux, Ubuntu 22.04.3 LTS).\linebreak (\autoref{fig:Dependency})](fig_2.png)
 
 The `biopixR` package in R is intended for analyzing bioimage data, with a
 specific focus on the analysis and characterization of bead microparticles. The
@@ -148,13 +154,19 @@ selection. Furthermore, it offers features for removing clumped or closely
 positioned particles to prevent inaccurate results, with the goal of improving
 the analysis of microparticles in diverse scientific disciplines.
 
-In addition to the `shapeFeatures()` function, capable of extracting
-shape-related information from detected objects and grouping them using the SOM
+The core function of `biopixR` is the `imgPipe()` function, which can perform the 
+opject detection and apply individial filter. Mover, it presscess three image 
+channels simultiniously to work with false color images. The embding of this 
+function in the dependency network and the interaction between all other functions 
+is shown in \autoref{fig:Dependency}.
+
+The `shapeFeatures()` function is capable of extracting shape-related information 
+from detected objects and grouping them using the SOM
 (Self-Organizing Map) algorithm [@kohonen], there's also the `imgPipe()`
 function. This latter function serves as a comprehensive pipeline for image
 analysis, offering a variety of selectable functions:
 
-* `importImage()`, a wrapper import function combining the `imager` [@imager] and `magick` [@magick] packages.
+* `importImage()`, joins import function combining the `imager` [@imager] and `magick` [@magick] packages.
 * `edgeDetection()`, a combination of a Canny edge detector and gap filling [@imager],
 * `objectDetection()`, detects objects in an image by identifying their coordinates,
 * `sizeFilter()`, eliminates objects that exceed or fall below a certain size threshold,
@@ -192,10 +204,11 @@ particularly well-suited for the detection, quantification, and extraction of
 useful information from circular objects within images. Another integrated tool
 is an interactive function that assists the user in selecting the optimal input
 for their analysis. The function `interactive_objectDetection()` initiates a
-graphical user interface (GUI) that utilizes the Tcl/Tk framework [@tcltk],
-enabling users to adjust the threshold and smoothing settings of the image.
+graphical user interface (GUI) (\autoref{fig:example2}) that utilizes the Tcl/Tk 
+framework [@tcltk], enabling users to adjust the threshold and smoothing settings 
+of the image.
 
-![Graphical User Interface for interactive parameter selection. The function `interactive_objectDetection()` provides a simple interface with sliders to adjust threshold, smoothing, and scale. It highlights object contours in purple and centers in green for easy visualization. A) In this example, the GUI was used in RKWard (0.7.5z+0.7.6+devel3, Linux, TUXEDO OS 2, [@rodiger_rkward_2012]). With fewer commands, an image can be imported and analyzed. B) The `plot()` function displays the false-color image as a preview. In this figure, cells with DNA damage (similar to @Roediger_2018) are visible. C) Loading the biopixR package in the R console shows additional information such as loaded libraries and the number of CPU threads (n = 20, parallel processing). D) The rendering process is displayed on the console, including timestamps and current state.](fig_1.png)
+![Graphical User Interface for interactive parameter selection. The function `interactive_objectDetection()` provides a simple interface with sliders to adjust threshold, smoothing, and scale. It highlights object contours in purple and centers in green for easy visualization. A) In this example, the GUI was used in RKWard (0.7.5z+0.7.6+devel3, Linux, TUXEDO OS 2, [@rodiger_rkward_2012]). With fewer commands, an image can be imported and analyzed. B) The `plot()` function displays the false-color image as a preview. In this figure, cells with DNA damage (similar to @Roediger_2018) are visible. C) Loading the biopixR package in the R console shows additional information such as loaded libraries and the number of CPU threads (n = 20, parallel processing). D) The rendering process is displayed on the console, including timestamps and current state. \label{fig:RKWard}](fig_1.png)
 
 # Current status and outlook
 
