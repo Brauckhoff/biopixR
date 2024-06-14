@@ -33,9 +33,29 @@ affiliations:
   index: 3
 ---
 
-
-
 # Summary
+
+`biopixR` is an `R` package for the analysis of bioimage data. It contains 15 
+functions for image import, segmentation, clustering, parameter optimization, 
+and processing to mitigate line gaps. Among them is new/optimized/improved 
+algorithm for edge detection based on the Canny algorithm. The `biopixR` 
+package provides a function with which users can use object detection and 
+the filter function in a pipeline function. Both canny edge detection and 
+thresholding can be parameterized via an interactive user interface using 
+Tcl\Tk. Moreover, `biopixR` offers unique datasets of microbead images and 
+microbeads in water-oil emulsions. It is designed for medium-throughput 
+analysis and generates log files to track the analytical process in detail. 
+Core functionality of `biopixR` was used in a recent study 
+[@geithe_multiplex_2024] to perform quality control  on microbeads. 
+`biopixR` can extract various types of information, including 
+*object size*, *quantity*, *shape* and *intensity*. The package includes 
+an algorithm that fills gaps between lines and reconnects loose ends, 
+making complex images accessible for later analysis. It utilizes the 
+`imager` [@imager] and `magick` [@magick] packages to perform various 
+image processing tasks, such as preprocessing, object counting, feature 
+extraction, and filtering. 
+
+# Statement of need
 
 Imaging is crucial for data acquisition in biological laboratories and the
 broader field of life sciences. It provides essential insights into cells
@@ -48,20 +68,7 @@ rely on visualization methods, such as microscopy [@Ding_2020]. Therefore, it
 is necessary to have user-friendly image processing software to effectively
 analyze the data.
 
-`biopixR` is an `R` package [@R_Core_Team] that utilizes the `imager`
-[@imager] and `magick` [@magick] packages to perform various image
-processing tasks, such as preprocessing, object counting, feature extraction,
-and filtering. It is designed for medium-throughput analysis and generates log
-files to track the analytical process in detail. Core functionality of `biopixR` 
-was used in a recent study [@geithe_multiplex_2024] to perform quality control 
-on microbeads. `biopixR` can extract various
-types of information, including *object size*, *quantity*, *shape* and
-*intensity*. The package includes an algorithm that fills gaps between lines and
-reconnects loose ends, making complex images accessible for later analysis.
-
-# Statement of need
-
-Extracting valuable information from complex biological images in a quick,
+Extracting valuable information from complex biological images (2D pixel images) in a quick,
 reliable, and straightforward manner presents a significant challenge. A
 critical aspect of this process is the quantification of objects within the
 images.
@@ -99,7 +106,7 @@ simplifying analytical procedures and opening up new experimental possibilities.
 # Software engineering
 
 `biopixR` (0.2.4, 
-[LGLP-3.0license](https://www.gnu.org/licenses/lgpl-3.0.en.html)) is an `R` 
+[LGLP-3.0license](https://www.gnu.org/licenses/lgpl-3.0.en.html)) is an `R` [@R_Core_Team]
 package (S3 class systen). The choice of `R` as a programming language for image
 processing is based on its open-source framework, advanced packages such as
 `imager` [@imager] and `magick` [@magick], and its strong support for
@@ -111,6 +118,21 @@ transparency in scientific research, making it a preferred choice for complex
 image processing tasks. The `biopixR` package underwent quality control through
 unit testing using the `testthat` package [@testthat], ensuring its
 reliability.
+
+# Installation
+
+The stable version of the package can be installed via:
+
+```
+install.packages("biopixR")
+```
+
+The developmental version of the package can be installed via:
+
+```
+install.package("devtools")
+devtools::install_github("Brauckhoff/biopixR")
+```
 
 ## Functions
 
