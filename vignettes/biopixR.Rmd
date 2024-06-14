@@ -38,28 +38,38 @@ options(digits = 3)
 
 # Getting started
 
-The biopixR package includes an image of microbeads as an example to demonstrate
-its analytical and processing abilities for biological imagery. This sample
-image displays the package's features, enabling users to experiment with image
-analysis and manipulation within the contexts of biotechnology and life
+The biopixR package includes multiple images of microbeads as an example to
+demonstrate its analytical and processing abilities for biological imagery. This
+sample images displays the package's features, enabling users to experiment with
+image analysis and manipulation within the contexts of biotechnology and life
 sciences. Researchers and practitioners can utilize this illustration to
-comprehend the application of biopixR to their individual imaging requirements,
-whether pertaining to cell biology, microscopy, or any other biological imaging
-applications.
+comprehend the application of `biopixR` to their individual imaging
+requirements, whether pertaining to cell biology, microscopy, or any other
+biological imaging applications.
 
-## Detecting objects in an image
+## First step: Import of an image
 
-```{r beads}
+The `biopixR` package features an import function called `importImage()`. This
+function acts as a wrapper, integrating the capabilities of the `magick` and
+`imager` packages. Since most image processing operations rely on `imager`, the
+`importImage()` function converts all formats into the `imager` class 'cimg'. It
+supports importing images in JPEG, PNG, BMP, and TIFF formats.
+
+```{r}
 library(biopixR)
-plot(beads)
+path2img <- system.file("images/beads.png", package = "biopixR")
+beads <- importImage(path2img)
 ```
 
-As the biopixR package primarily uses the image processing packages imager and
-magick, the examples are stored in the specific imager class: cimg.
+```{r beads}
+plot(beads)
+```
 
 ```{r class}
 class(beads)
 ```
+
+## Detecting objects in an image
 
 The objective of this task is to extract important information from an image
 consisting of microbeads. As a preliminary step, it is essential to distinguish
@@ -143,12 +153,12 @@ res_objectDetection$marked_objects |> plot()
 ```
 
 Nonetheless, a crucial differentiation occurs in obtaining the highlighted
-microbeads as a cimg, which opens up possibilities for the creation of an
-interactive tool using tcltk. This step facilitates the development of an
+microbeads as a 'cimg', which opens up possibilities for the creation of an
+interactive tool using `tcltk`. This step facilitates the development of an
 interactive interface, empowering users to dynamically explore the adjustment of
 various variables and observe the corresponding shifts in detected microbeads. 
-The interactive interface is presented through the `interactive_objectDetection`
-function within the biopixR package.
+The interactive interface is presented through the `interactive_objectDetection()`
+function within the `biopixR` package.
 
 ## Filter microbeads according to size and proximity
 
@@ -161,14 +171,32 @@ interquartile range (IQR) of the size distribution. To simplify limit selection
 in cases of insufficient detected objects, the function will issue a warning and
 generate a size distribution.
 
-```{r, error=TRUE}
-#res_sizeFilter <- sizeFilter(
-#  centers = res_objectDetection$centers,
-#  coordinates = res_objectDetection$coordinates,
-#  lowerlimit = "auto",
-#  upperlimit = "auto"
-#)
+This code will open an interactive `readline` prompt and ask whether the limits
+should be calculated automatically or adjusted based on the displayed size
+distribution plot. Currently, this interactive module is only triggered when the
+number of detected objects is less than 50. In future updates (expected in
+v1.2.0), it will also be possible to invoke this module by setting `lowerlimit`
+and `upperlimit` to 'interactive'.
+
+```{r, eval=FALSE}
+res_sizeFilter <- sizeFilter(
+  centers = res_objectDetection$centers,
+  coordinates = res_objectDetection$coordinates,
+  lowerlimit = "auto",
+  upperlimit = "auto"
+)
 ```
+```{r, echo=FALSE}
+res_sizeFilter <- sizeFilter(
+  centers = res_objectDetection$centers,
+  coordinates = res_objectDetection$coordinates,
+  lowerlimit = 0,
+  upperlimit = Inf
+)
+
+plot(res_sizeFilter$centers$size, ylab = "size in px")
+```
+
 
 As shown by the size distribution, there two larger objects (doublet - size:
 \>150 px; multiplet - size: \>400 px). Therefore, the limits will be set
@@ -488,7 +516,17 @@ result$summary
 
 *will be part of the `resultAnalytics` function as of version 0.2.0*
 
-# Case study: microbeads in droplets
+# Case study I: Using the `biopixR` image analysis pipeline
+
+imgPipe
+scanDir
+
+# Case study II: Clustering of image objects and images
+
+haralickCluster
+shapeFeatures
+
+# Case study III: microbeads in droplets
 
 To further illustrate the package's capabilities, the following section presents
 a case study mainly focused on addressing discontinuous edges in image analysis.
