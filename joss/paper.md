@@ -42,7 +42,7 @@ algorithm for edge detection based on the Canny algorithm. The `biopixR`
 package provides a function with which users can use object detection and 
 the filter function in a pipeline function. Both canny edge detection and 
 thresholding can be parameterized via an interactive user interface using 
-Tcl\Tk. The package provides a function for the clustering of objects 
+Tcl/Tk. The package provides a function for the clustering of objects 
 within an image according to the individual shape features using 
 Self-Organizing-Maps (SOM). For circular objects, the threshold and smoothing 
 parameter for objects detection can be calculated automatcally using 
@@ -142,7 +142,7 @@ devtools::install_github("Brauckhoff/biopixR")
 
 ## Functions
 
-![Dependency graph of the functions present in the `biopixR` package. Showing the levels of complexity by showing the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package from @foodwebr (package version 0.1.1, RStudio 2023.09.0+463, R 4.3.2 on Linux, Ubuntu 22.04.3 LTS).\linebreak (\autoref{fig:Dependency})](fig_2.png)
+![Dependency graph of the functions present in the `biopixR` package. Showing the levels of complexity by showing the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package from @foodwebr (package version 0.1.1, RStudio 2023.09.0+463, R 4.3.2 on Linux, Ubuntu 22.04.3 LTS).\linebreak (\label{fig:Dependency})](fig_2.png)
 
 The `biopixR` package in R is intended for analyzing bioimage data, with a
 specific focus on the analysis and characterization of bead microparticles. The
@@ -204,7 +204,7 @@ particularly well-suited for the detection, quantification, and extraction of
 useful information from circular objects within images. Another integrated tool
 is an interactive function that assists the user in selecting the optimal input
 for their analysis. The function `interactive_objectDetection()` initiates a
-graphical user interface (GUI) (\autoref{fig:example2}) that utilizes the Tcl/Tk 
+graphical user interface (GUI) (\autoref{fig:RKWard}) that utilizes the Tcl/Tk 
 framework [@tcltk], enabling users to adjust the threshold and smoothing settings 
 of the image.
 

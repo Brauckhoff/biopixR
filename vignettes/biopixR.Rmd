@@ -3,15 +3,15 @@ title: "biopixR - Introduction"
 author: "Tim Brauckhoff"
 date: "`r Sys.Date()`"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     toc: yes
     number_sections: yes
-  pdf_document:
-    toc: yes
 vignette: >
   %\VignetteIndexEntry{biopixR - Introduction} 
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 <style>
@@ -28,9 +28,7 @@ knitr::opts_chunk$set(
   comment = NA,
   verbose = TRUE,
   fig.width = 5,
-  fig.height = 5,
-  dev = "jpeg",
-  dev.args = list(quality = 25)
+  fig.height = 5
 )
 original_options <- options()
 options(digits = 3)
@@ -49,10 +47,10 @@ biological imaging applications.
 
 ## First step: Import of an image
 
-The `biopixR` package features an import function called `importImage()`. This
+The `biopixR` package features an import function called `importImage`. This
 function acts as a wrapper, integrating the capabilities of the `magick` and
 `imager` packages. Since most image processing operations rely on `imager`, the
-`importImage()` function converts all formats into the `imager` class 'cimg'. It
+`importImage` function converts all formats into the `imager` class 'cimg'. It
 supports importing images in JPEG, PNG, BMP, and TIFF formats.
 
 ```{r}
@@ -74,12 +72,20 @@ class(beads)
 The objective of this task is to extract important information from an image
 consisting of microbeads. As a preliminary step, it is essential to distinguish
 between individual microbeads and acquire their corresponding coordinates or
-positions. The `objectDetection` function uses edge detection and labeling
-techniques to gather elaborate information about the microbeads, allowing for
-the identification and differentiation of individual particles according to
-their unique edges. This procedure assists in deriving precise coordinates for
-every microbead in the image, which sets the groundwork for subsequent analysis
-and characterization of the microbeads within the biopixR package.
+positions. The `objectDetection` function can perform segmentation using either
+thresholding or edge detection. The thresholding method is particularly suited
+for images with high and inhomogeneous backgrounds, as it includes background
+correction by solving the Screened Poisson Equation before applying the
+threshold. This allows for the detection of low-contrast objects with
+inconsistent backgrounds, such as transparent microbeads. When edge detection is
+chosen, a modified Canny edge detector, provided by the `edgeDetection`
+function, is used. This modified function reconnects line ends to nearby
+contours, ensuring continuous contours even with lower smoothing settings. In
+summary, the `objectDetection` function gathers detailed information about the
+microbeads, enabling the identification and differentiation of individual
+objects. This process helps derive precise coordinates for each object in the
+image, which serves as the foundation for further analysis and characterization
+of the microbeads within the `biopixR` package.
 
 ```{r objectDetection}
 res_objectDetection <-
@@ -117,9 +123,9 @@ treated as a unified, larger object.
 Let's examine the next output from `objectDetection`. This function captures the
 coordinates of labeled regions, providing precise details about the position of
 each microbead. By leveraging another function within the package,
-`changePixelColor`, we can selectively color-specific coordinates in a cimg.
-Thus, we can apply this function to tint all the extracted coordinates in the
-microbead image and assess whether the outcome aligns with our expectations.
+`changePixelColor`, we can selectively color-specific coordinates in a 'cimg'.
+Thus, we can apply this function to highlight all the extracted coordinates in
+the microbead image and assess whether the outcome aligns with our expectations.
 
 ```{r visualization_2}
 changePixelColor(
@@ -157,8 +163,37 @@ microbeads as a 'cimg', which opens up possibilities for the creation of an
 interactive tool using `tcltk`. This step facilitates the development of an
 interactive interface, empowering users to dynamically explore the adjustment of
 various variables and observe the corresponding shifts in detected microbeads. 
-The interactive interface is presented through the `interactive_objectDetection()`
+The interactive interface is presented through the `interactive_objectDetection`
 function within the `biopixR` package.
+
+As previously discussed, the 'edge' method requires `alpha` and `sigma` as input
+parameters, which significantly impact the final result. To simplify the process
+of determining these parameters and to facilitate automation and batch
+processing, two methods are provided for their automated calculation:
+
+- **Grid Search** (alpha = 'static'; sigma = 'static')
+- **Gaussian Processes for Pareto Front Estimation and Optimization** (alpha = 'gaussian'; sigma = 'gaussian')
+
+Both methods rely on a fitness function that extracts shape information using
+another function, which will be introduced later. This fitness function
+evaluates the results with different input parameters, assuming circular-shaped
+objects. While the grid search method can be time-consuming as it tests every
+possible combination, the Pareto front optimization method samples and analyzes
+a subset of combinations, estimating the optimal parameters more quickly.
+
+It should be noted that the threshold function can also be employed, which does
+not require any additional input. Although the threshold method is a valid
+approach for segmentation, it has the disadvantage of merging objects in close
+proximity that would be considered distinct by the edge detector. Consequently,
+the decision between greater accuracy with parameter input or calculation and
+the more straightforward thresholding approach depends on the user's specific
+requirements.
+
+```{r}
+res_threshold_object <- objectDetection(beads, method = 'threshold')
+res_threshold_object$marked_objects |> plot()
+```
+
 
 ## Filter microbeads according to size and proximity
 
@@ -429,7 +464,7 @@ result_proximityFilter <-
 result_proximityFilter$detailed
 ```
 
-## Relative distance between microparticles
+## Relative distance between microparticles !!!to be removed!!!
 
 Another important aspect to consider in bioimaging is the relative distance
 between individual objects. By examining the spatial relationships between the
@@ -466,25 +501,8 @@ except for comparing a center to itself, resulting in a missing value. This
 calculation results in a distance matrix.
 
 ```{r}
-num_points <- nrow(res_proximityFilter$centers)
-relative_distances <-
-  matrix(NA, nrow = num_points, ncol = num_points)
-
-for (i in 1:num_points) {
-  for (j in 1:num_points) {
-    if (i == j) {
-      next
-    } else {
-      relative_distances[i, j] <-
-        euclidean_distance(
-          res_proximityFilter$centers[i, ],
-          res_proximityFilter$centers[j, ]
-        )
-    }
-  }
-}
-
-as.matrix(relative_distances)
+dist_mat <- dist(res_proximityFilter$centers[, 2:3], method = 'euclidean')
+dist_mat <- as.matrix(dist_mat)
 ```
 
 After removing missing values, the average relative distance for each center is
@@ -494,11 +512,27 @@ previously presented detailed results, providing further information about the
 distinct properties of each microbead.
 
 ```{r}
-for (a in 1:num_points) {
-  result$detailed$relative_distance[a] <-
-    mean(na.omit(relative_distances[a, ]))
+summary_stats_fun <- function(distances) {
+  # Exclude the diagonal element (distance to itself)
+  non_zero_distances <- distances[distances != 0]
+  c(
+    mean = mean(non_zero_distances),
+    median = median(non_zero_distances),
+    max = max(non_zero_distances),
+    min = min(non_zero_distances)
+  )
 }
 
+# Apply the custom function to each row of the distance matrix
+summary_stats <- t(apply(dist_mat, 1, summary_stats_fun))
+
+# Convert to data frame for better readability
+summary_stats_df <- as.data.frame(summary_stats)
+
+# Print the summary statistics
+print(summary_stats_df)
+
+result$detailed$relative_distance <- summary_stats_df$mean
 result$detailed
 ```
 
@@ -514,17 +548,109 @@ result$summary$mean_distance <-
 result$summary
 ```
 
-*will be part of the `resultAnalytics` function as of version 0.2.0*
+The relative distance metric was initially removed from the function and
+replaced by the coverage metric due to performance concerns and lengthy
+computation times. However, it will be reintroduced with the presented approach
+in the upcoming v1.2.0 release.
 
 # Case study I: Using the `biopixR` image analysis pipeline
 
 imgPipe
+```{r imgPipe1}
+res_pipe <- imgPipe(beads_large1,
+                    method = 'edge',
+                    alpha = 0.718,
+                    sigma = 0.194,
+                    sizeFilter = TRUE,
+                    upperlimit = 'auto',
+                    lowerlimit = 'auto')
+```
+
+```{r imgPipe2}
+plot(beads_large1)
+points(res_pipe$detailed$x,
+       res_pipe$detailed$y,
+       pch = 19,
+       col = factor(res_pipe$detailed$objectnumber))
+```
+
+
+
+
+
 scanDir
+
+
+
+```{r, eval=FALSE}
+path2dir <- system.file("images", package = "biopixR")
+
+scanDir(path = path2dir,
+        method = 'edge',
+        alpha = 'gaussian',
+        sigma = 'gaussian',
+        sizeFilter = FALSE,
+        proximityFilter = FALSE,
+        Rlog = FALSE)
+```
+
 
 # Case study II: Clustering of image objects and images
 
 haralickCluster
+
+
+```{r haralickCluster1, fig.width = 10, fig.height = 10}
+par(mfrow = c(2, 2))
+
+plot(beads, main = "Beads")
+plot(beads_large1, main = "Beads_large1")
+plot(beads_large2, main = "Beads_large2")
+plot(droplet_beads, main = "Droplet_beads")
+
+par(mfrow = c(1, 1))
+```
+
+```{r haralickCluster2}
+path2dir <- system.file("images", package = "biopixR")
+
+img_clus <- haralickCluster(path2dir)
+```
+
+```{r, echo=FALSE}
+file_paths <- img_clus$file
+new_file_paths <- sapply(file_paths, function(x) gsub("brauctim", "user", x))
+img_clus$file <- new_file_paths
+```
+
+```{r haralickCluster3}
+img_clus
+```
+
+
+
+
 shapeFeatures
+
+```{r shapeFeatures1}
+plot(beads_large1)
+```
+
+```{r shapeFeatures2}
+res_shapeFeatures <- shapeFeatures(
+  beads_large1,
+  alpha = 0.8,
+  sigma = 0.7,
+  SOM = TRUE
+)
+```
+
+```{r shapeFeatures3}
+colors <- c("cyan", "red")
+plot(beads_large1)
+points(res_shapeFeatures$x, res_shapeFeatures$y, col = colors[factor(res_shapeFeatures$class)], pch = 20)
+```
+
 
 # Case study III: microbeads in droplets
 
@@ -672,7 +798,7 @@ majority of cases, rendering it satisfactory for our specific example.
 
 ### Animated visualization of the `fillLineGaps` algorithm
 
-```{r fig.align='center'}
+```{r fillLineGaps, fig.align='center'}
 first_img <- vis_lineend
 second_img <- closed_gaps
 
@@ -684,10 +810,18 @@ second_magick <- cimg2magick(second_m)
 
 img <- c(first_magick, second_magick)
 
-image_animate(image_scale(img, "500x635"),
-  fps = 1,
-  dispose = "previous"
-)
+
+if (knitr::is_latex_output()) {
+  par(mfrow = c(1, 2))
+  plot(first_m)
+  plot(second_m)
+  par(mfrow = c(1, 1))
+} else {
+  image_animate(image_scale(img, "500x635"),
+                fps = 1,
+                dispose = "previous")
+}
+
 ```
 
 
