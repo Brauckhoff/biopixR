@@ -7,7 +7,7 @@ tags:
 - microparticles
 - batch processing
 - reproducible research
-date: "24 April 2024"
+date: "24 June 2024"
 output:
   pdf_document: default
   html_document:
@@ -35,85 +35,77 @@ affiliations:
 
 # Summary
 
-`biopixR` is an `R` package for the analysis of bioimage data. It contains 15 
-functions for image import, segmentation, clustering, parameter optimization, 
-and processing to mitigate line gaps. Among them is new/optimized/improved 
-algorithm for edge detection based on the Canny algorithm. The `biopixR` 
-package provides a function with which users can use object detection and 
-the filter function in a pipeline function. Both canny edge detection and 
-thresholding can be parameterized via an interactive user interface using 
-Tcl/Tk. The package provides a function for the clustering of objects 
-within an image according to the individual shape features using 
-Self-Organizing-Maps (SOM). For circular objects, the threshold and smoothing 
-parameter for objects detection can be calculated automatcally using 
-Gaussian process regression models (Kriging models).
+`biopixR` is an `R` package for the analysis of bioimage data. The `biopixR`
+package contains 15 functions for various tasks including image import,
+segmentation, clustering, parameter optimization, and line gap mitigation. Among
+these is an optimized edge detection algorithm based on the Canny algorithm.
+Users can employ object detection and filtering within a pipeline function. Both
+Canny edge detection and thresholding can be parameterized via an interactive
+Tcl/Tk user interface. Additionally, the package includes a function for
+clustering objects within an image based on their shape features using
+Self-Organizing Maps (SOM). For circular objects, threshold and smoothing
+parameters for object detection can be automatically calculated using Gaussian
+process regression models (Kriging models).
 
-Moreover, `biopixR` offers unique datasets of microbead images and 
-microbeads in water-oil emulsions. It is designed for medium-throughput 
-analysis and generates log files to track the analytical process in detail. 
-Core functionality of `biopixR` was used in a recent study 
-[@geithe_multiplex_2024] to perform quality control  on microbeads. 
-`biopixR` can extract various types of information, including 
-*object size*, *quantity*, *shape* and *intensity*. The package includes 
-an algorithm that fills gaps between lines and reconnects loose ends, 
-making complex images accessible for later analysis. It utilizes the 
-`imager` [@imager] and `magick` [@magick] packages to perform various 
-image processing tasks, such as preprocessing, object counting, feature 
-extraction, and filtering. 
+Additionally, `biopixR` provides unique datasets of microbead images and
+microbeads in water-oil emulsions. Designed for medium-throughput analysis, it
+generates detailed log files to track the analytical process. The core
+functionality of `biopixR` was recently utilized in a study
+[@geithe_multiplex_2024] to perform quality control on microbeads. `biopixR`
+can extract various types of information, including *object size*, *quantity*,
+*shape* and *intensity*. The package includes an algorithm that fills gaps
+between lines and reconnects loose ends, making complex images accessible for
+later analysis. It utilizes the `imager` [@imager] and `magick` [@magick]
+packages to perform various image processing tasks, such as preprocessing,
+object counting, feature extraction, and filtering. 
 
 # Statement of need
 
-Imaging is crucial for data acquisition in biological laboratories and the
-broader field of life sciences. It provides essential insights into cells
-[@Roediger_2018; @schneider_open_2019], biomarkers [@Vafajoo_2018], stress responses
-[@Korkmaz_2018], and gene expression [@Brenner_2000], which are necessary
-for diagnostics and predicting disease outcomes. Microbead technology is a
-highly promising field for gathering complex information in a straightforward,
-rapid, and flexible manner [@Roediger_2014]. These assays that use microbeads
-rely on visualization methods, such as microscopy [@Ding_2020]. Therefore, it
-is necessary to have user-friendly image processing software to effectively
-analyze the data.
-
-Extracting valuable information from complex biological images (2D pixel images) in a quick,
-reliable, and straightforward manner presents a significant challenge. A
-critical aspect of this process is the quantification of objects within the
+Imaging plays a pivotal role in data acquisition within biological laboratories
+and the broader life sciences. It offers crucial insights into cells
+[@Roediger_2018; @schneider_open_2019], biomarkers [@Vafajoo_2018],
+stress responses [@Korkmaz_2018], and gene expression [@Brenner_2000],
+which are vital for diagnostics and disease prediction. Microbead technology,
+known for its rapid and flexible data collection, relies heavily on imaging
+techniques like microscopy [@Roediger_2014; @Ding_2020]. The challenge lies
+in the fast and accurate extraction of valuable information from complex
+biological images, particularly in the quantification of objects within these
 images.
 
-Quantification is crucial for deriving biological insights from experiments, as
-demonstrated in bead-assays. This method is highly promising due to its
-extensive multiplexing abilities, high-throughput capacity, shortened analysis
-time, and minimal sample requirements [@Roediger_2014]. Detection methods for
-microbeads include flow cytometry, microfluidics, and image-based techniques
-[@Choi_2019]. A user-friendly tool integrated into R could be highly
-beneficial for comprehensive analysis, particularly when combined with
-statistical analysis and visualization techniques. Advancements in smart device
-imaging and chip development for bead-assays are improving the use of microbeads
-in point-of-care testing (POCT) and disease diagnosis [@Dinter_2019;
-@Zhang_2019]. This progress underscores the need for direct extraction of
-biological information from images, eliminating the dependence on complex
-laboratory equipment. Additionally, software capable of extracting attributes
-like fluorescence intensity, size, and shape enables the encoding of beads
-[@Zhang_2019]. This capability makes it possible to differentiate between
-populations, thus significantly enhancing the scope for multiplexing.
+The quantification of biological image data is a fundamental aspect of deriving
+insights into biological processes. This is exemplified by bead-assays, which
+offer extensive multiplexing abilities, high-throughput capacity, reduced
+analysis time, and minimal sample requirements [@Roediger_2014]. Methods for
+detecting microbeads include flow cytometry, microfluidics, and image-based
+techniques [@Choi_2019]. A user-friendly tool integrated into `R` could
+enhance analysis by combining statistical analysis and visualization techniques.
+The advancement of smart device imaging and chip development is facilitating the
+utilization of microbeads in point-of-care testing (POCT) and disease diagnosis
+[@Dinter_2019; @Zhang_2019]. This progress underscores the necessity for the
+development of efficient methods for extracting biological information from
+images, thereby eliminating the necessity for the use of complex laboratory
+equipment. Software that extracts attributes such as fluorescence intensity,
+size, and shape allows for bead encoding and differentiation between
+populations, thereby enhancing multiplexing capabilities [@Zhang_2019].
 
-Bead-based ePCR assays, like other bead-based assays, are often analyzed using
-fluorescence activated cell sorting (FACS) [@Fraser_2015]. However, this
-software could enable the analysis of bead-based ePCR through imaging
-techniques, as droplets can be imaged and altered to appear distinct by closing
-gaps between their contours. The package could be applied in various domains,
-including wastewater assessment, to investigate the presence of microplastics in
-water [@Ding_2020]. It could also be used in microbead-based drug delivery
-systems to facilitate real-time detection and localization [@Bannerman_2016].
+Bead-based ePCR assays, which are typically analyzed using
+fluorescence-activated cell sorting (FACS) [@Fraser_2015], could potentially
+benefit from the use of imaging techniques. As this software is capable of
+analyzing bead-based ePCR by modifying droplet images to appear distinct. The
+aforementioned applications extend to the assessment of wastewater for the
+detection of microplastics [@Ding_2020], the real-time localization in
+microbead-based drug delivery systems [@Bannerman_2016], and other fields of
+life science, such as cell biology.
 
-Therefore, the `biopixR` package for `R` is needed, as it automates the
-evaluation process and enables medium-throughput analysis directly from images,
-simplifying analytical procedures and opening up new experimental possibilities.
+Consequently, the `biopixR` package for `R` is a fundamental tool. The automated
+evaluation process enables medium-throughput analysis directly from images,
+simplifying analytical procedures and expanding experimental possibilities.
 
 # Software engineering
 
 `biopixR` (0.2.4, 
 [LGLP-3.0license](https://www.gnu.org/licenses/lgpl-3.0.en.html)) is an `R` [@R_Core_Team]
-package (S3 class systen). The choice of `R` as a programming language for image
+package (S3 class system). The choice of `R` as a programming language for image
 processing is based on its open-source framework, advanced packages such as
 `imager` [@imager] and `magick` [@magick], and its strong support for
 reproducible research [@Xie_2019]. These features collectively provide a
@@ -127,24 +119,39 @@ reliability.
 
 # Installation
 
-The stable version of the package can be installed via:
+The `biopixR` package can be installed from the Comprehensive R Archive Network
+(CRAN) or GitHub, providing users with stable and developmental versions
+respectively.
+
+To install the stable version of `biopixR` from CRAN, execute the following
+command in R:
 
 ```
 install.packages("biopixR")
 ```
 
-The developmental version of the package can be installed via:
+This command will download and install the latest stable release of the package,
+ensuring compatibility and reliability.
+
+For users interested in the latest features and ongoing development, the
+developmental version of `biopixR` is available on GitHub. To install this
+version, it is first necessary to install the `devtools` package if it is not
+already present in your R environment:
 
 ```
 install.package("devtools")
 devtools::install_github("Brauckhoff/biopixR")
 ```
 
+This command enables the installation of the development build from the GitHub
+repository. This provides access to the most recent features and updates that
+may not yet be available in the CRAN release.
+
 ## Functions
 
 ![Dependency graph of the functions present in the `biopixR` package. Showing the levels of complexity by showing the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package from @foodwebr (package version 0.1.1, RStudio 2023.09.0+463, R 4.3.2 on Linux, Ubuntu 22.04.3 LTS).\linebreak (\label{fig:Dependency})](fig_2.png)
 
-The `biopixR` package in R is intended for analyzing bioimage data, with a
+The `biopixR` package in `R` is intended for analyzing bioimage data, with a
 specific focus on the analysis and characterization of bead microparticles. The
 package provides tools for image preprocessing, segmentation, feature
 extraction, and visualization. It supports automation for medium-throughput
@@ -230,6 +237,8 @@ capabilities to identify DNA damage, particularly in the form of foci.
 
 The study was funded in part by the project Rubin: NeuroMiR (03RU1U051A, federal
 ministry of eduction and research, Germany).
+
+\pagebreak
 
 # References
 

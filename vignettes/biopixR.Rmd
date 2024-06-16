@@ -3,11 +3,11 @@ title: "biopixR - Introduction"
 author: "Tim Brauckhoff"
 date: "`r Sys.Date()`"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     toc: yes
     number_sections: yes
+  pdf_document:
+    toc: yes
 vignette: >
   %\VignetteIndexEntry{biopixR - Introduction} 
   %\VignetteEncoding{UTF-8}
@@ -810,17 +810,9 @@ second_magick <- cimg2magick(second_m)
 
 img <- c(first_magick, second_magick)
 
-
-if (knitr::is_latex_output()) {
-  par(mfrow = c(1, 2))
-  plot(first_m)
-  plot(second_m)
-  par(mfrow = c(1, 1))
-} else {
-  image_animate(image_scale(img, "500x635"),
-                fps = 1,
-                dispose = "previous")
-}
+image_animate(image_scale(img, "500x635"),
+              fps = 1,
+              dispose = "previous")
 
 ```
 
