@@ -5,8 +5,8 @@
 #' (Input can be obtained by \code{\link[biopixR]{objectDetection}} function)
 #' @param centers center coordinates of objects (value|mx|my|size data frame)
 #' @param coordinates all coordinates of the objects (x|y|value data frame)
-#' @param lowerlimit smallest accepted object size (numeric / 'auto')
-#' @param upperlimit highest accepted object size (numeric / 'auto')
+#' @param lowerlimit smallest accepted object size (numeric / 'auto' / 'interactive')
+#' @param upperlimit highest accepted object size (numeric / 'auto' / 'interactive')
 #' @returns list of 2 objects:
 #' \itemize{
 #'   \item Remaining centers after discarding according to size.
@@ -67,11 +67,11 @@ sizeFilter <- function(centers,
   # Automated limit calculation
   if (lowerlimit == "auto" & upperlimit == "auto") {
     # Extract sizes from center_df
-    data <- center_df$size
+    cluster_size <- center_df$size
 
     # Error handling: Warn if the number of detected objects is less than 50
     if (nrow(center_df) < 50) {
-      data |> plot(ylab = "size in px")
+      cluster_size |> plot(ylab = "size in px")
       warning(
         format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
         " Number of detected objects should be >50 for automated detection"
@@ -82,15 +82,15 @@ sizeFilter <- function(centers,
         readline(prompt = "Detected objects are less than 50. \n Would you like to adjust the thresholds and try again? (yes/no) ")
       if (tolower(user_input) == "no") {
         # Calculate quartiles
-        q1 <- quantile(data, 0.25)
-        q3 <- quantile(data, 0.75)
+        q1 <- quantile(cluster_size, 0.25)
+        q3 <- quantile(cluster_size, 0.75)
 
         # Calculate Interquartile Range (IQR)
         iqr <- q3 - q1
 
         # Identify non-outliers using the 1.5*IQR rule
         no_outliers <-
-          which(data > (q1 - 1.5 * iqr) & data < (q3 + 1.5 * iqr))
+          which(cluster_size > (q1 - 1.5 * iqr) & cluster_size < (q3 + 1.5 * iqr))
 
         # Filter results to include only non-outliers
         res_centers <- center_df[no_outliers]
@@ -127,15 +127,15 @@ sizeFilter <- function(centers,
     }
 
     # Calculate quartiles
-    q1 <- quantile(data, 0.25)
-    q3 <- quantile(data, 0.75)
+    q1 <- quantile(cluster_size, 0.25)
+    q3 <- quantile(cluster_size, 0.75)
 
     # Calculate Interquartile Range (IQR)
     iqr <- q3 - q1
 
     # Identify non-outliers using the 1.5*IQR rule
     no_outliers <-
-      which(data > (q1 - 1.5 * iqr) & data < (q3 + 1.5 * iqr))
+      which(cluster_size > (q1 - 1.5 * iqr) & cluster_size < (q3 + 1.5 * iqr))
 
     # Filter results to include only non-outliers
     res_centers <- center_df[no_outliers]
@@ -145,15 +145,44 @@ sizeFilter <- function(centers,
       xy_coords[xy_coords$value %in% res_centers$value, ]
   }
 
-  # Manual limit calculation
-  if (lowerlimit != "auto" & upperlimit != "auto") {
+  # Interactive limit calculation
+  if (lowerlimit == "interactive" & upperlimit == "interactive") {
     # Extract sizes from center_df
-    cluster_sizes <- center_df$size
+    cluster_size <- center_df$size
+
+    # Visualize size to facilitate limit selection
+    cluster_size |> plot(ylab = "size in px")
+
+    # Interactive user input; User provides limits
+    cha_lowerlimit <-
+      readline(prompt = "Please enter lowerlimit: ")
+    cha_upperlimit <-
+      readline(prompt = "Please enter upperlimit: ")
+
+    # Convert input
+    lowerlimit <- as.numeric(cha_lowerlimit)
+    upperlimit <- as.numeric(cha_upperlimit)
 
     # Filter clusters based on size limits
     res_centers <-
-      center_df[cluster_sizes > lowerlimit &
-                  cluster_sizes < upperlimit]
+      center_df[cluster_size > lowerlimit &
+                  cluster_size < upperlimit]
+
+    # Extract remaining coordinates based on filtered clusters
+    res_xy_coords <-
+      xy_coords[xy_coords$value %in% res_centers$value, ]
+  }
+
+
+  # Manual limit calculation
+  if (lowerlimit != "auto" & upperlimit != "auto") {
+    # Extract sizes from center_df
+    cluster_size <- center_df$size
+
+    # Filter clusters based on size limits
+    res_centers <-
+      center_df[cluster_size > lowerlimit &
+                  cluster_size < upperlimit]
 
     # Extract remaining coordinates based on filtered clusters
     res_xy_coords <-

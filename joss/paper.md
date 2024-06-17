@@ -38,11 +38,11 @@ affiliations:
 `biopixR` is an `R` package for the analysis of bioimage data. The `biopixR`
 package contains 15 functions for various tasks including image import,
 segmentation, clustering, parameter optimization, and line gap mitigation. Among
-these is an optimized edge detection algorithm based on the Canny algorithm.
-Users can employ object detection and filtering within a pipeline function. Both
-Canny edge detection and thresholding can be parameterized via an interactive
-Tcl/Tk user interface. Additionally, the package includes a function for
-clustering objects within an image based on their shape features using
+these is an optimized edge detection algorithm based on the Canny edge detection
+algorithm. Users can employ object detection and filtering within a pipeline
+function. Both Canny edge detection and thresholding can be parameterized via an
+interactive Tcl/Tk user interface. Additionally, the package includes a function
+for clustering objects within an image based on their shape features using
 Self-Organizing Maps (SOM). For circular objects, threshold and smoothing
 parameters for object detection can be automatically calculated using Gaussian
 process regression models (Kriging models).
@@ -50,14 +50,15 @@ process regression models (Kriging models).
 Additionally, `biopixR` provides unique datasets of microbead images and
 microbeads in water-oil emulsions. Designed for medium-throughput analysis, it
 generates detailed log files to track the analytical process. The core
-functionality of `biopixR` was recently utilized in a study
-[@geithe_multiplex_2024] to perform quality control on microbeads. `biopixR`
-can extract various types of information, including *object size*, *quantity*,
-*shape* and *intensity*. The package includes an algorithm that fills gaps
-between lines and reconnects loose ends, making complex images accessible for
-later analysis. It utilizes the `imager` [@imager] and `magick` [@magick]
-packages to perform various image processing tasks, such as preprocessing,
-object counting, feature extraction, and filtering. 
+functionality of `biopixR` was recently utilized in the study of
+@geithe_multiplex_2024 to perform quality control on microbeads. `biopixR` can
+extract various types of information, including *object size*, *quantity*,
+*shape* and *intensity*. The package includes an algorithm designed to fill gaps
+between lines and reconnect loose ends, thereby preparing complex images for
+subsequent analysis. Additionally, it supports various image processing tasks,
+including preprocessing, object counting, feature extraction, and filtering. The
+`biopixR` package is in part based on the `imager` [@imager] and `magick`
+[@magick] packages.
 
 # Statement of need
 
@@ -142,7 +143,6 @@ already present in your R environment:
 install.package("devtools")
 devtools::install_github("Brauckhoff/biopixR")
 ```
-
 This command enables the installation of the development build from the GitHub
 repository. This provides access to the most recent features and updates that
 may not yet be available in the CRAN release.
@@ -161,17 +161,15 @@ selection. Furthermore, it offers features for removing clumped or closely
 positioned particles to prevent inaccurate results, with the goal of improving
 the analysis of microparticles in diverse scientific disciplines.
 
-The core function of `biopixR` is the `imgPipe()` function, which can perform the 
-opject detection and apply individial filter. Mover, it presscess three image 
-channels simultiniously to work with false color images. The embding of this 
-function in the dependency network and the interaction between all other functions 
-is shown in \autoref{fig:Dependency}.
-
-The `shapeFeatures()` function is capable of extracting shape-related information 
-from detected objects and grouping them using the SOM
-(Self-Organizing Map) algorithm [@kohonen], there's also the `imgPipe()`
-function. This latter function serves as a comprehensive pipeline for image
-analysis, offering a variety of selectable functions:
+The `shapeFeatures()` function is capable of extracting shape-related
+information from detected objects and grouping them using the SOM
+(Self-Organizing Map) algorithm [@kohonen]. The central function of `biopixR`
+is `imgPipe()`, which performs object detection and applies individual filters.
+Furthermore, it is capable of processing multiple color channels, such as the
+analysis of dual-color microbeads. The integration of this function within the
+dependency network and its interaction with other functions is illustrated in
+\autoref{fig:Dependency}. This function serves as a comprehensive pipeline for
+image analysis, offering a variety of selectable functions:
 
 * `importImage()`, joins import function combining the `imager` [@imager] and `magick` [@magick] packages.
 * `edgeDetection()`, a combination of a Canny edge detector and gap filling [@imager],
@@ -184,8 +182,8 @@ The `biopixR` package includes functions for analyzing entire directories,
 allowing for medium-throughput analysis. Making feature extraction and image
 clustering easily accessible:
 
-* `haralickCluster()`, extracts Haralick features and cluster using PAM (Partitioning Around Medoids) [@Haralick_1973; @radiomics; @cluster],
-* `scanDir()`, utilizing the pipeline for whole directory analysis (under development).
+* `haralickCluster()`, extracts Haralick features and clusters information using PAM (Partitioning Around Medoids) [@Haralick_1973; @radiomics; @cluster],
+* `scanDir()`, utilizing the pipeline for whole directory analysis.
 
 The `fillLineGaps()` algorithm, along with helper functions:
 

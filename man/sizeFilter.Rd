@@ -11,9 +11,9 @@ sizeFilter(centers, coordinates, lowerlimit = "auto", upperlimit = "auto")
 
 \item{coordinates}{all coordinates of the objects (x|y|value data frame)}
 
-\item{lowerlimit}{smallest accepted object size (numeric / 'auto')}
+\item{lowerlimit}{smallest accepted object size (numeric / 'auto' / 'interactive')}
 
-\item{upperlimit}{highest accepted object size (numeric / 'auto')}
+\item{upperlimit}{highest accepted object size (numeric / 'auto' / 'interactive')}
 }
 \value{
 list of 2 objects:

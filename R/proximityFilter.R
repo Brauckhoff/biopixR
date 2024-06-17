@@ -94,7 +94,7 @@ proximityFilter <- function(centers,
     xy_edit <- proximityCalc(xy_coords, center_df, radius)
 
     # Result: xy coordinates that pass the filter
-    xy_coords_clus <- xy_edit
+    xy_coords_clus <- xy_edit[xy_edit$value %in% center_df$value, ]
 
     # Result: remaining centers
     DT <- data.table(xy_coords_clus)
@@ -154,7 +154,7 @@ proximityFilter <- function(centers,
     xy_edit <- proximityCalc(xy_coords, center_df, radius)
 
     # Result: xy coordinates that pass the filter
-    xy_coords_clus <- xy_edit
+    xy_coords_clus <- xy_edit[xy_edit$value %in% center_df$value, ]
 
     # Result: remaining centers
     DT <- data.table(xy_coords_clus)
