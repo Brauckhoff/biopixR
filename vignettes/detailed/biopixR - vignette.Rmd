@@ -30,13 +30,14 @@ knitr::opts_chunk$set(
 original_options <- options()
 options(digits = 3)
 
-library(biopixR)
+library(knitr)
 library(foodwebr)
+library(biopixR)
 ```
 
 \pagebreak
 
-```{r, echo=FALSE, fig.align='center'}
+```{r, echo=FALSE, fig.align='center', out.width="69%"}
 knitr::include_graphics("figures/fig0_logo.png")
 ```
 
@@ -61,29 +62,80 @@ foodweb(biopixR::imgPipe) |> plot()
 knitr::include_graphics("figures/fig4_dependency.png")
 ```
 
+The core contributors are listed in the `DESCRIPTION` file of the `biopixR` package. The following paragraphs describe methods applied for the `biopixR` package.
+
 ### Version Control and Continous Integration
+
+For the purpose of version control, the widely used Git system, which is
+available on all major development platforms, was employed. Version control with
+Git enables the revision of changes and older versions of the code by providing
+complete repository copies. Additionally, it permits individual adaptation by
+creating distinct "branches" for the purpose of working on and experimenting
+with different versions while maintaining a stable one. Most importantly, it
+facilitates the organized sharing and merging of changes among team members,
+thereby significantly enhancing collaboration [@Lanubile2010; @Blischak2016;
+@Vuorre2018].
+
+GitHub, a Git repository hosting provider, offers a web-based user interface to
+facilitate collaboration in open source projects. It incorporates tools for the
+reporting of bugs (Issues), collaboration (Pull requests), and workflows
+(Actions) [@Spinellis2012; @Cosentino2016; @PerezRiverol2016]. The source code
+of the `biopixR` package is accessible at:
+
+\phantom{x}\hspace{0.75cm} https://github.com/Brauckhoff/biopixR
+
+Continuous integration (CI) is widely regarded as a good practice in software
+development. As team members frequently integrate their code, sometimes multiple
+times a day, the combination of code from different contributors can lead to
+significant issues in the software's integrity and functionality. To address
+this issue, CI is employed as an automated build and test system. It verifies
+the package's functionality and compatibility across various operating systems
+(OS). This ensures that the code, package structure, metadata, and format remain
+functional. This process of error catching is simplified by CI, as it is able to
+identify potential issues in the integration process [@Meyer2014; @Soares2022].
+
+For `R`, the standard test suite is the `R CMD check`, which includes over 50
+individual checks. These tests encompass a range of topics, including metadata
+validation, package structure, `DESCRIPTION` files, Namespace, `R` code, and
+documentation.^[https://r-pkgs.org/r-cmd-check.html] The `R CMD check`
+workflow for the `biopixR` package, based on the work of @Hester2021, involves
+testing across all major operating systems. The tests were conducted on Windows,
+macOS, and Linux. Furthermore, the developer version of `R` was tested on the
+Linux operating system. The source code for the CI setup using GitHub workflows, 
+as well as the test history can be accessed at:
+
+\phantom{x}\hspace{0.75cm} https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yml
+
 
 ### Naming Convention and Literate Programming
 
-`biopixR` is an `R` ($\ge$ 4.2.0) package, designed using the S3 object system. S3 incorporates features of object-oriented programming while simplifying development through the use of naming conventions @Brito2008
+`biopixR` is an `R` package ($\ge$ 4.2.0), designed using the S3 object system.
+S3 incorporates object-oriented programming features while simplifying
+development through naming conventions [@Chambers2014]. Typically, functions
+and parameters in R packages are written using underscore separation
+[@Rasmus2012]. However, for the purpose of differentiation, this convention
+was adapted. Underscore separation is employed solely for variables and
+parameters introduced within the package. In accordance with the nomenclature
+convention proposed by @Rasmus2012, the functions of the `biopixR` package
+adhere to the **lowerCamelCase** style (e.g., `objectDetection()`), with the
+exception of those designated to be interactive, which also utilize the
+**underscore_separated** style (e.g., `interactive_objectDetection()`).
 
-Typically, functions and parameters are written using underscore separation, a common style in R packages [@Rasmus2012]. However, for easier differentiation this convention was broken and only used for the variables and parameters introduced in the package. By the naming convention of @Rasmus2012 the functions of the `biopixR` package follow the **lowerCamelCase** convention with an exception for interactive function using the **underscore_separated** style (e.g. `interactive_objectDetection()`).
+In order to enhance the formatting, consistency, and readability of the code,
+the `styler` package by @Mueller2017 was employed and applied to the code. The
+`styler` package performs "non-invasive pretty printing of R code", whereby the
+code is formatted according to the [*tidyverse style guide*](https://style.tidyverse.org/).
 
-For improving code format`styler` - @Mueller2017
-
-Literate programming, a concept proposed by @Knuth1984, integrates source code and documentation within a single file. Markup conventions (e.g., ‘#’) dictate how to typeset the documentation, producing outputs in typesetting languages such as Markdown.
+Literate programming, introduced by @Knuth1984, combines source code and
+documentation in a single file. This approach uses markup conventions (e.g.,
+'#') to format the documentation, generating outputs in typesetting
+languages like **Markdown**. Literate programming is crucial for ensuring
+reproducibility of analysis in software development [@Vassilev2016].
+Additionally, inline code annotations have been added to every function in the
+`biopixR` package.
 
 The `roxygen2`, `rmarkdown`, and `knitr` packages were employed to write the
 documentation inline with the code for the `biopixR` package.
-
-https://www.datacamp.com/tutorial/r-objects-and-classes
-https://academic.oup.com/comjnl/article/27/2/97/343244
-https://content.e-bookshelf.de/media/reading/L-15652-9b3cab7f3d.pdf
-https://projecteuclid.org/journals/statistical-science/volume-29/issue-2/Object-Oriented-Programming-Functional-Programming-and-R/10.1214/13-STS452.full
-https://styler.r-lib.org/articles/styler.html
-https://style.tidyverse.org/
-https://github.com/r-lib/styler
-https://adv-r.hadley.nz/s3.html
 
 
 ### Installation of the `biopixR` package
@@ -99,7 +151,8 @@ package.
 install.packages("devtools")
 
 # Install the 'biopixR' package from a GitHub repository.
-# 'install_github' is a function in 'devtools' that is used to install R packages hosted on GitHub.
+# 'install_github' is a function in 'devtools' that is used to install R packages 
+# hosted on GitHub.
 # The argument "Brauckhoff/biopixR" specifies the GitHub username/repo of the package.
 devtools::install_github("Brauckhoff/biopixR")
 ```
@@ -126,6 +179,8 @@ following link:
 
 ## Quantitative Analysis of Biological Images with Focus on Microbeads
 
+library(biopixR)
+
 ### Quantitative Assessment of Microbeads
 
 
@@ -135,31 +190,44 @@ following link:
 ### Software for Quantitative Evaluation of Biological Images
 
 ```{r eval=FALSE}
-par(mfrow = c(1, 2))
-
+# Import the image from the specified file path
 img <- importImage("figures/tim_242602_c_s6c1+2+3m3.tif")
-plot(img)
+
+# Plot the imported image without axes
+plot(img, axes = FALSE)
+
+# Add a text annotation "A" at coordinates (50, 60) with dark red color and size 6
 text(c(50), c(60), c("A"), col = "darkred", cex = 6)
 
+# Extract the green channel from the image (assuming the image has multiple color channels)
 img_g <- img[, , , 2]
+
+# Convert the green channel to a 'cimg' object for further processing
 cimg_g <- as.cimg(img_g)
 
+# Perform object detection on the green channel image using the 'edge' method
+# with specified parameters alpha and sigma
 detected <-
   objectDetection(cimg_g,
                   method = 'edge',
                   alpha = 1.3,
                   sigma = 0)
+
+# Change the pixel colors of the detected objects
 colored_objects <-
-  changePixelColor(z,
-                   r$coordinates,
-                   color = factor(r$coordinates$value),
+  changePixelColor(cimg_g,
+                   detected$coordinates,
+                   color = factor(detected$coordinates$value),
                    vis = FALSE)
 
-plot(colored_objects)
+# Plot the image with colored objects without axes
+plot(colored_objects, axes = FALSE)
+
+# Add a text annotation "B" at coordinates (50, 60) with dark red color and size 6
 text(c(50), c(60), c("B"), col = "darkred", cex = 6)
 ```
 
-```{r, fig.pos='hold', fig.align='center', out.width="99%"}
+```{r, echo=FALSE,fig.pos='hold', fig.align='center', out.width="99%"}
 knitr::include_graphics("figures/fig1_DSB_analysis.png")
 ```
 
@@ -171,11 +239,103 @@ knitr::include_graphics("figures/fig1_DSB_analysis.png")
 
 ### `importImage()` Importing Images into the R Environment
 
+### `edgeDetection()` An improved Canny edge Detector
+
+```{r, eval=FALSE}
+# Set up the plotting area to have 1 row and 2 columns
+par(mfrow = c(1,2))
+
+# Apply Canny edge detection to the image 'beads_large1' with specified parameters
+edge_canny <- cannyEdges(beads_large1, alpha = 0.8, sigma = 0)
+
+# Label the detected edges
+labeled_canny <- label(edge_canny)
+
+# Plot the labeled edges without axes
+plot(labeled_canny, axes = FALSE)
+
+# Add a text label "A" in dark red color at coordinates (475, 360)
+text(c(475), c(360), c("A"), col = "darkred", cex = 4)
+
+# Mirror the detected edges across the x-axis
+edge_canny_m <- mirror(edge_canny, axis = "x")
+
+# Convert the mirrored edge image to magick format
+canny_magick <- cimg2magick(edge_canny_m)
+
+
+# Detect the coordinates of all line ends using morphology operation
+lineends_canny <- image_morphology(canny_magick,
+                                 "HitAndMiss", "LineEnds")
+
+# Convert the extracted coordinates back into 'cimg' format
+lineends_cimg <- magick2cimg(lineends_canny)
+
+# Find the coordinates of the line ends and transform into a data frame
+end_points <- which(lineends_cimg == TRUE, arr.ind = TRUE)
+end_points_df <- as.data.frame(end_points)
+colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
+
+# Highlight the line ends in green color on the original edge image
+endpoints_img <- changePixelColor(as.cimg(edge_canny),
+                 end_points_df,
+                 color = "green",
+                 visualize = FALSE)
+
+# Plot the image with highlighted line ends without axes
+plot(endpoints_img, axes = FALSE)
+
+# Draw red arrows at specified coordinates
+arrows(x0=23, y0=29, x1=24, y1=30, col="red", lwd=2)
+arrows(x0=412, y0=148, x1=413, y1=147, col="red", lwd=2)
+arrows(x0=73, y0=210, x1=72, y1=210, col="red", lwd=2)
+
+# Add a text label "B" in dark red color at coordinates (475, 360)
+text(c(475), c(360), c("B"), col = "darkred", cex = 4)
+
+# Set up the plotting area back to normal
+par(mfrow = c(1,1))
+```
+
+```{r, fig.pos='hold', fig.align='center', out.width="99%"}
+include_graphics("figures/fig5_edgeDetection.png")
+```
+
+
+```{r,  fig.pos='hold', fig.align='center', out.width="79%"}
+edge_biopixR <- objectDetection(beads_large1, method = 'edge', alpha = 0.8, sigma = 0)
+plot(edge_biopixR$marked_objects, axes = FALSE)
+```
+
+
 ### `objectDetection()` Function to detect Microbeads in an Image
 
 
-```{r}
 
+
+```{r, eval=FALSE}
+par(mfrow = c(1,2))
+transparant_beads <- importImage("figures/fig6_transparent_beads.bmp")
+plot(transparant_beads, axes = FALSE)
+text(c(80), c(80), c("A"), col = "darkred", cex = 5)
+result_transparant <- objectDetection(transparant_beads, method = 'threshold')
+plot(result_transparant$marked_objects, axes=FALSE)
+text(c(80), c(80), c("B"), col = "darkred", cex = 5)
+par(mfrow = c(1,1))
+```
+
+```{r, echo=FALSE}
+include_graphics("figures/fig7_transparent_beads.png")
+```
+
+
+
+```{r, eval=FALSE}
+interactive_objectDetection(beads_large1)
+```
+
+```{r, echo=FALSE}
+include_graphics("figures/fig8_GUI.png")
 ```
 
 
@@ -185,7 +345,45 @@ knitr::include_graphics("figures/fig1_DSB_analysis.png")
 
 ## Batch proccesing Functions within the `biopixR` package
 
-### `imgPipe()` and `scanDir()`
+This section introduces two pipeline functions. The first is `imgPipe`, which integrates multiple functions from the `biopixR` package, allowing for the comprehensive analysis and filtering of an image within a single function. The second function, `scanDir`, is an extension of `imgPipe` designed for batch processing. It enables the analysis of entire directories with all the options, parameter adjustments, and individual filtering capabilities offered by `imgPipe`.
+
+### `imgPipe()`: One image One function 
+
+The `imgPipe()` function integrates various functions into a single streamlined pipeline, including `objectDetection()`, `sizeFilter()`, `proximityFilter()`, and `resultsAnalytics()`. It is designed to process multiple color channels simultaneously. For instance, if an image contains objects of two different colors, with each color detectable in separate channels, these two images can be input into the `imgPipe()` function. The function will then analyze both images and combine the results, providing a summary of the number of objects detected in each image. This feature is particularly useful for analyzing dual-colored microbeads.
+
+In the following example, the 'edge' method (edge detection) is utilized. Parameters such as alpha and sigma need to be specified, and the `sizeFilter()` is enabled to exclude doublets and multiplets from the analysis.
+
+```{r imgPipe1}
+res_pipe <- imgPipe(beads_large1,
+                    method = 'edge',
+                    alpha = 0.7,
+                    sigma = 0.1,
+                    sizeFilter = TRUE,
+                    upperlimit = 'auto',
+                    lowerlimit = 'auto')
+
+# Create data for the visualization of lower and upper limit
+res_comp <- objectDetection(beads_large1, method = 'edge', alpha = 0.7, sigma = 0.1)
+```
+
+The remaining microbeads are highlighted in different colors to distinguish between individual objects. Alongside the image, a plot is provided showing the calculated size limits.
+
+```{r imgPipe2, fig.pos='hold', out.width="99%", fig.align='center'}
+par(mfrow = c(1,2))
+
+plot(beads_large1, axes = FALSE)
+points(res_pipe$detailed$x,
+       res_pipe$detailed$y,
+       pch = 19,
+       col = factor(res_pipe$detailed$objectnumber))
+
+plot(res_comp$centers$size, ylab = "size in px")
+abline(h = c(85, 109))
+
+par(mfrow = c(1,1))
+```
+
+### `scanDir()`
 
 ## Functions for Droplet Analysis
 
@@ -198,26 +396,57 @@ knitr::include_graphics("figures/fig1_DSB_analysis.png")
 ### `shapeFeatures()` - Object clustering based on shape features
 
 ```{r}
-library(imager)
+circles <- importImage("figures/fig3_analysis_circ.png")
+circles <- grayscale(circles)
 
-circ <- importImage("figures/fig3_analysis_circ.png")
-circ <- grayscale(circ)
-
-test <- shapeFeatures(circ) 
-
+shapes <- shapeFeatures(circles, alpha = 1, sigma = 0) 
 ```
 
 ```{r, echo=FALSE}
-seven <- test[6, 2:12]
-six <- test[7, 2:12]
+seven <- shapes[6, 2:12]
+six <- shapes[7, 2:12]
 
-test[6, 2:12] <- six
-test[7, 2:12] <- seven
+shapes[6, 2:12] <- six
+shapes[7, 2:12] <- seven
 ```
 
-```{r, fig.pos='hold', fig.align='center', out.width="79%"}
+```{r, echo=FALSE, fig.pos='hold', fig.align='center', out.width="79%"}
 knitr::include_graphics("figures/fig2_circularity.png")
 ```
+
+```{r, echo=FALSE}
+data <- shapes[, c(1,8:12)]
+
+kable(
+  data,
+  col.names = c(
+    "objectnumber",
+    "circularity",
+    "eccentricity",
+    "mean radius",
+    "sd radius",
+    "aspect ratio"
+  ),
+  caption = "Comparison of Aspect Ratios"
+)
+```
+
+```{r, echo=FALSE, out.width="79%", fig.align='center', fig.pos='hold'}
+truth <- data.frame(index = seq_len(nrow(shapes)),
+                    AR = c(1, 10/9, 10/8, 10/7, 10/6, 2, 10/4, 10/3, 5, 10))
+
+plot(truth$index, truth$AR, main = "Comparison of Dataframes",
+     xlab = "Objectnumber", ylab = "Aspect Ratio", pch = 19, col = "blue")
+
+# Add points from the second dataframe for comparison
+points(shapes$objectnumber, shapes$aspect_ratio, pch = 20, col = "green")
+
+# Add a legend to the plot
+legend("topleft", legend = c("Dataframe 1", "Dataframe 2"),
+       col = c("blue", "green"), pch = c(19, 19))
+```
+
+
 
 ### `HaralickCluster()` - Image classification based on texture features
 
@@ -226,7 +455,6 @@ knitr::include_graphics("figures/fig2_circularity.png")
 
 - `interpolatePixels()`
 - `adaptiveInterpolation()`
-- `edgeDetection()`
 - `changePixelColor()`
 
 # Discussion
