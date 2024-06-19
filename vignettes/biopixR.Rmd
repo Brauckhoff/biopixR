@@ -36,7 +36,7 @@ options(digits = 3)
 
 # Getting started
 
-The biopixR package includes multiple images of microbeads as an example to
+The `biopixR` package includes multiple images of microbeads as an example to
 demonstrate its analytical and processing abilities for biological imagery. This
 sample images display the package's features, enabling users to experiment with
 image analysis and manipulation within the contexts of biotechnology and life

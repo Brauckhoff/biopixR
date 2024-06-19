@@ -3,12 +3,22 @@ title: "biopixR - Tools for Biological Image Processing and Analysis"
 author: "Tim Brauckhoff"
 date: "`r Sys.Date()`"
 output:
-  pdf_document:
-    toc: yes
-  html_document:
-    toc: yes
-    number_sections: yes
+  bookdown::pdf_document2:
+    fig_caption: yes
+    toc: FALSE
+    toc_depth: 3
+    fontsize: 12pt
+    latex_engine: xelatex
+csl: european-journal-of-taxonomy.csl
+link-citations: yes
+urlcolor: Blue
+linkcolor: Blue
+always_allow_html: TRUE
 bibliography: lib-vig.bib
+header-includes:
+  \usepackage{float}
+  \usepackage[onehalfspacing]{setspace}
+  \usepackage[]{hyperref}
 ---
 
 <style>
@@ -23,9 +33,7 @@ knitr::opts_chunk$set(
   message = FALSE,
   cache = FALSE,
   comment = NA,
-  verbose = TRUE,
-  fig.width = 5,
-  fig.height = 5
+  verbose = TRUE
 )
 original_options <- options()
 options(digits = 3)
@@ -35,10 +43,12 @@ library(foodwebr)
 library(biopixR)
 ```
 
+\tableofcontents
+
 \pagebreak
 
-```{r, echo=FALSE, fig.align='center', out.width="69%"}
-knitr::include_graphics("figures/fig0_logo.png")
+```{r, echo=FALSE, fig.align='center', out.width="69%", fig.show='hold', fig.pos="ht"}
+include_graphics("figures/fig0_logo.png")
 ```
 
 
@@ -46,9 +56,9 @@ knitr::include_graphics("figures/fig0_logo.png")
 
 # Introduction to Object Quantification in Biological Images
 
-## Techniques in Bioimage Informatics for Object Detection
+## Techniques in Bioimage Informatics for Feature detection
 
- **Segmentation and Classification**
+### Why is there a need for the `biopixR` package?
 
 # Concepts and Methods
 
@@ -58,8 +68,8 @@ knitr::include_graphics("figures/fig0_logo.png")
 foodweb(biopixR::imgPipe) |> plot()
 ```
 
-```{r, echo=FALSE, fig.pos='hold', fig.align='center', out.width="99%"}
-knitr::include_graphics("figures/fig4_dependency.png")
+```{r, echo=FALSE, fig.show='hold', fig.align='center', out.width="99%", fig.pos="ht"}
+include_graphics("figures/fig4_dependency.png")
 ```
 
 The core contributors are listed in the `DESCRIPTION` file of the `biopixR` package. The following paragraphs describe methods applied for the `biopixR` package.
@@ -151,7 +161,7 @@ package.
 install.packages("devtools")
 
 # Install the 'biopixR' package from a GitHub repository.
-# 'install_github' is a function in 'devtools' that is used to install R packages 
+# 'install_github' is a function in 'devtools' that is used to install R packages
 # hosted on GitHub.
 # The argument "Brauckhoff/biopixR" specifies the GitHub username/repo of the package.
 devtools::install_github("Brauckhoff/biopixR")
@@ -177,73 +187,158 @@ following link:
 
 ### Unit Testing of the `biopixR` Package
 
-## Quantitative Analysis of Biological Images with Focus on Microbeads
+https://dl.acm.org/doi/abs/10.1145/267580.267590
+https://ieeexplore.ieee.org/abstract/document/9402000
 
-library(biopixR)
+Myers2012
+https://malenezi.github.io/malenezi/SE401/Books/114-the-art-of-software-testing-3-edition.pdf
 
-### Quantitative Assessment of Microbeads
+`testthat` package by @Wickham2011.https://svn.r-project.org/Rjournal/html/archive/2011-1/RJournal_2011-1_Wickham.pdf
 
-
-
-### Why is there a need for the `biopixR` package?
-
-### Software for Quantitative Evaluation of Biological Images
-
-```{r eval=FALSE}
-# Import the image from the specified file path
-img <- importImage("figures/tim_242602_c_s6c1+2+3m3.tif")
-
-# Plot the imported image without axes
-plot(img, axes = FALSE)
-
-# Add a text annotation "A" at coordinates (50, 60) with dark red color and size 6
-text(c(50), c(60), c("A"), col = "darkred", cex = 6)
-
-# Extract the green channel from the image (assuming the image has multiple color channels)
-img_g <- img[, , , 2]
-
-# Convert the green channel to a 'cimg' object for further processing
-cimg_g <- as.cimg(img_g)
-
-# Perform object detection on the green channel image using the 'edge' method
-# with specified parameters alpha and sigma
-detected <-
-  objectDetection(cimg_g,
-                  method = 'edge',
-                  alpha = 1.3,
-                  sigma = 0)
-
-# Change the pixel colors of the detected objects
-colored_objects <-
-  changePixelColor(cimg_g,
-                   detected$coordinates,
-                   color = factor(detected$coordinates$value),
-                   vis = FALSE)
-
-# Plot the image with colored objects without axes
-plot(colored_objects, axes = FALSE)
-
-# Add a text annotation "B" at coordinates (50, 60) with dark red color and size 6
-text(c(50), c(60), c("B"), col = "darkred", cex = 6)
-```
-
-```{r, echo=FALSE,fig.pos='hold', fig.align='center', out.width="99%"}
-knitr::include_graphics("figures/fig1_DSB_analysis.png")
-```
-
-### Principles in Bioimage Informatics
 
 ## Functions for Quantitative Data Analysis in `biopixR`
 
-### Quantification of Microbeads with Function of the `biopixR` package
+The `biopixR` package includes a series of microbead images in order to
+demonstrate its capabilities in the analysis and processing of biological
+imagery. The sample images illustrate the package's functionalities, allowing
+users to explore and experiment with image analysis and manipulation within the
+context of biotechnology and life sciences. Researchers and practitioners may
+utilize these illustrations to comprehend the applicability of `biopixR` to
+their particular imaging requirements, whether pertaining to cell biology,
+microscopy, or other biological imaging applications.
 
-### `importImage()` Importing Images into the R Environment
+(ref:examples) **Examples**: Images of microbeads provided by the `biopixR` package.
 
-### `edgeDetection()` An improved Canny edge Detector
+```{r examples, echo=FALSE, fig.cap="(ref:examples)", out.width="99%", fig.show='hold', fig.pos="ht"}
+# Load the biopixR package
+library(biopixR)
+
+# Set up a 2x2 plotting area
+par(mfrow = c(2, 2))
+
+# Plot example images without axes and with a title
+plot(beads, axes = FALSE, main = "beads")
+plot(beads_large1, axes = FALSE, main = "beads_large1")
+plot(beads_large2, axes = FALSE, main = "beads_large2")
+plot(droplet_beads, axes = FALSE, main = "droplet_beads")
+
+# Reset the plotting area to a single plot
+par(mfrow = c(1, 1))
+```
+
+A selection of these images will be employed in the forthcoming demonstration of
+the `biopixR` functions.
+
+### `importImage()` - Importing Images into the R Environment
+
+The `biopixR` package features an import function called `importImage()`. This
+function acts as a wrapper, integrating the capabilities of the `magick` and
+`imager` packages. Since most image processing operations rely on `imager`, the
+`importImage` function converts all formats into the `imager` class 'cimg'. It
+was frequently observed that images exhibited more than three dimensions within
+the color channel, specifically an additional transparency layer, also called
+alpha. Such images frequently give rise to challenging and elusive errors. To
+address this issue, the `imageImport()` function employs a process of detection
+and removal of a fourth color dimension, should it be present. The function
+supports importing images in JPEG, PNG, BMP, and TIFF formats.
+
+```{r}
+# Get the path to the "beads.png" image file within the `biopixR` package
+path2img <- system.file("images/beads.png", package = "biopixR")
+
+# Import the image from the path specified by 'path2img' and store it in the 
+# 'microbeads' object
+microbeads <- importImage(path2img)
+
+# Import the image "fig6.1_transparent.bmp" from the "figures" directory and 
+# store it in the 'transparent_bead' object
+transparent_bead <- importImage("figures/fig6.1_transparent.bmp")
+
+# Display the class of the 'microbeads' object
+class(microbeads)
+```
+
+(ref:beads) **Example images**: Showcasing the functionality of the function for image import - `importImages()`.
+
+```{r beads, fig.align='center', fig.show='hold', out.width="99%", fig.cap="(ref:beads)", fig.pos="ht"}
+# Set up a 1x2 plotting area
+par(mfrow = c(1, 2))
+
+# Display imported images
+plot(microbeads, axes = FALSE)
+plot(transparent_bead, axes = FALSE)
+
+# Reset the plotting area to a single plot
+par(mfrow = c(1, 1))
+```
+
+
+### `edgeDetection()` - A modified Canny edge Detector
+
+A variety of edge detection algorithms are available in the `R` programming
+language, with the Canny edge detector, developed by @Canny1986, being the most
+widely implemented across multiple packages, including those by @Barthelme2015;
+@Ooms2016; @Mouselimis2016; and @Beare2018. Other noteworthy edge detectors in
+the `R` package `OpenImageR` include those by @Prewitt1970, @Sobel2014,
+@Roberts1980, and @Scharr2000 [@Mouselimis2016]. After evaluating the
+different results (exemplary see \@ref(fig:compare)), the Canny edge detection
+algorithm from the `imager` package was selected for edge detection. The
+resulting binary image serves as a foundation for subsequent feature detection.
+Furthermore, the `cannyEdges()` function in `imager` offers adjustable
+parameters for alpha and sigma, enabling users to customize thresholding and
+smoothing, providing the desired flexibility.
+
+The process of Canny edge detection using the `imager` package is comprised of a
+series of steps. Initially, a Gaussian filter is applied to the image, resulting
+in the smoothing of the image in order to remove noise. The degree of smoothing
+can be adjusted by varying the value of the `sigma` parameter. Subsequently, the
+intensity gradient is calculated in order to determine the magnitude of the
+edges. This is followed by the application of non-maximum suppression, which
+serves to minimize the blur introduced previously. Subsequently, a double
+threshold is applied. In the absence of provided thresholds, they are estimated
+through k-means clustering. The calculated threshold can be adjusted using the
+`alpha` parameter. These thresholds are employed to classify edges as either
+weak or strong. Finally, hysteresis is employed to integrate these edges, with
+weak edges being discarded if they are not in proximity to strong edges
+[@Barthelme2015; @Barthelme2019].^[http://dahtah.github.io/imager/canny.html]
+
+(ref:compare) **Comparison of Two Edge Detection Algorithms**: **A**) Resulting image using the @Prewitt1970 edge detection algorithm from the `OpenImageR` package. The contours have higher intensity, but the image is not binary. **B**) The Canny edge detection algorithm produces a binary image with distinct contours.
+
+```{r, eval=FALSE}
+# Set up a 1x2 plotting area
+par(mfrow = c(1, 2))
+
+OpenImageR::edge_detection(as.matrix(beads), method = "Prewitt") |> as.cimg() |> plot(axes = FALSE, main = "Prewitt - edge detection", cex.main = 2)
+text(c(7.5), c(7.5), c("A"), col = "darkred", cex = 3.5)
+
+cannyEdges(beads) |> plot(axes = FALSE, main = "Canny - edge detection", cex.main = 2)
+text(c(7.5), c(7.5), c("B"), col = "darkred", cex = 3.5)
+
+# Reset the plotting area to a single plot
+par(mfrow = c(1, 1))
+```
+
+```{r compare, echo = FALSE, fig.show='hold', fig.align='center', out.width="99%", fig.pos="ht", fig.cap="(ref:compare)"}
+include_graphics("figures/fig5.1_edgeDetection.png")
+```
+
+In the context of microbead images, the contours that were identified frequently
+exhibited gaps, rendering them inaccessible for subsequent labeling (see
+\@ref(fig:cannyE)A). The figure depicts filled circles representing successfully
+labeled microbeads, while the contours indicate unsuccessful labeling.
+Consequently, segmentation with fragmented contours is incomplete, rendering the
+objects inaccessible for further analysis. To address this issue, the `magick`
+package was employed to identify line ends (see \@ref(fig:cannyE)B). Line ends
+can then be reconnected to a neighboring line, provided that the line end does
+not share the same label. This process of reconnection is constrained by a
+specific radius in order to prevent line ends from connecting across the entire
+image.
+
+(ref:cannyE) **Segmentation Result with Canny Edge Detector**: **A**) Segmentation result using the `label()` function. The segmentation is incomplete, as not all microbeads are identified as foreground. Only the contours are detected in these cases (highlighted by red arrows). **B**) Result of the `cannyEdges()` function, showing detected line end pixels, which are colored and circled in green.
 
 ```{r, eval=FALSE}
 # Set up the plotting area to have 1 row and 2 columns
-par(mfrow = c(1,2))
+par(mfrow = c(1, 2))
 
 # Apply Canny edge detection to the image 'beads_large1' with specified parameters
 edge_canny <- cannyEdges(beads_large1, alpha = 0.8, sigma = 0)
@@ -257,6 +352,32 @@ plot(labeled_canny, axes = FALSE)
 # Add a text label "A" in dark red color at coordinates (475, 360)
 text(c(475), c(360), c("A"), col = "darkred", cex = 4)
 
+# Draw red arrows at specified coordinates
+arrows(
+  x0 = 23,
+  y0 = 29,
+  x1 = 24,
+  y1 = 30,
+  col = "red",
+  lwd = 2
+)
+arrows(
+  x0 = 412,
+  y0 = 148,
+  x1 = 413,
+  y1 = 147,
+  col = "red",
+  lwd = 2
+)
+arrows(
+  x0 = 73,
+  y0 = 210,
+  x1 = 72,
+  y1 = 210,
+  col = "red",
+  lwd = 2
+)
+
 # Mirror the detected edges across the x-axis
 edge_canny_m <- mirror(edge_canny, axis = "x")
 
@@ -266,7 +387,7 @@ canny_magick <- cimg2magick(edge_canny_m)
 
 # Detect the coordinates of all line ends using morphology operation
 lineends_canny <- image_morphology(canny_magick,
-                                 "HitAndMiss", "LineEnds")
+                                   "HitAndMiss", "LineEnds")
 
 # Convert the extracted coordinates back into 'cimg' format
 lineends_cimg <- magick2cimg(lineends_canny)
@@ -276,35 +397,101 @@ end_points <- which(lineends_cimg == TRUE, arr.ind = TRUE)
 end_points_df <- as.data.frame(end_points)
 colnames(end_points_df) <- c("x", "y", "dim3", "dim4")
 
-# Highlight the line ends in green color on the original edge image
+# Highlight the line end pixel in green color on the original edge image
 endpoints_img <- changePixelColor(as.cimg(edge_canny),
-                 end_points_df,
-                 color = "green",
-                 visualize = FALSE)
+                                  end_points_df,
+                                  color = "green",
+                                  visualize = FALSE)
 
 # Plot the image with highlighted line ends without axes
 plot(endpoints_img, axes = FALSE)
 
+# Highlight the line ends in green color on the original edge image
+points(end_points_df$x, end_points_df$y, col = "green")
+
 # Draw red arrows at specified coordinates
-arrows(x0=23, y0=29, x1=24, y1=30, col="red", lwd=2)
-arrows(x0=412, y0=148, x1=413, y1=147, col="red", lwd=2)
-arrows(x0=73, y0=210, x1=72, y1=210, col="red", lwd=2)
+arrows(
+  x0 = 23,
+  y0 = 29,
+  x1 = 24,
+  y1 = 30,
+  col = "red",
+  lwd = 2
+)
+arrows(
+  x0 = 412,
+  y0 = 148,
+  x1 = 413,
+  y1 = 147,
+  col = "red",
+  lwd = 2
+)
+arrows(
+  x0 = 73,
+  y0 = 210,
+  x1 = 72,
+  y1 = 210,
+  col = "red",
+  lwd = 2
+)
 
 # Add a text label "B" in dark red color at coordinates (475, 360)
 text(c(475), c(360), c("B"), col = "darkred", cex = 4)
 
 # Set up the plotting area back to normal
-par(mfrow = c(1,1))
+par(mfrow = c(1, 1))
 ```
 
-```{r, fig.pos='hold', fig.align='center', out.width="99%"}
+```{r cannyE, echo = FALSE, fig.show='hold', fig.align='center', out.width="99%", fig.cap="(ref:cannyE)", fig.pos="ht"}
 include_graphics("figures/fig5_edgeDetection.png")
 ```
 
+As illustrated in \@ref(fig:edgeD)A, the modified Canny edge detector,
+`edgeDetection()`, is capable of successfully rejoining line ends, thereby
+enabling the detection of previously unlabeled microbeads, as shown in
+\@ref(fig:cannyE)A. For further visualization, the `objectDetection()` function
+was employed. This function employs the `edgeDetection()` function and provides
+visual feedback as an output (\@ref(fig:edgeD)B).
 
-```{r,  fig.pos='hold', fig.align='center', out.width="79%"}
-edge_biopixR <- objectDetection(beads_large1, method = 'edge', alpha = 0.8, sigma = 0)
-plot(edge_biopixR$marked_objects, axes = FALSE)
+(ref:edgeD) **Segmentation Result with Modified Canny Edge Detector**: **A**) Segmentation result using the `label()` function, showing successful segmentation with all microbeads identified as part of the foreground. **B**) Successful segmentation visualized using the `objectDetection()` function, with purple contours around each microbead and green dots indicating their centers.
+
+```{r, eval = FALSE}
+# Set up a 1x2 plotting area
+par(mfrow = c(1, 2))
+
+# Detect objects in the 'beads_large1' image using the edge method with 
+# specified alpha and sigma values
+object_biopixR <-
+  objectDetection(beads_large1,
+                  method = 'edge',
+                  alpha = 0.8,
+                  sigma = 0)
+
+# Perform edge detection on the 'beads_large1' image with specified alpha and 
+# sigma values
+edge_biopixR <- edgeDetection(beads_large1, alpha = 0.8, sigma = 0)
+
+# Label the detected edges in the 'edge_biopixR' image
+labeled_biopixR <- label(edge_biopixR)
+
+# Plot the labeled edges without axes
+plot(labeled_biopixR, axes = FALSE)
+
+# Add text "A" to the plot at coordinates (475, 360) with dark red color and size 4
+text(c(475), c(360), c("A"), col = "darkred", cex = 4)
+
+# Plot the marked objects from the object detection without axes
+plot(object_biopixR$marked_objects, axes = FALSE)
+
+# Add text "B" to the plot at coordinates (475, 360) with dark red color and size 4
+text(c(475), c(360), c("B"), col = "darkred", cex = 4)
+
+# Reset the plotting area to a single plot
+par(mfrow = c(1, 1))
+```
+
+```{r edgeD, echo = FALSE, fig.show='hold', fig.align='center', out.width="79%", fig.cap="(ref:edgeD)", fig.pos="ht"}
+include_graphics("figures/fig5.2_edgeDetection.png")
 ```
 
 
@@ -323,8 +510,9 @@ plot(result_transparant$marked_objects, axes=FALSE)
 text(c(80), c(80), c("B"), col = "darkred", cex = 5)
 par(mfrow = c(1,1))
 ```
+(ref:transparent) **Transparent microbeads**:
 
-```{r, echo=FALSE}
+```{r transparent, echo=FALSE, fig.cap="(ref:transparent)", out.width="99%", fig.pos="ht"}
 include_graphics("figures/fig7_transparent_beads.png")
 ```
 
@@ -334,7 +522,7 @@ include_graphics("figures/fig7_transparent_beads.png")
 interactive_objectDetection(beads_large1)
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, out.width="99%", fig.pos="ht"}
 include_graphics("figures/fig8_GUI.png")
 ```
 
@@ -368,7 +556,7 @@ res_comp <- objectDetection(beads_large1, method = 'edge', alpha = 0.7, sigma = 
 
 The remaining microbeads are highlighted in different colors to distinguish between individual objects. Alongside the image, a plot is provided showing the calculated size limits.
 
-```{r imgPipe2, fig.pos='hold', out.width="99%", fig.align='center'}
+```{r imgPipe2, fig.show='hold', out.width="99%", fig.align='center', fig.pos="ht"}
 par(mfrow = c(1,2))
 
 plot(beads_large1, axes = FALSE)
@@ -410,7 +598,7 @@ shapes[6, 2:12] <- six
 shapes[7, 2:12] <- seven
 ```
 
-```{r, echo=FALSE, fig.pos='hold', fig.align='center', out.width="79%"}
+```{r, echo=FALSE, fig.show='hold', fig.align='center', out.width="79%", fig.pos="ht"}
 knitr::include_graphics("figures/fig2_circularity.png")
 ```
 
@@ -431,7 +619,7 @@ kable(
 )
 ```
 
-```{r, echo=FALSE, out.width="79%", fig.align='center', fig.pos='hold'}
+```{r, echo=FALSE, out.width="79%", fig.align='center', fig.show='hold', fig.pos="ht"}
 truth <- data.frame(index = seq_len(nrow(shapes)),
                     AR = c(1, 10/9, 10/8, 10/7, 10/6, 2, 10/4, 10/3, 5, 10))
 
@@ -443,12 +631,40 @@ points(shapes$objectnumber, shapes$aspect_ratio, pch = 20, col = "green")
 
 # Add a legend to the plot
 legend("topleft", legend = c("Dataframe 1", "Dataframe 2"),
-       col = c("blue", "green"), pch = c(19, 19))
+       col = c("blue", "green"), pch = c(19, 20))
 ```
 
 
 
 ### `HaralickCluster()` - Image classification based on texture features
+
+```{r haralickCluster2}
+path2dir <- system.file("images", package = "biopixR")
+
+img_clus <- haralickCluster(path2dir)
+```
+
+```{r, echo=FALSE}
+file_paths <- img_clus$file
+new_file_paths <- sapply(file_paths, function(x) gsub("brauctim", "user", x))
+img_clus$file <- new_file_paths
+```
+
+```{r haralickCluster3}
+img_clus
+```
+
+```{r, echo=FALSE, out.width="99%", fig.show='hold', fig.align='center', fig.pos="ht"}
+include_graphics(
+  c(
+    "figures/1update.png",
+    "figures/2update.png",
+    "figures/3update.png",
+    "figures/4update.png"
+  )
+)
+```
+
 
 
 ## Helper Functions of the `biopixR` Package
@@ -459,7 +675,57 @@ legend("topleft", legend = c("Dataframe 1", "Dataframe 2"),
 
 # Discussion
 
+
+
 # Summary and Conclusion
+
+
+# Outlook
+
+```{r eval=FALSE}
+# Import the image from the specified file path
+img <- importImage("figures/tim_242602_c_s6c1+2+3m3.tif")
+
+# Plot the imported image without axes
+plot(img, axes = FALSE)
+
+# Add a text annotation "A" at coordinates (50, 60) with dark red color and size 6
+text(c(50), c(60), c("A"), col = "darkred", cex = 6)
+
+# Extract the green channel from the image (assuming the image has multiple color channels)
+img_g <- img[, , , 2]
+
+# Convert the green channel to a 'cimg' object for further processing
+cimg_g <- as.cimg(img_g)
+
+# Perform object detection on the green channel image using the 'edge' method
+# with specified parameters alpha and sigma
+detected <-
+  objectDetection(cimg_g,
+                  method = 'edge',
+                  alpha = 1.3,
+                  sigma = 0)
+
+# Change the pixel colors of the detected objects
+colored_objects <-
+  changePixelColor(cimg_g,
+                   detected$coordinates,
+                   color = factor(detected$coordinates$value),
+                   vis = FALSE)
+
+# Plot the image with colored objects without axes
+plot(colored_objects, axes = FALSE)
+
+# Add a text annotation "B" at coordinates (50, 60) with dark red color and size 6
+text(c(50), c(60), c("B"), col = "darkred", cex = 6)
+```
+
+```{r, echo=FALSE, fig.show='hold', fig.align='center', out.width="99%", fig.pos="ht"}
+knitr::include_graphics("figures/fig1_DSB_analysis.png")
+```
+
+
+# Acknowledgement
 
 
 
