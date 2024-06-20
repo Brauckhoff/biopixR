@@ -62,13 +62,22 @@ include_graphics("figures/fig0_logo.png")
 
 # Concepts and Methods
 
+For the development and testing of the `biopixR` package, a Lenovo ThinkPad E15
+Gen2 was utilized, featuring 16 GB of RAM, an 11th Gen Intel® Core™ i5-1135G7
+@ 2.40GHz × 8 processor, and a NV137 / Mesa Intel® Xe Graphics (TGL GT2)
+graphics chip. The operating system employed was Ubuntu 22.04.3 LTS 64-bit. The
+R version used was 4.3.2, and the development environment was
+RStudio 2023.09.0+463 "Desert Sunflower" Release 2023-09-25.
+
 ## Development, Implementation and Installation
+
+(ref:depend) **Dependency Graph of Functions in the `biopixR` Package**: This graph illustrates the levels of complexity by depicting the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package (version 0.1.1) from @AppletonFox2022, with RStudio 2023.09.0+463 and R 4.3.2 on Linux (Ubuntu 22.04.3 LTS).
 
 ```{r, eval=FALSE}
 foodweb(biopixR::imgPipe) |> plot()
 ```
 
-```{r, echo=FALSE, fig.show='hold', fig.align='center', out.width="99%", fig.pos="ht"}
+```{r depend, echo=FALSE, fig.show='hold', fig.align='center', out.width="99%", fig.pos="ht", fig.cap="(ref:depend)"}
 include_graphics("figures/fig4_dependency.png")
 ```
 
@@ -187,13 +196,71 @@ following link:
 
 ### Unit Testing of the `biopixR` Package
 
-https://dl.acm.org/doi/abs/10.1145/267580.267590
-https://ieeexplore.ieee.org/abstract/document/9402000
+Software testing is a fundamental technique for the verification and validation
+of software, demonstrating the absence of errors. Module or unit testing is one
+such testing procedure, whereby individual subprograms, routines, or in `R`,
+functions are tested independently. This approach breaks down the entire package
+into smaller, more manageable components, rather than testing the whole software
+at once. A principal benefit of unit testing is the reduction of the debugging
+search area, as the specific function causing an issue is identified during
+testing [@Myers2012]. Given that `R` is a package-based programming ecosystem,
+ensuring the correctness of distributed code is vital to guarantee the
+functionality of dependent packages [@Vidoni2021]. A quantitative measure of
+the number of statements in a given code or function that are executed without
+error by a set of tests is described by the term *coverage* [@Zhu1997;
+@Vidoni2021].
 
-Myers2012
-https://malenezi.github.io/malenezi/SE401/Books/114-the-art-of-software-testing-3-edition.pdf
+The objective of testing is to verify that specific inputs are processed
+correctly to generate the expected outputs and to ensure that error and warning
+statements operate as intended. In conclusion, tests confirm that the code
+performs as expected, and these expectations are recorded in reproducible
+scripts. In `R`, packages such as `RUnit`, `svUnit`, and `testthat` facilitate
+these tests [@Wickham2011; @Myers2012].
 
-`testthat` package by @Wickham2011.https://svn.r-project.org/Rjournal/html/archive/2011-1/RJournal_2011-1_Wickham.pdf
+Unit tests for the `biopixR` package were created using the `testthat` package
+by @Wickham2009. The tests are executed automatically as part of the package
+building process and during the `R CMD check`. The unit tests corresponding to
+each function are located in the `/tests/testthat/` subdirectory of the
+`biopixR` package. The following example provides insight into the testing
+procedure for the `changePixelColor()` function, with expectations that:
+
+- The function throws an error when importing an object that is not a 'cimg'.
+- It does not throw an error when the input is correct: a 'cimg' object and coordinates as an x|y dataframe.
+- The `add.colour()` function (incorporated in `changePixelColor()`) transforms a grayscale image into one with three color channels.
+- Normalization of `col2rgb()` results in values between 0 and 1 across three different channels.
+- The color code is `0 0 1` for a pixel colored blue using the `changePixelColor()` function.
+- The color code is `1 1 1` for a white pixel.
+- The color code is `0 0 0` for a black pixel.
+
+```{r, eval=FALSE}
+# Expectations and examples used for the unit testing of the `biopixR` package
+library(testthat)
+library(biopixR)
+
+test_that("changePixelColor", {
+  mat <- matrix(0, 4, 4)
+  mat[2:3, 2:3] <- 1
+  img <- as.cimg(mat)
+  coordinates <- data.frame(x = c(1, 3),
+                            y = c(1, 3))
+
+  expect_error(changePixelColor(mat, coordinates),
+               regexp = "image must be of class 'cimg'")
+  expect_no_error(changePixelColor(img, coordinates))
+
+  expect_equal(dim(img)[4], 1)
+  expect_equal(dim(add.colour(img))[4], 3)
+
+  expect_equal(as.vector(col2rgb("red") / 255), as.vector(c(1, 0, 0)))
+  expect_equal(as.vector(col2rgb("green") / 255), as.vector(c(0, 1, 0)))
+  expect_equal(as.vector(col2rgb("blue") / 255), as.vector(c(0, 0, 1)))
+
+  test <- changePixelColor(img, coordinates, color = "blue")
+  expect_equal(test[1, 1, ,], as.vector(c(0, 0, 1)))
+  expect_equal(test[2, 2, ,], as.vector(c(1, 1, 1)))
+  expect_equal(test[1, 2, ,], as.vector(c(0, 0, 0)))
+})
+```
 
 
 ## Functions for Quantitative Data Analysis in `biopixR`
@@ -273,7 +340,7 @@ par(mfrow = c(1, 1))
 ```
 
 
-### `edgeDetection()` - A modified Canny edge Detector
+### `edgeDetection()` - A modified Canny edge Detector {#edge}
 
 A variety of edge detection algorithms are available in the `R` programming
 language, with the Canny edge detector, developed by @Canny1986, being the most
@@ -499,6 +566,65 @@ include_graphics("figures/fig5.2_edgeDetection.png")
 
 
 
+**Edge Method**:
+
+
+
+**Automated Parameter selection**:
+
+\phantom{x}\hspace{0.5cm} *Grid Search* - 
+
+```{r, eval=FALSE}
+tictoc::tic()
+static_result <- objectDetection(beads_large1,
+                                   method = 'edge',
+                                   alpha = 'static',
+                                   sigma = 'static')
+tictoc::toc()
+```
+
+```{r, echo=FALSE}
+cat("257.414 sec elapsed")
+
+static_result <- objectDetection(beads_large1,
+                                   method = 'edge',
+                                   alpha = 1,
+                                   sigma = 0.6)
+```
+
+```{r static, echo=FALSE, fig.cap="(ref:static)", out.width="99%", fig.pos="ht", fig.align='center'}
+plot(static_result$marked_objects, axes = FALSE)
+```
+
+
+\phantom{x}\hspace{0.5cm} *Multiparameter Optimization* - 
+
+```{r}
+tictoc::tic()
+gaussian_result <- objectDetection(beads_large1,
+                                   method = 'edge',
+                                   alpha = 'gaussian',
+                                   sigma = 'gaussian')
+tictoc::toc()
+```
+
+```{r uncert, echo=FALSE, fig.cap="(ref:uncert)", out.width="99%", fig.pos="ht", fig.align='center'}
+include_graphics("figures/fig18_uncertainty_plot.png")
+```
+
+```{r pareto, echo=FALSE, fig.cap="(ref:pareto)", out.width="99%", fig.pos="ht", fig.align='center'}
+include_graphics("figures/fig17_Pareto_front.png")
+```
+
+```{r}
+plot(gaussian_result$marked_objects, axes = FALSE)
+```
+
+
+**Thresholding Method**:
+
+
+(ref:transparent) **Transparent microbeads**:
 
 ```{r, eval=FALSE}
 par(mfrow = c(1,2))
@@ -510,19 +636,38 @@ plot(result_transparant$marked_objects, axes=FALSE)
 text(c(80), c(80), c("B"), col = "darkred", cex = 5)
 par(mfrow = c(1,1))
 ```
-(ref:transparent) **Transparent microbeads**:
 
 ```{r transparent, echo=FALSE, fig.cap="(ref:transparent)", out.width="99%", fig.pos="ht"}
 include_graphics("figures/fig7_transparent_beads.png")
 ```
 
+**Interactive Approach**:
 
+To facilitate parameter selection, an interactive feature detection function was
+developed using the R package `tcltk`, which provides access to Tcl/Tk in R. The
+Graphical User Interface (GUI) is invoked via the
+`interactive_objectDetection()` function (see Figure \@ref(fig:GUI)). The `alpha` and
+`sigma` parameters of the `edgeDetection()` function, discussed in chapter
+\@ref(edge), represent the threshold adjustment factor and the smoothing factor,
+respectively. The corresponding sliders in the Tcl/Tk interface enable users to
+adjust these parameters in order to optimize object detection. The detected
+objects are highlighted with purple contours and green centers. The "Switch
+Method" button enables the user to toggle between edge detection and the
+threshold method for feature detection. Figure \@ref(fig:GUI) illustrates that the
+threshold adjustment factor - `alpha` - must be decreased, as not all microbeads
+are currently being detected. In order to facilitate the analysis of smaller
+images, a scaling slider was incorporated into the interface, utilizing the
+`imresize()` function from the `imager` package. This function employs bilinear
+interpolation to adjust the image size according to user input
+[@Barthelme2015].
+
+(ref:GUI) **Graphical User Interface for Interactive Parameter Selection**: The `interactive_objectDetection()` function offers a user-friendly interface with sliders to adjust threshold, smoothing, and scale. It also includes a button to switch between edge detection and thresholding methods. Object contours are highlighted in purple and centers in green for easy visualization. This example was executed in RStudio 2023.09.0+463 with R 4.3.2 on Linux (Ubuntu 22.04.3 LTS), displaying fluorescent microbeads. The rendering process, including timestamps and the current state, is shown in the console.
 
 ```{r, eval=FALSE}
 interactive_objectDetection(beads_large1)
 ```
 
-```{r, echo=FALSE, out.width="99%", fig.pos="ht"}
+```{r GUI, echo=FALSE, out.width="99%", fig.pos="ht", fig.cap="(ref:GUI)"}
 include_graphics("figures/fig8_GUI.png")
 ```
 
@@ -675,12 +820,13 @@ include_graphics(
 
 # Discussion
 
+## Batch processing
+### vectorization
+## unit testing
+## complexity
+## outside the box applicability
 
-
-# Summary and Conclusion
-
-
-# Outlook
+(ref:DSB)
 
 ```{r eval=FALSE}
 # Import the image from the specified file path
@@ -720,9 +866,31 @@ plot(colored_objects, axes = FALSE)
 text(c(50), c(60), c("B"), col = "darkred", cex = 6)
 ```
 
-```{r, echo=FALSE, fig.show='hold', fig.align='center', out.width="99%", fig.pos="ht"}
+```{r DSB, echo=FALSE, fig.show='hold', fig.align='center', out.width="99%", fig.pos="ht", fig.cap="(ref:DSB)"}
 knitr::include_graphics("figures/fig1_DSB_analysis.png")
 ```
+
+# Summary and Conclusion
+
+
+# Outlook
+
+Given that the `biopixR` package is still relatively new, there is considerable
+scope for optimization and further improvements. Ongoing testing continues to
+reveal bugs, which will be addressed in a timely manner. Some of the issues
+identified during the writing process include a problem with the `scanDir()`
+function, where the log function is not able to locate the documentation file.
+Another area for improvement is the optimization of the `haralickCluster()`
+function by replacing loops with vectorized operations, as the current use of
+loops results in slower performance. Moreover, the enhancement of unit tests and
+the integration of the quality control package `covr` into the continuous
+integration workflow will also contribute to an improvement in code quality.
+Long-term objectives include the development of an interactive Shiny application
+to provide a graphical web interface for the functions available in `biopixR`,
+thereby enhancing the program's accessibility to a broader user base. Another
+objective is to enhance the package's applicability for analyzing double-strand
+breaks, building on initial experiments that have already demonstrated its
+potential in this area (see Figure \@ref(fig:DSB)).
 
 
 # Acknowledgement
