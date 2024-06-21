@@ -1,6 +1,6 @@
 ---
 title: "biopixR - Tools for Biological Image Processing and Analysis"
-author: "Tim Brauckhoff"
+author: "Tim Brauckhoff and Stefan Rödiger"
 date: "`r Sys.Date()`"
 output:
   bookdown::pdf_document2:
@@ -33,7 +33,12 @@ knitr::opts_chunk$set(
   message = FALSE,
   cache = FALSE,
   comment = NA,
-  verbose = TRUE
+  verbose = TRUE,
+  fig.width = 7,
+  fig.height = 7,
+  fig.align = 'center',
+  fig.show = 'hold',
+  fig.pos = 'ht'
 )
 original_options <- options()
 options(digits = 3)
@@ -47,7 +52,7 @@ library(biopixR)
 
 \pagebreak
 
-```{r, echo=FALSE, fig.align='center', out.width="69%", fig.show='hold', fig.pos="ht"}
+```{r, echo=FALSE}
 include_graphics("figures/fig0_logo.png")
 ```
 
@@ -62,14 +67,27 @@ include_graphics("figures/fig0_logo.png")
 
 # Concepts and Methods
 
+The following chapters provide an insight into the principles and methods used in the development process of the `biopixR` package, covering
+
+- literate programming
+- unit testing
+- continuous integration
+- version control
+
+as recommended by @Peng2016 and @Wickham2023. 
+
+
+
 For the development and testing of the `biopixR` package, a Lenovo ThinkPad E15
 Gen2 was utilized, featuring 16 GB of RAM, an 11th Gen Intel® Core™ i5-1135G7
 @ 2.40GHz × 8 processor, and a NV137 / Mesa Intel® Xe Graphics (TGL GT2)
 graphics chip. The operating system employed was Ubuntu 22.04.3 LTS 64-bit. The
-R version used was 4.3.2, and the development environment was
+`R` version used was 4.3.2, and the development environment was
 RStudio 2023.09.0+463 "Desert Sunflower" Release 2023-09-25.
 
 ## Development, Implementation and Installation
+
+
 
 (ref:depend) **Dependency Graph of Functions in the `biopixR` Package**: This graph illustrates the levels of complexity by depicting the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package (version 0.1.1) from @AppletonFox2022, with RStudio 2023.09.0+463 and R 4.3.2 on Linux (Ubuntu 22.04.3 LTS).
 
@@ -562,15 +580,33 @@ include_graphics("figures/fig5.2_edgeDetection.png")
 ```
 
 
-### `objectDetection()` Function to detect Microbeads in an Image
+### `objectDetection()` - A Function for Feature extraction
 
+The `objectDetection()` function of the `biopixR` package serves as a
+segmentation tool, offering a variety of methods for the extraction of objects
+of interest from an image. The extracted information includes the coordinates,
+centers, and sizes of each detected object. In the case of microbeads, it is
+essential to distinguish between individual entities. Consequently, the
+`objectDetection()` function provides tools for segmentation using either
+thresholding or edge detection. Both methods have distinct advantages depending
+on the specific application, and their respective use cases will be presented in
+the following sections.
 
+**Edge Detection Method in `objectDetection`**:
 
-**Edge Method**:
-
-
+When edge detection is selected, the modified Canny edge detector, provided by
+the `edgeDetection()` function, is used. As previously described in chapter
+\@ref(edge), the selection of the `alpha` and `sigma` parameters plays a pivotal
+role in the performance of feature extraction. The objective is to modify the
+threshold (`alpha`) in order to detect all objects without detecting noise, and
+to maintain a minimal level of smoothing (`sigma`) in order to avoid merging
+proximate objects and to ensure accurate edge detection. To facilitate the
+parameter selection process, the `biopixR` package offers a variety of methods
+to assist with the parameter selection process:
 
 **Automated Parameter selection**:
+
+
 
 \phantom{x}\hspace{0.5cm} *Grid Search* - 
 
@@ -592,7 +628,7 @@ static_result <- objectDetection(beads_large1,
                                    sigma = 0.6)
 ```
 
-```{r static, echo=FALSE, fig.cap="(ref:static)", out.width="99%", fig.pos="ht", fig.align='center'}
+```{r static, echo=FALSE, fig.cap="(ref:static)"}
 plot(static_result$marked_objects, axes = FALSE)
 ```
 
@@ -608,11 +644,11 @@ gaussian_result <- objectDetection(beads_large1,
 tictoc::toc()
 ```
 
-```{r uncert, echo=FALSE, fig.cap="(ref:uncert)", out.width="99%", fig.pos="ht", fig.align='center'}
+```{r uncert, echo=FALSE, fig.cap="(ref:uncert)"}
 include_graphics("figures/fig18_uncertainty_plot.png")
 ```
 
-```{r pareto, echo=FALSE, fig.cap="(ref:pareto)", out.width="99%", fig.pos="ht", fig.align='center'}
+```{r pareto, echo=FALSE, fig.cap="(ref:pareto)"}
 include_graphics("figures/fig17_Pareto_front.png")
 ```
 
@@ -623,8 +659,22 @@ plot(gaussian_result$marked_objects, axes = FALSE)
 
 **Thresholding Method**:
 
+The thresholding method is particularly well-suited for images with high and
+inhomogeneous backgrounds, as it incorporates background correction by solving
+the Screened Poisson Equation before applying the threshold. This correction is
+achieved through the use of the `SPE()` function from the `imagerExtra` package
+[@Ochi2018], which is based on the method described by @Morel2014. This
+approach addresses image artifacts such as inhomogeneous illumination and low
+contrast while preserving image details [@Morel2014]. Consequently, the method
+allows for the detection of low-contrast objects against inconsistent
+backgrounds, such as transparent microbeads (see Figure \@ref(fig:transparent)A).
+The thresholding method is highly robust and performs also well on fluorescent
+microbead images. However, this approach has one disadvantage: the threshold is
+less strict than edge detection, which may result in the merging of objects in
+close proximity that would be regarded as separate entities by the edge
+detection method.
 
-(ref:transparent) **Transparent microbeads**:
+(ref:transparent) **Transparent Microbeads**: **A**) Original image of transparent microbeads, showing low contrast between the microbeads and the background. **B**) Application of the threshold method, resulting in the detection of the outer layer (halo) of the microbeads, successfully capturing the ligand signal. Detected coordinates are colored in purple, with centers marked in green.
 
 ```{r, eval=FALSE}
 par(mfrow = c(1,2))
@@ -671,10 +721,22 @@ interactive_objectDetection(beads_large1)
 include_graphics("figures/fig8_GUI.png")
 ```
 
+In conclusion, the `objectDetection()` function gathers comprehensive data about
+image objects, which facilitates the identification and differentiation of
+individual features. This process provides precise coordinates for each object
+in the image, which serve as the foundation for further analysis and
+characterization of features within the `biopixR` package.
+
 
 ### Dealing with Autofluorescence and Clotting with `sizeFilter()` and `proximityFilter()`
 
+
+
+
 ### Interpretation with `resultAnalytics()`
+
+
+
 
 ## Batch proccesing Functions within the `biopixR` package
 
@@ -873,6 +935,8 @@ knitr::include_graphics("figures/fig1_DSB_analysis.png")
 # Summary and Conclusion
 
 
+
+
 # Outlook
 
 Given that the `biopixR` package is still relatively new, there is considerable
@@ -895,6 +959,10 @@ potential in this area (see Figure \@ref(fig:DSB)).
 
 # Acknowledgement
 
+We would like to express our gratitude to Dr. Franziska Dinter and Coline
+Kieffer for providing the microbead images and conducting the related
+experiments. Their contributions were essential for the development and testing
+of the `biopixR` package.
 
 
 \pagebreak
