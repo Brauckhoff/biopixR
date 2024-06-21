@@ -36,12 +36,12 @@ affiliations:
 # Summary
 
 `biopixR` is an `R` package for the analysis of bioimage data. The `biopixR`
-package contains 15 functions for various tasks including image import,
+package contains 15 functions for various tasks, including image import,
 segmentation, clustering, parameter optimization, and line gap mitigation. Among
-these is an optimized edge detection algorithm based on the Canny edge detection
+these is an optimized edge detection algorithm based on Canny edge detection
 algorithm. Users can employ object detection and filtering within a pipeline
 function. Both Canny edge detection and thresholding can be parameterized via an
-interactive Tcl/Tk user interface. Additionally, the package includes a function
+interactive Tcl/Tk user interface. The package includes a function
 for clustering objects within an image based on their shape features using
 Self-Organizing Maps (SOM). For circular objects, threshold and smoothing
 parameters for object detection can be automatically calculated using Gaussian
@@ -74,7 +74,7 @@ biological images, particularly in the quantification of objects within these
 images.
 
 The quantification of biological image data is a fundamental aspect of deriving
-insights into biological processes. This is exemplified by bead-assays, which
+insights into biological processes. This is exemplified by microbead-assays, which
 offer extensive multiplexing abilities, high-throughput capacity, reduced
 analysis time, and minimal sample requirements [@Roediger_2014]. Methods for
 detecting microbeads include flow cytometry, microfluidics, and image-based
@@ -86,15 +86,15 @@ utilization of microbeads in point-of-care testing (POCT) and disease diagnosis
 development of efficient methods for extracting biological information from
 images, thereby eliminating the necessity for the use of complex laboratory
 equipment. Software that extracts attributes such as fluorescence intensity,
-size, and shape allows for bead encoding and differentiation between
+size and shape allow for bead encoding and differentiation between
 populations, thereby enhancing multiplexing capabilities [@Zhang_2019].
 
-Bead-based ePCR assays, which are typically analyzed using
-fluorescence-activated cell sorting (FACS) [@Fraser_2015], could potentially
-benefit from the use of imaging techniques. As this software is capable of
-analyzing bead-based ePCR by modifying droplet images to appear distinct. The
-aforementioned applications extend to the assessment of wastewater for the
-detection of microplastics [@Ding_2020], the real-time localization in
+Microbead-based emulsion Polymerase Chain Reaction (ePCR) assays, which are 
+typically analyzed using fluorescence-activated cell sorting (FACS) [@Fraser_2015], 
+could potentially benefit from the use of imaging techniques. As this software 
+is capable of analyzing bead-based ePCR by modifying droplet images to appear 
+distinct. The aforementioned applications extend to the assessment of wastewater 
+for the detection of microplastics [@Ding_2020], the real-time localization in
 microbead-based drug delivery systems [@Bannerman_2016], and other fields of
 life science, such as cell biology.
 
@@ -106,10 +106,18 @@ simplifying analytical procedures and expanding experimental possibilities.
 
 `biopixR` (0.2.4, 
 [LGLP-3.0license](https://www.gnu.org/licenses/lgpl-3.0.en.html)) is an `R` [@R_Core_Team]
-package (S3 class system). The choice of `R` as a programming language for image
+package (S3 class system). To ensure code quality, we employed various methodologies, 
+including [Continuous Integration](https://github.com/Brauckhoff/biopixR/blob/main/.github/workflows/R-CMD-check.yml)
+(CI), unit testing [@testthat], adherence to naming conventions
+[@Rasmus_2012], and the application of style guidelines [@Wickham_2019]. The choice of `R` as a programming language for image
 processing is based on its open-source framework, advanced packages such as
 `imager` [@imager] and `magick` [@magick], and its strong support for
-reproducible research [@Xie_2019]. These features collectively provide a
+reproducible research [@Xie_2019]. The importance of ensuring software 
+reproducibility is widely recognized, not only for our own work but also 
+for the broader scientific community  [@gentleman_statistical_2007 ;@rodiger_r_2015]. One measure to achieve this is by minimizing dependencies on other packages 
+or libraries and single archives whenever possible. Therefore, `biopixR` depends on `R` ($\ge$ 4.2.0), `imager`, `magick` and `tcltk`, imports `data.table` and `cluster`
+and suggests `knitr`, `rmarkdown`, `doParallel`, `kohonen`, `imagerExtra`, `GPareto` and `foreach` exclusively from CRAN.
+These features collectively provide a
 sophisticated environment for image analysis and editing, with the added
 advantage of community-driven improvements [@Chambers_2008]. `R`'s
 integration of analysis with documentation ensures methodological precision and
@@ -169,13 +177,13 @@ Furthermore, it is capable of processing multiple color channels, such as the
 analysis of dual-color microbeads. The integration of this function within the
 dependency network and its interaction with other functions is illustrated in
 \autoref{fig:Dependency}. This function serves as a comprehensive pipeline for
-image analysis, offering a variety of selectable functions:
+image analysis, offering various of selectable functions:
 
-* `importImage()`, joins import function combining the `imager` [@imager] and `magick` [@magick] packages.
+* `importImage()`, joins import function of the `imager` [@imager] and `magick` [@magick] packages.
 * `edgeDetection()`, a combination of a Canny edge detector and gap filling [@imager],
 * `objectDetection()`, detects objects in an image by identifying their coordinates,
 * `sizeFilter()`, eliminates objects that exceed or fall below a certain size threshold,
-* `proximityFilter()`, filters objects that are in close proximity to each other,
+* `proximityFilter()`, filters objects that are in proximity,
 * `resultAnalytics()`, summarizes the extracted features in a clear and concise manner.
 
 The `biopixR` package includes functions for analyzing entire directories,
@@ -198,12 +206,11 @@ in the package's vignette.
 
 ## Graphical User Interface:
 
-In this section, we aim to provide a concise outlook of the `biopixR` package,
-emphasizing its broader applicability beyond microbead detection. The `biopixR`
+The `biopixR` package has a broader applicability beyond microbead detection. The `biopixR`
 package is adaptable and can be utilized in any research field where the
 identification of distinct objects in images can be achieved through the use of
 a Canny edge detector or thresholding. This encompasses research areas such as
-foci detection, microplastic, and plant seeds. The automation methods employed
+foci detection, microplastics, and plant seeds. The automation methods employed
 in `biopixR` are predicated on the assumption of circular objects, rendering it
 particularly well-suited for the detection, quantification, and extraction of
 useful information from circular objects within images. Another integrated tool
@@ -213,19 +220,11 @@ graphical user interface (GUI) (\autoref{fig:RKWard}) that utilizes the Tcl/Tk
 framework [@tcltk], enabling users to adjust the threshold and smoothing settings 
 of the image.
 
-![Graphical User Interface for interactive parameter selection. The function `interactive_objectDetection()` provides a simple interface with sliders to adjust threshold, smoothing, and scale. It highlights object contours in purple and centers in green for easy visualization. A) In this example, the GUI was used in RKWard (0.7.5z+0.7.6+devel3, Linux, TUXEDO OS 2, [@rodiger_rkward_2012]). With fewer commands, an image can be imported and analyzed. B) The `plot()` function displays the false-color image as a preview. In this figure, cells with DNA damage (similar to @Roediger_2018) are visible. C) Loading the biopixR package in the R console shows additional information such as loaded libraries and the number of CPU threads (n = 20, parallel processing). D) The rendering process is displayed on the console, including timestamps and current state. \label{fig:RKWard}](fig_1.png)
+![Graphical User Interface for interactive parameter selection. The function `interactive_objectDetection()` provides a simple interface with sliders to adjust threshold, smoothing, and scale. It highlights object contours in purple and centers in green for easy visualization. A) In this example, the GUI was used in RKWard (0.7.5z+0.7.6+devel3, Linux, TUXEDO OS 2, [@rodiger_rkward_2012]). With fewer commands, an image can be imported and analyzed. B) The `plot()` function displays the false-color image as a preview. In this figure, cells with DNA damage (similar to @Roediger_2018) are visible. C) Loading the biopixR package in the R console shows additional information such as loaded libraries and the number of CPU threads (n = 20, parallel processing). D) The rendering process is displayed on the console, including timestamps and the current state. \label{fig:RKWard}](fig_1.png)
 
-# Current status and outlook
+# Conclusion
 
-The `biopixR` package was first released on 
-CRAN in March 2024. To ensure code quality, we employed various methodologies, 
-including [Continuous Integration](https://github.com/Brauckhoff/biopixR/blob/main/.github/workflows/R-CMD-check.yml)
-(CI), unit testing [@testthat], adherence to naming conventions
-[@Rasmus_2012], and the application of style guidelines [@Wickham_2019].
-Although the package is relatively new, we are working to expand its features
-and evaluate its applicability using empirical research data from diverse
-sources. In addition, future developments will involve expanding its
-capabilities to identify DNA damage, particularly in the form of foci.
+In summary, `biopixR` represents a significant advancement in image analysis capabilities for `R` users. By providing both automation methods and interactive tools, the package empowers researchers to extract valuable insights from images with ease. Its adaptability across various research fields makes it a valuable tool for researchers seeking efficient solutions. Leveraging the power of `R` and its extensive library of packages, users can seamlessly integrate `biopixR` into their existing workflows, streamlining data analysis and visualization tasks. Moreover, the package's minimal dependencies ensure long-term stability and maintainability over time, making it an attractive choice for researchers seeking reprocducible software.
 
 # Acknowledgments
 
@@ -234,7 +233,7 @@ capabilities to identify DNA damage, particularly in the form of foci.
 # Funding
 
 The study was funded in part by the project Rubin: NeuroMiR (03RU1U051A, federal
-ministry of eduction and research, Germany).
+ministry of education and research, Germany).
 
 \pagebreak
 
