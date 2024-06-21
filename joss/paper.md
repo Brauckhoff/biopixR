@@ -112,7 +112,12 @@ including [Continuous Integration](https://github.com/Brauckhoff/biopixR/blob/ma
 [@Rasmus_2012], and the application of style guidelines [@Wickham_2019]. The choice of `R` as a programming language for image
 processing is based on its open-source framework, advanced packages such as
 `imager` [@imager] and `magick` [@magick], and its strong support for
-reproducible research [@Xie_2019]. These features collectively provide a
+reproducible research [@Xie_2019]. The importance of ensuring software 
+reproducibility is widely recognized, not only for our own work but also 
+for the broader scientific community  [@gentleman_statistical_2007 ;@rodiger_r_2015]. One measure to achieve this is by minimizing dependencies on other packages 
+or libraries and single archives whenever possible. Therefore, `biopixR` depends on `R` ($\largerequal$ 4.2.0), `imager`, `magick` and `tcltk`, imports `data.table` and `cluster`
+and suggests `knitr`, `rmarkdown`, `doParallel`, `kohonen`, `imagerExtra`, `GPareto` and `foreach` exclusively from CRAN.
+These features collectively provide a
 sophisticated environment for image analysis and editing, with the added
 advantage of community-driven improvements [@Chambers_2008]. `R`'s
 integration of analysis with documentation ensures methodological precision and
@@ -216,6 +221,10 @@ framework [@tcltk], enabling users to adjust the threshold and smoothing setting
 of the image.
 
 ![Graphical User Interface for interactive parameter selection. The function `interactive_objectDetection()` provides a simple interface with sliders to adjust threshold, smoothing, and scale. It highlights object contours in purple and centers in green for easy visualization. A) In this example, the GUI was used in RKWard (0.7.5z+0.7.6+devel3, Linux, TUXEDO OS 2, [@rodiger_rkward_2012]). With fewer commands, an image can be imported and analyzed. B) The `plot()` function displays the false-color image as a preview. In this figure, cells with DNA damage (similar to @Roediger_2018) are visible. C) Loading the biopixR package in the R console shows additional information such as loaded libraries and the number of CPU threads (n = 20, parallel processing). D) The rendering process is displayed on the console, including timestamps and the current state. \label{fig:RKWard}](fig_1.png)
+
+# Conclusion
+
+In summary, `biopixR` represents a significant advancement in image analysis capabilities for `R` users. By providing both automation methods and interactive tools, the package empowers researchers to extract valuable insights from images with ease. Its adaptability across various research fields makes it a valuable tool for researchers seeking efficient solutions. Leveraging the power of `R` and its extensive library of packages, users can seamlessly integrate `biopixR` into their existing workflows, streamlining data analysis and visualization tasks. Moreover, the package's minimal dependencies ensure long-term stability and maintainability over time, making it an attractive choice for researchers seeking reprocducible software.
 
 # Acknowledgments
 
