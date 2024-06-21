@@ -115,7 +115,7 @@ processing is based on its open-source framework, advanced packages such as
 reproducible research [@Xie_2019]. The importance of ensuring software 
 reproducibility is widely recognized, not only for our own work but also 
 for the broader scientific community  [@gentleman_statistical_2007 ;@rodiger_r_2015]. One measure to achieve this is by minimizing dependencies on other packages 
-or libraries and single archives whenever possible. Therefore, `biopixR` depends on `R` ($\largerequal$ 4.2.0), `imager`, `magick` and `tcltk`, imports `data.table` and `cluster`
+or libraries and single archives whenever possible. Therefore, `biopixR` depends on `R` ($\ge$ 4.2.0), `imager`, `magick` and `tcltk`, imports `data.table` and `cluster`
 and suggests `knitr`, `rmarkdown`, `doParallel`, `kohonen`, `imagerExtra`, `GPareto` and `foreach` exclusively from CRAN.
 These features collectively provide a
 sophisticated environment for image analysis and editing, with the added
