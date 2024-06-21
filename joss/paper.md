@@ -106,7 +106,10 @@ simplifying analytical procedures and expanding experimental possibilities.
 
 `biopixR` (0.2.4, 
 [LGLP-3.0license](https://www.gnu.org/licenses/lgpl-3.0.en.html)) is an `R` [@R_Core_Team]
-package (S3 class system). The choice of `R` as a programming language for image
+package (S3 class system). To ensure code quality, we employed various methodologies, 
+including [Continuous Integration](https://github.com/Brauckhoff/biopixR/blob/main/.github/workflows/R-CMD-check.yml)
+(CI), unit testing [@testthat], adherence to naming conventions
+[@Rasmus_2012], and the application of style guidelines [@Wickham_2019]. The choice of `R` as a programming language for image
 processing is based on its open-source framework, advanced packages such as
 `imager` [@imager] and `magick` [@magick], and its strong support for
 reproducible research [@Xie_2019]. These features collectively provide a
@@ -213,18 +216,6 @@ framework [@tcltk], enabling users to adjust the threshold and smoothing setting
 of the image.
 
 ![Graphical User Interface for interactive parameter selection. The function `interactive_objectDetection()` provides a simple interface with sliders to adjust threshold, smoothing, and scale. It highlights object contours in purple and centers in green for easy visualization. A) In this example, the GUI was used in RKWard (0.7.5z+0.7.6+devel3, Linux, TUXEDO OS 2, [@rodiger_rkward_2012]). With fewer commands, an image can be imported and analyzed. B) The `plot()` function displays the false-color image as a preview. In this figure, cells with DNA damage (similar to @Roediger_2018) are visible. C) Loading the biopixR package in the R console shows additional information such as loaded libraries and the number of CPU threads (n = 20, parallel processing). D) The rendering process is displayed on the console, including timestamps and the current state. \label{fig:RKWard}](fig_1.png)
-
-# Status and outlook
-
-The `biopixR` package was first released on 
-CRAN in March 2024. To ensure code quality, we employed various methodologies, 
-including [Continuous Integration](https://github.com/Brauckhoff/biopixR/blob/main/.github/workflows/R-CMD-check.yml)
-(CI), unit testing [@testthat], adherence to naming conventions
-[@Rasmus_2012], and the application of style guidelines [@Wickham_2019].
-Although the package is relatively new, we are working to expand its features
-and evaluate its applicability using empirical research data from diverse
-sources. In addition, future developments will involve expanding its
-capabilities to identify DNA damage, particularly in the form of foci.
 
 # Acknowledgments
 
