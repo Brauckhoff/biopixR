@@ -41,7 +41,7 @@ segmentation, clustering, parameter optimization, and line gap mitigation. Among
 these is an optimized edge detection algorithm based on the Canny edge detection
 algorithm. Users can employ object detection and filtering within a pipeline
 function. Both Canny edge detection and thresholding can be parameterized via an
-interactive Tcl/Tk user interface. Additionally, the package includes a function
+interactive Tcl/Tk user interface. The package includes a function
 for clustering objects within an image based on their shape features using
 Self-Organizing Maps (SOM). For circular objects, threshold and smoothing
 parameters for object detection can be automatically calculated using Gaussian
