@@ -24,12 +24,12 @@ authors:
 bibliography: paper.bib
 affiliations:
 - name: BTU Cottbus–Senftenberg, Faculty Environment and Natural Sciences, Senftenberg,
-    Germany
+    Germany    
   index: 1
 - name: The City of Paris Industrial Physics and Chemistry Higher Educational Institution,
-    Paris, France
+    Paris, France    
   index: 2
-- name: BTU Cottbus–Senftenberg, Faculty of Health Brandenburg, Senftenberg, Germany
+- name: BTU Cottbus–Senftenberg, Faculty of Health Brandenburg, Senftenberg, Germany    
   index: 3
 ---
 
@@ -227,10 +227,6 @@ of the image.
 In summary, `biopixR` represents a significant advancement in image analysis capabilities for `R` users. By providing both automation methods and interactive tools, the package empowers researchers to extract valuable insights from images with ease. Its adaptability across various research fields makes it a valuable tool for researchers seeking efficient solutions. Leveraging the power of `R` and its extensive library of packages, users can seamlessly integrate `biopixR` into their existing workflows, streamlining data analysis and visualization tasks. Moreover, the package's minimal dependencies ensure long-term stability and maintainability over time, making it an attractive choice for researchers seeking reprocducible software.
 
 # Acknowledgments
-
-
-
-# Funding
 
 The study was funded in part by the project Rubin: NeuroMiR (03RU1U051A, federal
 ministry of education and research, Germany).
