@@ -35,13 +35,13 @@ affiliations:
 
 # Summary
 
-`biopixR` is an `R` package for the analysis of bioimage data. The `biopixR`
-package contains 15 functions for various tasks, including image import,
-segmentation, clustering, parameter optimization, and line gap mitigation. Among
-these is an optimized edge detection algorithm based on Canny edge detection
-algorithm. Users can employ object detection and filtering within a pipeline
-function. Both Canny edge detection and thresholding can be parameterized via an
-interactive Tcl/Tk user interface. The package includes a function
+`biopixR` is an `R` package designed specifically for the analysis of bioimage data.
+The package comprises 15 functions that cater to various tasks,
+including image import, segmentation, clustering, parameter optimization, and line 
+gap mitigation. Among these is an optimized edge detection algorithm based on Canny 
+edge detection algorithm. Users can employ object detection and filtering within a 
+pipeline function. Both Canny edge detection and thresholding can be parameterized 
+via an interactive Tcl/Tk user interface. The package includes a function
 for clustering objects within an image based on their shape features using
 Self-Organizing Maps (SOM). For circular objects, threshold and smoothing
 parameters for object detection can be automatically calculated using Gaussian
