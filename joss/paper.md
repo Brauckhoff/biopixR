@@ -1,5 +1,5 @@
 ---
-title: 'biopixR: Extracting Insights from Biological Images'
+title: '`biopixR`: Extracting Insights from Biological Images'
 tags:
 - R
 - bioimages
@@ -24,12 +24,12 @@ authors:
 bibliography: paper.bib
 affiliations:
 - name: BTU Cottbus–Senftenberg, Faculty Environment and Natural Sciences, Senftenberg,
-    Germany    
+    Germany    \linebreak
   index: 1
 - name: The City of Paris Industrial Physics and Chemistry Higher Educational Institution,
-    Paris, France    
+    Paris, France    \linebreak
   index: 2
-- name: BTU Cottbus–Senftenberg, Faculty of Health Brandenburg, Senftenberg, Germany    
+- name: BTU Cottbus–Senftenberg, Faculty of Health Brandenburg, Senftenberg, Germany    \linebreak
   index: 3
 ---
 
