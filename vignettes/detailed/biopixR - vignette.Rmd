@@ -669,7 +669,7 @@ include_graphics("figures/fig5.2_edgeDetection.png")
 ```
 
 
-### `objectDetection()` - A Function for Feature extraction
+## `objectDetection()` - A Function for Feature extraction
 
 The `objectDetection()` function of the `biopixR` package serves as a
 segmentation tool, offering a variety of methods for the extraction of objects
@@ -681,7 +681,7 @@ thresholding or edge detection. Both methods have distinct advantages depending
 on the specific application, and their respective use cases will be presented in
 the following sections.
 
-**Edge Detection Method in `objectDetection`**:
+### Edge Detection Method in `objectDetection`
 
 When edge detection is selected, the modified Canny edge detector, provided by
 the `edgeDetection()` function, is used. As previously described in chapter
@@ -746,7 +746,7 @@ plot(gaussian_result$marked_objects, axes = FALSE)
 ```
 
 
-**Thresholding Method**:
+### Thresholding Method in `objectDetection`
 
 The thresholding method is particularly well-suited for images with high and
 inhomogeneous backgrounds, as it incorporates background correction by solving
@@ -780,7 +780,7 @@ par(mfrow = c(1,1))
 include_graphics("figures/fig7_transparent_beads.png")
 ```
 
-**Interactive Approach**:
+### Interactive Approach in `objectDetection`
 
 To facilitate parameter selection, an interactive feature detection function was
 developed using the R package `tcltk`, which provides access to Tcl/Tk in R. The
@@ -817,12 +817,111 @@ in the image, which serve as the foundation for further analysis and
 characterization of features within the `biopixR` package.
 
 
-### Dealing with Autofluorescence and Clotting with `sizeFilter()` and `proximityFilter()`
+## Dealing with induced Fluorescence and Clotting with `sizeFilter()` and `proximityFilter()`
+
+In microbead-based assays, two phenomena must be avoided to prevent the
+generation of low-quality or incorrect results. These issues are exemplified in
+one of the images provided by the package (see Figure \@ref(fig:error)). The
+first issue arises when microbeads are in close proximity to one another, which
+has the potential to induce fluorescence in adjacent beads and result in the
+generation of false positive signals. To address this issue, we developed the
+`proximityFilter()` function.
+
+(ref:error) **Unwanted Microbead Phenomena**: The image is part of the biopixR package and illustrates the various occurrences within a microbead sample. It is evident that some microbeads are situated in close proximity to one another, as indicated by the green arrow. Moreover, the microbeads have the potential to aggregate, forming clusters such as doublets (highlighted by the red arrow) and multiplets (marked by the cyan arrow).
+
+```{r error, out.width="79%", fig.pos="ht", fig.cap="(ref:error)"}
+plot(beads)
+arrows(
+  x0 = 60,
+  y0 = 17,
+  x1 = 61,
+  y1 = 16,
+  col = "green",
+  lwd = 2
+)
+arrows(
+  x0 = 90,
+  y0 = 75,
+  x1 = 91,
+  y1 = 74,
+  col = "cyan",
+  lwd = 2
+)
+arrows(
+  x0 = 30,
+  y0 = 116,
+  x1 = 29,
+  y1 = 117,
+  col = "red",
+  lwd = 2
+)
+```
+
+The `proximityFilter()` function is used to filter objects based on a specified
+radius. For each object, a square region is defined around its center,
+representing an area in which no other object is permitted. In the event that
+another object is detected within this region, both objects are discarded. The
+user has the option to specify the radius in pixels, or alternatively, it can be
+calculated automatically by the algorithm. In the case of the latter, the
+algorithm assumes that the objects are circular and determines the radius based
+on their size. The calculated radius is then extended by a factor called
+"elongation." The default elongation factor is 2, which means that an area of
+two radii (with one radius overlapping with the object) around the object must
+be free of other objects for the object to pass the filter. The elongation
+factor can be adjusted according to the user's specific requirements (see Figure
+\@ref(fig:prox)).
+
+(ref:prox) **Proximity Filtering Process**: The `objectDetection()` function is initially employed for the purpose of identifying all objects within the image. The resulting data from this function is then employed as input for the `proximityFilter()`, with the radius set to automatic calculation. The final result is represented through the use of the `changePixelColor()` function, wherein each passing object is highlighted in a distinct color.
+
+```{r prox, out.width="79%", fig.pos="ht", fig.cap="(ref:prox)"}
+objects <-
+  objectDetection(beads,
+                  method = 'edge',
+                  alpha = 1,
+                  sigma = 0)
+filter_prox <-
+  proximityFilter(objects$centers,
+                  objects$coordinates,
+                  radius = "auto",
+                  elongation = 2)
+
+changePixelColor(
+  beads,
+  filter_prox$coordinates,
+  color = factor(filter_prox$coordinates$value),
+  visualize = T
+)
+```
+
+The second phenomenon is the aggregation of microbeads, which results in the
+formation of doublets and multiplets. These aggregated microbeads must be
+discarded to achieve consistent and reproducible results consisting of single
+microbeads. To address this issue, the `sizeFilter` function was developed (see
+Figure \@ref(fig:size)). This function filters objects based on their individual
+sizes, using specified lower and upper limits. These limits can be set manually,
+interactively, or automatically. In the interactive approach, the size
+distribution is plotted in the R environment, and the user is prompted in the
+console to enter the limits based on the visualized distribution. In the
+automated approach, which is applicable when the number of objects exceeds 50,
+the interquartile range (IQR) is used to calculate the limits. Specifically, the
+filter applies the 1.5 * IQR rule in order to determine the size thresholds.
+
+(ref:size) **Size Filtering Process**: The same input utilized for the previously demonstrated proximity filtering, obtained via the `objectDetection()` function, is employed in this instance. Due to an insufficient number of objects for automated calculation, the size limits are provided manually based on the size distribution shown on the left. On the right, the `changePixelColor()` visualization tool is employed to highlight the objects that meet the size criteria in different colors.
+
+```{r size, out.width="49%", fig.pos="ht", fig.cap="(ref:size)"}
+filter_size <- sizeFilter(objects$centers, objects$coordinates, lowerlimit = 0, upperlimit = 150)
+
+plot(objects$centers$size, ylab = "size in px")
+changePixelColor(beads, filter_size$coordinates, color = factor(filter_size$coordinates$value), visualize = T)
+```
+
+As has been demonstrated, the `biopixR` package is an effective tool for
+addressing the undesired phenomena present in microbead-based assays. The
+package provides automated filter functions, some of which include interactive
+modules that facilitate applicability in laboratory settings.
 
 
-
-
-### Interpretation with `resultAnalytics()`
+## Interpretation with `resultAnalytics()`
 
 
 
@@ -871,7 +970,7 @@ par(mfrow = c(1,1))
 
 ## Functions for Droplet Analysis
 
-### Dealing with discontinous edges
+
 
 ### `fillLineGaps()` - 
 
@@ -986,7 +1085,7 @@ comparable approaches in the packages `pliman` and `FIELDmageR`, which, however,
 have very specific use cases apart from those envisioned by us. With this 
 approach, the users can analyze large data sets in medium-sized batches, 
 depending on the computing performance. In our anecdotal example, these were 
-about 180 images with an average size of 2 MB (tiff, compressed, single 
+about 180 images with an average size of 1.4 MB (bmp, single 
 channel). The processing time was 20 minutes on the computer with the 
 specifications given in the section Concepts and Methods. In the context of 
 scientific work, this is a huge time-saving, given that many scientists usually 
@@ -1028,6 +1127,9 @@ simplifying individual functions within the package.
 To achieve this goal, we have implemented various features and functionalities 
 as follows:
 
+https://cran.r-project.org/web/packages/disk.frame/index.html
+https://cran.r-project.org/web/packages/bigmemory/index.html
+https://cran.r-project.org/web/packages/ff/index.html
 
 ## unit testing
 ## complexity
