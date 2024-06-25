@@ -55,14 +55,66 @@ library(biopixR)
 include_graphics("figures/fig0_logo.png")
 ```
 
+# Introduction to Techniques in Bioimage Informatics for Feature detection
 
-# Aims of the `biopixR` package
+The quality of image data is too high for manual processing. Therefore, automatic 
+processing of image data is crucial to ensure we can achieve objective and reproducible 
+results. Additionally, Bioimage Informatics plays a key role in applications such as 
+edge detection and feature extraction.
 
-# Introduction to Object Quantification in Biological Images
+# History, philosophy and aims of the `biopixR` package
 
-## Techniques in Bioimage Informatics for Feature detection
+About six years ago, we began developing algorithms for the R programming language 
+as part of our research in bioimage informatics. Our focus was on analyzing data from 
+microbead-based assays (nucleic acid and protein biomarker quantification) and 
+cell-based assays (e.g., DNA damage analysis). Over time, we created various scripts 
+for internal projects and contributed to repositories like codeberg.org. However, our 
+early work did not adhere to high standards of software engineering, such as unit testing, 
+version tagging, or continuous integration.
 
-### Why is there a need for the `biopixR` package?
+As the algorithms developed proved inefficient and unable to meet current 
+scientific needs, we decided in 2023 to completely rewrite the software. 
+This effort gained momentum in October 2023 when we transitioned to open repositories 
+on GitHub, adopting modern approaches to ensure higher software quality and foster 
+greater collaboration with the scientific and open-source communities.
+
+Our most important goal was to publish the package on the trend, because the 
+trend infrastructure requires high quality software. We have achieved this goal. 
+Since then, we have published several package versions, including our first milestone 
+release (0.2.4) on CRAN on April 2, 2024, as well as a stable version (1.0) on June 3, 2024. 
+Since our initial commits to CRAN, we've received valuable feedback and contributions from 
+other package authors (e.g., the data.table package author).
+
+The `biopixR` package was early used for the analysis of microbeads 
+([https://doi.org/10.1101/2021.03.19.436219](https://doi.org/10.1101/2021.03.19.436219), 
+Posted March 20, 2021), as demonstrated in the latest use case for quality control of 
+microbeads [@Geithe2024]. The `biopixR` package has been employed in a recent 
+publication [https://doi.org/10.1101/2023.01.10.523433](https://doi.org/10.1101/2023.01.10.523433) 
+for precise quantification of signal intensities. In this study, we delve into the development 
+of novel hydrophobic microbeads that can be used to quantify amphiphile molecules such as 
+phospholipids on surfaces. These molecules play a crucial role in various diseases and conditions, 
+including atherosclerosis, cardiovascular disease, infections, inflammatory disorders, cancer, 
+and autoimmune diseases.However, its applications can be extended to any research
+problem involving feature extraction from images and quantifying related image
+data. These applications include the assessment of wastewater for the detection
+of microplastics [@Ding2020], the real-time localization in microbead-based
+drug delivery systems [@Bannerman2016], and other fields within the life
+sciences, such as cell biology.
+
+- Convenient import ...
+- Batch processing (scanDir) ...
+
+All technical and experimental aspects of `biopixR` are aimed to adhere to the
+principles of reproducible research. The development process was guided by the
+work of @Wickham2023 and the Guidelines provided by the @R_Core_Team.
+Encompassing the package building, meta structure, licencing, testing,
+documentation and distribution of the software. In accordance with the
+principles of *Agile Software Development* and *Extreme Programming*, several
+practices were implemented with the objective of ensuring the delivery of
+high-quality software that meets the needs of both end users and developers.
+These practices include version control, literate programming, unit testing, and
+continuous integration [@Lanubile2010; @Myers2012; @Roediger2015;
+@Gregory2021].
 
 # Concepts and Methods
 
@@ -107,6 +159,8 @@ metabolic pathways, and protein expression patterns. Fundamental operations in
 bioimage informatics include feature extraction, segmentation, registration,
 clustering, classification, annotation, and visualization [@Peng2008].
 
+## Licence and wider open source context
+
 `biopixR` is an open-source software package (licensed under the LGPL
 $\ge$ 3)^[https://www.gnu.org/licenses/lgpl-3.0.de.html] for the statistical
 programming language `R`, which is widely used in statistics, bioinformatics,
@@ -120,27 +174,6 @@ of comprehensive data processing and automation capabilities. Although initially
 designed for statistical analysis, `R`, in conjunction with its associated
 packages, is capable of effectively supporting image analysis and automation
 [@Chessel2017; @Haase2022].
-
-The `biopixR` package was initially developed for the analysis of microbeads, as
-demonstrated in the latest use case for quality control of microbeads
-[@Geithe2024]. However, its applications can be extended to any research
-problem involving feature extraction from images and quantifying related image
-data. These applications include the assessment of wastewater for the detection
-of microplastics [@Ding2020], the real-time localization in microbead-based
-drug delivery systems [@Bannerman2016], and other fields within the life
-sciences, such as cell biology.
-
-All technical and experimental aspects of `biopixR` should adhere to the
-principles of reproducible research. The development process was guided by the
-work of @Wickham2023 and the Guidelines provided by the @R_Core_Team.
-Encompassing the package building, meta structure, licencing, testing,
-documentation and distribution of the software. In accordance with the
-principles of *Agile Software Development* and *Extreme Programming*, several
-practices were implemented with the objective of ensuring the delivery of
-high-quality software that meets the needs of both end users and developers.
-These practices include version control, literate programming, unit testing, and
-continuous integration [@Lanubile2010; @Myers2012; @Roediger2015;
-@Gregory2021].
 
 A summary of the functions present in the `biopixR` package is provided in
 Figure \@ref(fig:depend), as the function in relation to the `imgPipe()` function
@@ -158,7 +191,7 @@ include_graphics("figures/fig4_dependency.png")
 
 The core contributors are listed in the `DESCRIPTION` file of the `biopixR` package. The following paragraphs describe methods applied for the `biopixR` package.
 
-### Version Control and Continous Integration
+## Version Control and Continous Integration
 
 For the purpose of version control, the widely used Git system, which is
 available on all major development platforms, was employed. Version control with
@@ -201,7 +234,7 @@ as well as the test history can be accessed at:
 \phantom{x}\hspace{0.75cm} https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yml
 
 
-### Naming Convention and Literate Programming
+## Naming Convention and Literate Programming
 
 `biopixR` is an `R` package ($\ge$ 4.2.0), designed using the S3 object system.
 S3 incorporates object-oriented programming features while simplifying
@@ -231,45 +264,7 @@ Additionally, inline code annotations have been added to every function in the
 The `roxygen2`, `rmarkdown`, and `knitr` packages were employed to write the
 documentation inline with the code for the `biopixR` package.
 
-
-### Installation of the `biopixR` package
-
-The ongoing developments will be consistently updated in the GitHub repository.
-Consequently, the latest developer version of the `biopixR` package can be
-accessed and downloaded directly from the repository using the `devtools`
-package.
-
-```{r, eval=FALSE}
-# Install the 'devtools' package from CRAN.
-# 'devtools' is required for installing R packages directly from GitHub repositories.
-install.packages("devtools")
-
-# Install the 'biopixR' package from a GitHub repository.
-# 'install_github' is a function in 'devtools' that is used to install R packages
-# hosted on GitHub.
-# The argument "Brauckhoff/biopixR" specifies the GitHub username/repo of the package.
-devtools::install_github("Brauckhoff/biopixR")
-```
-
-The `biopixR` package is available on The **C**omprehensive **R** **A**rchive
-**N**etwork (CRAN), which can be accessed at
-[https://CRAN.R-project.org/package=biopixR]. CRAN employs rigorous testing
-procedures to ensure that the package can be downloaded and built on all major
-operating systems. Additionally, it validates the examples and documentation
-through the `R CMD check`. In order to utilize the `biopixR` package, it is
-first necessary to install R (version 4.2.0 or higher) and then to execute the
-following code:
-
-```{r, eval=FALSE}
-# Install the 'biopixR' package from the Comprehensive R Archive Network (CRAN).
-install.packages("biopixR")
-```
-
-The results of the R CMD check conducted by CRAN can be accessed via the
-following link:
-[https://cran.r-project.org/web/checks/check_results_biopixR.html]
-
-### Unit Testing of the `biopixR` Package
+## Unit Testing of the `biopixR` Package
 
 Software testing is a fundamental technique for the verification and validation
 of software, demonstrating the absence of errors. Module or unit testing is one
@@ -338,7 +333,44 @@ test_that("changePixelColor", {
 ```
 
 
-## Functions for Quantitative Data Analysis in `biopixR`
+## Installation of the `biopixR` package
+
+The ongoing developments will be consistently updated in the GitHub repository.
+Consequently, the latest developer version of the `biopixR` package can be
+accessed and downloaded directly from the repository using the `devtools`
+package.
+
+```{r, eval=FALSE}
+# Install the 'devtools' package from CRAN.
+# 'devtools' is required for installing R packages directly from GitHub repositories.
+install.packages("devtools")
+
+# Install the 'biopixR' package from a GitHub repository.
+# 'install_github' is a function in 'devtools' that is used to install R packages
+# hosted on GitHub.
+# The argument "Brauckhoff/biopixR" specifies the GitHub username/repo of the package.
+devtools::install_github("Brauckhoff/biopixR")
+```
+
+The `biopixR` package is available on The **C**omprehensive **R** **A**rchive
+**N**etwork (CRAN), which can be accessed at
+[https://CRAN.R-project.org/package=biopixR]. CRAN employs rigorous testing
+procedures to ensure that the package can be downloaded and built on all major
+operating systems. Additionally, it validates the examples and documentation
+through the `R CMD check`. In order to utilize the `biopixR` package, it is
+first necessary to install R (version 4.2.0 or higher) and then to execute the
+following code:
+
+```{r, eval=FALSE}
+# Install the 'biopixR' package from the Comprehensive R Archive Network (CRAN).
+install.packages("biopixR")
+```
+
+The results of the R CMD check conducted by CRAN can be accessed via the
+following link:
+[https://cran.r-project.org/web/checks/check_results_biopixR.html]
+
+# Functions for Quantitative Data Analysis in `biopixR`
 
 The `biopixR` package includes a series of microbead images in order to
 demonstrate its capabilities in the analysis and processing of biological
@@ -371,7 +403,7 @@ par(mfrow = c(1, 1))
 A selection of these images will be employed in the forthcoming demonstration of
 the `biopixR` functions.
 
-### `importImage()` - Importing Images into the R Environment
+## `importImage()` - Importing Images into the R Environment
 
 The `biopixR` package features an import function called `importImage()`. This
 function acts as a wrapper, integrating the capabilities of the `magick` and
@@ -415,7 +447,7 @@ par(mfrow = c(1, 1))
 ```
 
 
-### `edgeDetection()` - A modified Canny edge Detector {#edge}
+## `edgeDetection()` - A modified Canny edge Detector {#edge}
 
 A variety of edge detection algorithms are available in the `R` programming
 language, with the Canny edge detector, developed by @Canny1986, being the most
@@ -939,8 +971,64 @@ include_graphics(
 
 # Discussion
 
-## Batch processing
-### vectorization
+In this document, we have shown that many tasks can be done utilizing the 
+`biopixR` package, which can typically be done by analyzing image data, such as 
+microbead-based assays or cell-based assays. In particular, we have shown that 
+it is possible to identify objects more quickly, reproducibly, and efficiently, 
+and to extract features in the form of quantitative data from images, than 
+manual analysis. Although `R` can is a programming language that naturally 
+supports the customized development of batch processing, we noticed while 
+working with peers in the wet laboratory, that it is useful to provide certain 
+routines in the form of pipelines and batch processing as simple and 
+quick-to-understand functions by average uses. We have achieved this using the 
+functions `imagepipe` and `scandir`. According to our knowledge, there are only 
+comparable approaches in the packages `pliman` and `FIELDmageR`, which, however, 
+have very specific use cases apart from those envisioned by us. With this 
+approach, the users can analyze large data sets in medium-sized batches, 
+depending on the computing performance. In our anecdotal example, these were 
+about 180 images with an average size of 2 MB (tiff, compressed, single 
+channel). The processing time was 20 minutes on the computer with the 
+specifications given in the section Concepts and Methods. In the context of 
+scientific work, this is a huge time-saving, given that many scientists usually 
+perform their work manually. For speed optimization, the `foreach` package was 
+implemented for parallel processing to achieve a greater time gain. This enables 
+the user to use a certain number of CPU cores to significantly speed up the 
+analysis of image data and, in this case run it in parallel. In `R`, for loops, 
+calculations are done in a slow and sequential manner. To avoid this and to 
+speed up the calculations vectorization was used. This means that the operations 
+can be applied to a whole vector and do not have to be sequentially followed. To 
+increase user-friendliness, it is even possible to import data in the form of 
+images in different formats, which can be automatically converted from the 
+import function into the main used `imager` format CImg. A characteristic of 
+this batch processing feature is that in one folder, a mixture of different 
+image formats (e.g., JPEG, PNG, and BMP) can be used and that the import 
+automatically adjusts to the corresponding formats. To our knowledge, this is 
+the only package that has such a function.
+
+Another problem that can arise when importing images is that they contain a 
+fourth dimension in the color channel, which contains information about the 
+transparency of the image. This transparency of information crashes many 
+functions. Therefore, the import function makes sure that the alpha channel is 
+removed. Currently, we see no further possibilities for a significant increase. 
+the performance with the current implementation. The greatest speed increases in 
+the analysis is indeed of the hardware in the form of CPU speed, and the number 
+of cores that can be used. Since there is no proper implementation on graphics 
+chips, we see no potential here either. It would be conceivable from our point 
+of view that the use of HDF5, where a speed increase could be achieved for 
+example by Chunking (incl. adjusting chunk cache size), compression to improve 
+I/O performance and access pattern optimization, would be possible. However, we 
+have not further evaluated this. This would be a task in future analysis 
+projects.
+
+One of our design goals was to develop a package that is low in complexity in 
+its own right. Specifically, we aimed to minimize the number of dependencies on 
+other packages, thereby reducing overall complexity. Additionally, we focused on 
+simplifying individual functions within the package.
+
+To achieve this goal, we have implemented various features and functionalities 
+as follows:
+
+
 ## unit testing
 ## complexity
 ## outside the box applicability
@@ -991,12 +1079,7 @@ knitr::include_graphics("figures/fig1_DSB_analysis.png")
 
 # Summary and Conclusion
 
-
-
-
-# Outlook
-
-Given that the `biopixR` package is still relatively new, there is considerable
+Given that the `biopixR` package is work in progresss, there is
 scope for optimization and further improvements. Ongoing testing continues to
 reveal bugs, which will be addressed in a timely manner. Some of the issues
 identified during the writing process include a problem with the `scanDir()`
@@ -1016,9 +1099,10 @@ potential in this area (see Figure \@ref(fig:DSB)).
 
 # Acknowledgement
 
-We would like to express our gratitude to Dr. Franziska Dinter and Coline
-Kieffer for providing the microbead images and conducting the related
-experiments. Their contributions were essential for the development and testing
+We would like to express our gratitude to Dr. Franziska Dinter (BTU Cottbus - Senftenberg, 
+Senftenberg, Germany) and Dr. Coline Kieffer (PSL University, Paris, France) for 
+providing the microbead images, conducting the related experiments and discussion. Their 
+contributions were essential for the development and testing
 of the `biopixR` package.
 
 
