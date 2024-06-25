@@ -64,7 +64,7 @@ edge detection and feature extraction.
 
 # History, philosophy and aims of the `biopixR` package
 
-About six years ago, we began developing algorithms for the R programming language 
+In 2018, we began developing algorithms for the R programming language 
 as part of our research in bioimage informatics. Our focus was on analyzing data from 
 microbead-based assays (nucleic acid and protein biomarker quantification) and 
 cell-based assays (e.g., DNA damage analysis). Over time, we created various scripts 
