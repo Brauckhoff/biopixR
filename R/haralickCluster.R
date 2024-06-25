@@ -1,4 +1,4 @@
-# Function to compute GLCM for a given image
+# Function to compute Gray Level Co-occurrence Matrix (GLCM) for a given image
 computeGLCM <-
   function(image,
            distance = 1,                          # Specifies the pixel distance for computing relationships
