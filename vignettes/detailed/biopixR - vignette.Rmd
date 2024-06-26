@@ -695,16 +695,43 @@ to assist with the parameter selection process:
 
 **Automated Parameter selection**:
 
+Both automation methods employ a fitness function to extract shape information
+via the `shapeFeatures` function. The fitness function evaluates the results
+using a variety of input parameters, operating under the assumption that the
+objects in question are circular in shape. While the grid search method is
+time-consuming due to its exhaustive testing of every possible parameter
+combination, the Pareto front optimization method samples and analyzes a subset
+of combinations, allowing for a more rapid estimation of the optimal parameters.
 
+\phantom{x}\hspace{0.5cm} *Grid Search* - In order to conduct a grid search,
+it is first necessary to create a parameter grid containing all possible
+combinations of the alpha and sigma parameters. The range of alpha is
+predetermined and fixed at 0.1 to 1.5, while the range of sigma is also
+predetermined and fixed at 0 to 2, with both ranges incrementing by 0.1. This
+process yields a grid of 315 objects, which represent the potential parameter
+combinations to be tested. For each combination, a fitness value is calculated
+using the fitness function, with the entire parameter grid being scanned in
+sequence. In order to achieve a balance between the two objectives of attaining
+circular shaped objects and detecting all objects, the fitness value
+representing the shape is combined with the number of detected objects. The
+results of this method are presented in Figure \@ref(fig:static). The image
+analysis process is relatively time-consuming, with a runtime of approximately
+five minutes for the example image. Additionally, four of the microbeads could
+not be successfully detected.
 
-\phantom{x}\hspace{0.5cm} *Grid Search* - 
+(ref:static) **Results of Automated Feature Extraction Using Grid Search**:  The successfully detected microbeads are highlighted through the internal visualization of the `objectDetection()` function. The contours are outlined in purple, and the center of each object is marked with a green circle. Notably, four microbeads were not detected by the algorithm (indicated by the red arrow).
 
 ```{r, eval=FALSE}
+# Start the timer to measure the execution time of the code block
 tictoc::tic()
+
+# Perform automated object detection on the 'beads_large1' image
 static_result <- objectDetection(beads_large1,
                                    method = 'edge',
                                    alpha = 'static',
                                    sigma = 'static')
+
+# Stop the timer and display the elapsed time
 tictoc::toc()
 ```
 
@@ -718,30 +745,91 @@ static_result <- objectDetection(beads_large1,
 ```
 
 ```{r static, echo=FALSE, fig.cap="(ref:static)"}
+# Display the result of the automated parameter calculation using grid search
 plot(static_result$marked_objects, axes = FALSE)
+
+# Visualize undetected microbeads
+arrows(456, 45, 455, col = "red", lwd = 2)
+arrows(374, 82, 375, col = "red", lwd = 2)
+arrows(386, 175, 385, col = "red", lwd = 2)
+arrows(50, 170, 49, 171, col = "red", lwd = 2)
 ```
 
 
-\phantom{x}\hspace{0.5cm} *Multiparameter Optimization* - 
+\phantom{x}\hspace{0.5cm} *Multi-objective Optimization* - As mentioned above,
+automation must strike a balance between detecting only objects with perfect
+shapes (losing information about the phenomena discussed above) and detecting
+noise or unwanted areas around the objects, which can lead to the merging of
+nearby objects as seen in normal thresholding. In grid search, combining both
+quality (shape features) and quantity (number of objects detected) measures into
+a single value while maintaining this balance is a significant challenge. These
+measures are controlled by the input parameters `alpha` and `sigma`. In order to
+solve this problem, another method specifically designed to optimize multiple
+parameters, known as multi-objective optimization, has been used.
+
+In `R`, this method is accessible through the `GPareto` package, which is
+designed for 'Gaussian process-based multi-objective optimization'. This approach
+is particularly suitable for computationally intensive optimization tasks. This
+criterion is met because finding an optimal parameter combination requires the
+extraction of shape features for each parameter combination in order to evaluate
+them [@Binois2019].
+
+The Gaussian process is used to model the objective functions based on a limited
+number of sample points. Gaussian regression predicts unknown values by modeling
+the spatial correlation between sample points [@Binois2019]. The objectives to
+be optimized are the parameters `alpha` and `sigma`. The optimization task can
+be formulated as: detect as many objects as possible, while maintaining good
+shape characteristics for most of the detected objects and avoiding merging of
+nearby objects (quality/quantity trade-off).
+
+The `GPareto` package aims to identify the set of optimal compromises, known as
+the Pareto set, consisting of non-dominated points (points where no other point
+has better objectives). The visualization of the Pareto set in the objective
+space is called the Pareto front [@Binois2019].
+
+The principle of this method involves:
+1. Generating an initial set of observations.
+2. Fitting the Gaussian process models to each objective independently.
+3. Running an inner optimization loop to find the best point (new point as the maximizer of an infill criterion).
+4. Obtaining a new observation by running the simulator and updating the models accordingly.
+
+The last two steps are repeated until the simulation budget of 20 is exhausted
+or a stopping criterion is met [@Binois2019].
+
+The default criterion selected is SMS-(EGO) - S-metric Selection Efficient
+Global Optimization, an extension of the EGO algorithm tailored for
+multi-objective optimization. This method, used as an infill criterion, selects
+new sample points by maximizing hypervolume improvement, effectively balancing
+exploration (finding new areas) and exploitation (refining known good areas).
+Particle Swarm Optimization (PSO) is used as the internal optimization routine
+to find the optimal sampling point [@Binois2019].
 
 ```{r}
+# Start the timer to measure the execution time of the code block
 tictoc::tic()
+
+# Perform automated object detection on the 'beads_large1' image
 gaussian_result <- objectDetection(beads_large1,
                                    method = 'edge',
                                    alpha = 'gaussian',
                                    sigma = 'gaussian')
+
+# Stop the timer and display the elapsed time
 tictoc::toc()
 ```
 
-```{r uncert, echo=FALSE, fig.cap="(ref:uncert)"}
-include_graphics("figures/fig18_uncertainty_plot.png")
+(ref:gpareto) **Uncertainty Plot of the Objective Space** (left) & **Pareto Front Approximation** (right):
+The Uncertainty Plot provides a visualization of the confidence levels in the estimate of the Pareto front derived using Gaussian process modeling. The sample points used to construct the model are highlighted in yellow, while the actual realizations of the Pareto set are highlighted in green. In addition, the probability shades categorize regions of interest as white (indicating regions of high interest), black (indicating regions of low interest), and gray (indicating regions of uncertainty). The Pareto Front Plot visualizes the non-dominated solutions, known as the Pareto set. The optimal point within this set is highlighted in green. The input parameters 'alpha' and 'sigma' corresponding to this optimal point were used for the final analysis of the microbead image.
+
+```{r gpareto, echo=FALSE, fig.cap="(ref:gpareto)", out.width="49%"}
+include_graphics("figures/fig18.png")
+include_graphics("figures/fig17.png")
 ```
 
-```{r pareto, echo=FALSE, fig.cap="(ref:pareto)"}
-include_graphics("figures/fig17_Pareto_front.png")
-```
+(ref:multip) **Results of Automated Feature Extraction Using Multi-objective Optimization**:  The successfully detected microbeads are highlighted through the internal visualization of the `objectDetection()` function. The contours are outlined in purple, and the center of each object is marked with a green circle. Notably, all the microbeads are detected.
 
-```{r}
+```{r multip, fig.cap="(ref:multip)"}
+# Display the result of the automated parameter calculation using multi-objective optimization
 plot(gaussian_result$marked_objects, axes = FALSE)
 ```
 
@@ -757,11 +845,11 @@ approach addresses image artifacts such as inhomogeneous illumination and low
 contrast while preserving image details [@Morel2014]. Consequently, the method
 allows for the detection of low-contrast objects against inconsistent
 backgrounds, such as transparent microbeads (see Figure \@ref(fig:transparent)A).
-The thresholding method is highly robust and performs also well on fluorescent
-microbead images. However, this approach has one disadvantage: the threshold is
-less strict than edge detection, which may result in the merging of objects in
-close proximity that would be regarded as separate entities by the edge
-detection method.
+The thresholding method does not require any additional input, is highly robust
+and performs also well on fluorescent microbead images. However, this approach
+has one disadvantage: the threshold is less strict than edge detection, which
+may result in the merging of objects in close proximity that would be regarded
+as separate entities by the edge detection method.
 
 (ref:transparent) **Transparent Microbeads**: **A**) Original image of transparent microbeads, showing low contrast between the microbeads and the background. **B**) Application of the threshold method, resulting in the detection of the outer layer (halo) of the microbeads, successfully capturing the ligand signal. Detected coordinates are colored in purple, with centers marked in green.
 
@@ -814,7 +902,9 @@ In conclusion, the `objectDetection()` function gathers comprehensive data about
 image objects, which facilitates the identification and differentiation of
 individual features. This process provides precise coordinates for each object
 in the image, which serve as the foundation for further analysis and
-characterization of features within the `biopixR` package.
+characterization of features within the `biopixR` package. Moreover, the
+function provides a variety of methods for extracting objects within an image,
+thereby ensuring its adaptability for a broad range of applications.
 
 
 ## Dealing with induced Fluorescence and Clotting with `sizeFilter()` and `proximityFilter()`
@@ -908,11 +998,13 @@ filter applies the 1.5 * IQR rule in order to determine the size thresholds.
 
 (ref:size) **Size Filtering Process**: The same input utilized for the previously demonstrated proximity filtering, obtained via the `objectDetection()` function, is employed in this instance. Due to an insufficient number of objects for automated calculation, the size limits are provided manually based on the size distribution shown on the left. On the right, the `changePixelColor()` visualization tool is employed to highlight the objects that meet the size criteria in different colors.
 
-```{r size, out.width="49%", fig.pos="ht", fig.cap="(ref:size)"}
+```{r size, fig.pos="ht", fig.cap="(ref:size)"}
+par(mfrow = c(1,2))
 filter_size <- sizeFilter(objects$centers, objects$coordinates, lowerlimit = 0, upperlimit = 150)
 
 plot(objects$centers$size, ylab = "size in px")
 changePixelColor(beads, filter_size$coordinates, color = factor(filter_size$coordinates$value), visualize = T)
+par(mfrow = c(1,1))
 ```
 
 As has been demonstrated, the `biopixR` package is an effective tool for
@@ -923,7 +1015,64 @@ modules that facilitate applicability in laboratory settings.
 
 ## Interpretation with `resultAnalytics()`
 
+The `resultAnalytics()` function is designed to summarize the most important
+information about the extracted features. This includes details such as the
+number of objects, coordinates, size, intensity, and the number of objects that
+did not pass the filtering process, if applied. It also provides coverage
+information, which indicates the percentage of the image that is considered part
+of the objects. The function takes the object coordinates and the image as input
+and calculates these properties. The results are divided into two tables: one
+representing the average of all features, providing a comprehensive summary of
+the entire image in a single row (see table \@ref(tab:res2)), and the second
+providing detailed information about each detected object (see table
+\@ref(tab:res1)), which is useful but can be overwhelming when there are hundreds
+of objects in the image. Users can also provide the unfiltered coordinates if
+filtering was used; in this case, the function estimates the number of rejected
+objects based on the average size of all detected objects.
 
+```{r res1, echo=FALSE}
+result <- resultAnalytics(beads,
+                          coordinates = filter_size$coordinates,
+                          unfiltered = objects$coordinates)
+
+kable(
+  result$detailed,
+  format = "markdown",
+  booktabs = TRUE,
+  caption = "Detailed Results of extracted Features",
+  col.names = c(
+    "objectnumber",
+    "size in px",
+    "intensity",
+    "sd(intensity)",
+    "x",
+    "y"
+  ),
+  align = "cccccc",
+  escape = FALSE
+)
+```
+
+
+```{r res2, echo=FALSE}
+kable(
+  result$summary,
+  format = "markdown",
+  booktabs = TRUE,
+  caption = "Summary of extracted Features",
+  col.names = c(
+    "number of objects",
+    "mean(size)",
+    "sd(size)",
+    "mean(intensity)",
+    "sd(intensity)",
+    "estimated rejected",
+    "coverage"
+  ),
+  align = "cccccc",
+  escape = FALSE
+)
+```
 
 
 ## Batch proccesing Functions within the `biopixR` package
@@ -1131,8 +1280,33 @@ https://cran.r-project.org/web/packages/disk.frame/index.html
 https://cran.r-project.org/web/packages/bigmemory/index.html
 https://cran.r-project.org/web/packages/ff/index.html
 
-## unit testing
 ## complexity
+
+## Capabilities and Limitations - A Comparative Analysis of Human and Software Performance
+
+A number of illustrative examples demonstrate that each individual microbead is
+accurately identified. However, the identification of clotted microbeads, which
+are referred to as doublets or multiplets, does not align with the expected
+pattern. It is important to note that not every visually distinguishable
+microbead is regarded as a single object. The observed phenomenon, whereby
+doublets are identified as a single entity, is a consequence of the
+disappearance of their edges along the contact surface. The same principle
+applies to multiplets. The consecutive edges of aggregated microbeads result in
+their treatment as a single, larger object. Consequently, the number of detected
+objects will be lower than the actual number of microbeads present in an image
+if these aggregated microbeads are present. This variability could be addressed
+by integrating a watershed algorithm, a specialized segmentation algorithm
+capable of distinguishing touching objects [@Beucher1992; @Pau2010]. To
+demonstrate the discrepancy and comprehend the capabilities, an experiment was
+conducted to compare the manual analysis of three microbead images (n=5) with
+the results obtained using the `biopixR` package.
+
+In order to compare the manual and software-based methods, the Intraclass
+Correlation Coefficient (ICC) will be utilized. The statistical comparison of
+the data will be conducted using the `R` package `irr`, which includes various
+methods for analyzing interrater reliability [@irr].
+
+
 ## outside the box applicability
 
 (ref:DSB)
