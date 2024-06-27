@@ -179,7 +179,7 @@ information from detected objects and grouping them using the SOM algorithm
 object detection and applies individual filters. This pipeline integrates all
 the fundamental procedures for comprehensive analysis into a single function.
 The user is required to provide the input image and select the appropriate
-detection methods in order to gain insights into the specific objectives present
+detection methods to gain insights into the specific objectives present
 in the image. Furthermore, the user has the option to customize their workflow
 with individual filters. In addition, the function is capable of processing
 multiple color channels, such as the analysis of dual-color microbeads. The
@@ -188,7 +188,7 @@ with other functions is illustrated in \autoref{fig:Dependency}. This function
 serves as a comprehensive pipeline for image analysis, offering a variety of
 selectable functions:
 
-* `importImage()`, joins import function of the `imager` [@imager] and `magick` [@magick] packages.
+* `importImage()`, joins import functions of the `imager` [@imager] and `magick` [@magick] packages.
 * `edgeDetection()`, a combination of a Canny edge detector and gap filling [@imager],
 * `objectDetection()`, detects objects in an image by edge detection or thresholding,
 * `sizeFilter()`, eliminates objects that exceed or fall below a certain size threshold,
@@ -216,7 +216,7 @@ in the package's vignette [@biopixR].
 
 ## Graphical User Interface:
 
-The `biopixR` package has a broader applicability beyond microbead detection. The `biopixR`
+The `biopixR` package has broader applicability beyond microbead detection. The `biopixR`
 package is adaptable and can be utilized in any research field where the
 identification of distinct objects in images can be achieved through the use of
 a Canny edge detector or thresholding. This encompasses research areas such as
