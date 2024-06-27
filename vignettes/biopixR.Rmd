@@ -186,7 +186,7 @@ It should be noted that the threshold function can also be employed, which does
 not require any additional input. Although the threshold method is a valid
 approach for segmentation, it has the disadvantage of merging objects in close
 proximity that would be considered distinct by the edge detector. Consequently,
-the decision between greater accuracy with parameter input or time consuming
+the decision between greater accuracy with parameter input or time-consuming
 calculation and the more straightforward thresholding approach depends on the
 user's specific requirements.
 
@@ -204,7 +204,7 @@ the `sizeFilter`. The filter is applied to the image using previously obtained
 coordinates and centers, with specified lower and upper limits. If more objects
 are identified, automated limit calculation becomes available based on the
 interquartile range (IQR) of the size distribution. To simplify limit selection
-in cases of insufficient detected objects, the function will issue a warning and
+in cases of insufficiently detected objects, the function will issue a warning and
 generate a size distribution.
 
 This code will open an interactive `readline` prompt and ask whether the limits
@@ -263,7 +263,7 @@ The goal of excluding clotted microbeads from the analysis has been achieved
 successfully. As shown in the image above, the resulting data set now only
 includes individual microbeads.
 
-When microbeads are in close proximity, they can induce fluorescence in each
+When microbeads are in proximity, they can induce fluorescence in each
 other. This phenomenon can lead to misleading signals and contribute to false
 positives during analysis. To prevent distorted results, the `proximityFilter`
 is used in subsequent steps. This function inspects each gathered center and
@@ -281,7 +281,7 @@ twice the radius, ensuring that the minimum distance to another microbead is
 half a microbead (only if radius = 'auto'). Note that the coordinates obtained
 from the `objectDetection` function should be used as they are not filtered and
 therefore include all coordinates. This ensures the accurate exclusion of
-microbeads that are in close proximity to doublets or multiplets.
+microbeads that are in proximity to doublets or multiplets.
 
 ```{r}
 res_proximityFilter <-
@@ -329,7 +329,7 @@ the signal is a crucial parameter for both microbeads and any fluorescent image.
 Finally, it may be of interest to calculate the area density, which represents
 the percentage of detected pixels (microbeads) relative to the pixel area of the
 entire image. To extract this information, the `resultAnalytics` function from
-the biopixR package is utilized. This function requires the data frame of the
+the `biopixR` package is utilized. This function requires the data frame of the
 remaining coordinates, the unfiltered coordinates, and the original image as
 inputs.
 
@@ -563,7 +563,7 @@ determines the maximum pixel range around each line end that ought to be scanned
 for another edge. The iterations parameter specifies the number of times the
 algorithm will be applied to the given image. The function incorporates an
 internal visualization that highlights the pixels added by the algorithm to fill
-the line gaps. In the following images the visualization and the result of the
+the line gaps. In the following images, the visualization and the results of the
 function are displayed.
 
 ```{r fig.show='hold', out.width="49%"}

@@ -58,11 +58,11 @@ include_graphics("figures/fig0_logo.png")
 # Introduction to Techniques in Bioimage Informatics for Feature detection
 
 The quality of image data is too high for manual processing. Therefore, automatic 
-processing of image data is crucial to ensure we can achieve objective and reproducible 
+processing of image data is crucial to ensuring objective and reproducible 
 results. Additionally, Bioimage Informatics plays a key role in applications such as 
 edge detection and feature extraction.
 
-# History, philosophy and aims of the `biopixR` package
+# History, philosophy, and aims of the `biopixR` package
 
 In 2018, we began developing algorithms for the R programming language 
 as part of our research in bioimage informatics. Our focus was on analyzing data from 
@@ -78,7 +78,7 @@ This effort gained momentum in October 2023 when we transitioned to open reposit
 on GitHub, adopting modern approaches to ensure higher software quality and foster 
 greater collaboration with the scientific and open-source communities.
 
-Our most important goal was to publish the package on the trend, because the 
+Our most important goal was to publish the package on the trend because the 
 trend infrastructure requires high quality software. We have achieved this goal. 
 Since then, we have published several package versions, including our first milestone 
 release (0.2.4) on CRAN on April 2, 2024, as well as a stable version (1.0) on June 3, 2024. 
@@ -97,7 +97,7 @@ including atherosclerosis, cardiovascular disease, infections, inflammatory diso
 and autoimmune diseases.However, its applications can be extended to any research
 problem involving feature extraction from images and quantifying related image
 data. These applications include the assessment of wastewater for the detection
-of microplastics [@Ding2020], the real-time localization in microbead-based
+of microplastics [@Ding2020], the real-time localization of microbead-based
 drug delivery systems [@Bannerman2016], and other fields within the life
 sciences, such as cell biology.
 
@@ -107,7 +107,7 @@ sciences, such as cell biology.
 All technical and experimental aspects of `biopixR` are aimed to adhere to the
 principles of reproducible research. The development process was guided by the
 work of @Wickham2023 and the Guidelines provided by the @R_Core_Team.
-Encompassing the package building, meta structure, licencing, testing,
+Encompassing the package building, metastructure, licencing, testing,
 documentation and distribution of the software. In accordance with the
 principles of *Agile Software Development* and *Extreme Programming*, several
 practices were implemented with the objective of ensuring the delivery of
@@ -159,19 +159,19 @@ metabolic pathways, and protein expression patterns. Fundamental operations in
 bioimage informatics include feature extraction, segmentation, registration,
 clustering, classification, annotation, and visualization [@Peng2008].
 
-## Licence and wider open source context
+## License and wider open source context
 
 `biopixR` is an open-source software package (licensed under the LGPL
 $\ge$ 3)^[https://www.gnu.org/licenses/lgpl-3.0.de.html] for the statistical
 programming language `R`, which is widely used in statistics, bioinformatics,
-and data science. `R`'s active cummunity has developed numerous packages for a
+and data science. `R`'s active community has developed numerous packages for a
 multitude of applications, which facilitate the development of customized
 workflows, including data import, preprocessing, analysis, post-processing, and
 visualization, within a reproducible environment [@Roediger2015; @Giorgi2022].
 The growing significance of image acquisition, processing, segmentation, feature
 extraction, and visualization in biological research underscores the importance
 of comprehensive data processing and automation capabilities. Although initially
-designed for statistical analysis, `R`, in conjunction with its associated
+designed for statistical analysis, `R`, with its associated
 packages, is capable of effectively supporting image analysis and automation
 [@Chessel2017; @Haase2022].
 
@@ -191,7 +191,7 @@ include_graphics("figures/fig4_dependency.png")
 
 The core contributors are listed in the `DESCRIPTION` file of the `biopixR` package. The following paragraphs describe methods applied for the `biopixR` package.
 
-## Version Control and Continous Integration
+## Version Control and Continuous Integration
 
 For the purpose of version control, the widely used Git system, which is
 available on all major development platforms, was employed. Version control with
@@ -218,7 +218,7 @@ significant issues in the software's integrity and functionality. To address
 this issue, CI is employed as an automated build and test system. It verifies
 the package's functionality and compatibility across various operating systems
 (OS). This ensures that the code, package structure, metadata, and format remain
-functional. This process of error catching is simplified by CI, as it is able to
+functional. This process of error catching is simplified by CI, as it can
 identify potential issues in the integration process [@Meyer2014; @Soares2022].
 
 For `R`, the standard test suite is the `R CMD check`, which includes over 50
@@ -248,7 +248,7 @@ adhere to the **lowerCamelCase** style (e.g., `objectDetection()`), with the
 exception of those designated to be interactive, which also utilize the
 **underscore_separated** style (e.g., `interactive_objectDetection()`).
 
-In order to enhance the formatting, consistency, and readability of the code,
+To enhance the formatting, consistency, and readability of the code,
 the `styler` package by @Mueller2017 was employed and applied to the code. The
 `styler` package performs "non-invasive pretty printing of R code", whereby the
 code is formatted according to the [*tidyverse style guide*](https://style.tidyverse.org/).
@@ -289,8 +289,8 @@ these tests [@Wickham2011; @Myers2012].
 
 Unit tests for the `biopixR` package were created using the `testthat` package
 by @Wickham2009. The tests are executed automatically as part of the package
-building process and during the `R CMD check`. The unit tests corresponding to
-each function are located in the `/tests/testthat/` subdirectory of the
+building process and during the `R CMD check`. The unit test corresponding to
+each function is located in the `/tests/testthat/` subdirectory of the
 `biopixR` package. The following example provides insight into the testing
 procedure for the `changePixelColor()` function, with expectations that:
 
@@ -357,7 +357,7 @@ The `biopixR` package is available on The **C**omprehensive **R** **A**rchive
 [https://CRAN.R-project.org/package=biopixR]. CRAN employs rigorous testing
 procedures to ensure that the package can be downloaded and built on all major
 operating systems. Additionally, it validates the examples and documentation
-through the `R CMD check`. In order to utilize the `biopixR` package, it is
+through the `R CMD check`. To utilize the `biopixR` package, it is
 first necessary to install R (version 4.2.0 or higher) and then to execute the
 following code:
 
@@ -372,7 +372,7 @@ following link:
 
 # Functions for Quantitative Data Analysis in `biopixR`
 
-The `biopixR` package includes a series of microbead images in order to
+The `biopixR` package includes a series of microbead images to
 demonstrate its capabilities in the analysis and processing of biological
 imagery. The sample images illustrate the package's functionalities, allowing
 users to explore and experiment with image analysis and manipulation within the
@@ -449,11 +449,11 @@ par(mfrow = c(1, 1))
 
 ## `edgeDetection()` - A modified Canny edge Detector {#edge}
 
-A variety of edge detection algorithms are available in the `R` programming
+Various edge detection algorithms are available in the `R` programming
 language, with the Canny edge detector, developed by @Canny1986, being the most
 widely implemented across multiple packages, including those by @Barthelme2015;
 @Ooms2016; @Mouselimis2016; and @Beare2018. Other noteworthy edge detectors in
-the `R` package `OpenImageR` include those by @Prewitt1970, @Sobel2014,
+the `R` package `OpenImageR` includes those by @Prewitt1970, @Sobel2014,
 @Roberts1980, and @Scharr2000 [@Mouselimis2016]. After evaluating the
 different results (exemplary see \@ref(fig:compare)), the Canny edge detection
 algorithm from the `imager` package was selected for edge detection. The
@@ -462,11 +462,11 @@ Furthermore, the `cannyEdges()` function in `imager` offers adjustable
 parameters for alpha and sigma, enabling users to customize thresholding and
 smoothing, providing the desired flexibility.
 
-The process of Canny edge detection using the `imager` package is comprised of a
+The process of Canny edge detection using the `imager` package comprises a
 series of steps. Initially, a Gaussian filter is applied to the image, resulting
-in the smoothing of the image in order to remove noise. The degree of smoothing
+in the smoothing of the image to remove noise. The degree of smoothing
 can be adjusted by varying the value of the `sigma` parameter. Subsequently, the
-intensity gradient is calculated in order to determine the magnitude of the
+intensity gradient is calculated to determine the magnitude of the
 edges. This is followed by the application of non-maximum suppression, which
 serves to minimize the blur introduced previously. Subsequently, a double
 threshold is applied. In the absence of provided thresholds, they are estimated
@@ -505,7 +505,7 @@ objects inaccessible for further analysis. To address this issue, the `magick`
 package was employed to identify line ends (see \@ref(fig:cannyE)B). Line ends
 can then be reconnected to a neighboring line, provided that the line end does
 not share the same label. This process of reconnection is constrained by a
-specific radius in order to prevent line ends from connecting across the entire
+specific radius to prevent line ends from connecting across the entire
 image.
 
 (ref:cannyE) **Segmentation Result with Canny Edge Detector**: **A**) Segmentation result using the `label()` function. The segmentation is incomplete, as not all microbeads are identified as foreground. Only the contours are detected in these cases (highlighted by red arrows). **B**) Result of the `cannyEdges()` function, showing detected line end pixels, which are colored and circled in green.
@@ -687,8 +687,8 @@ When edge detection is selected, the modified Canny edge detector, provided by
 the `edgeDetection()` function, is used. As previously described in chapter
 \@ref(edge), the selection of the `alpha` and `sigma` parameters plays a pivotal
 role in the performance of feature extraction. The objective is to modify the
-threshold (`alpha`) in order to detect all objects without detecting noise, and
-to maintain a minimal level of smoothing (`sigma`) in order to avoid merging
+threshold (`alpha`) to detect all objects without detecting noise, and
+to maintain a minimal level of smoothing (`sigma`) to avoid merging
 proximate objects and to ensure accurate edge detection. To facilitate the
 parameter selection process, the `biopixR` package offers a variety of methods
 to assist with the parameter selection process:
@@ -703,7 +703,7 @@ time-consuming due to its exhaustive testing of every possible parameter
 combination, the Pareto front optimization method samples and analyzes a subset
 of combinations, allowing for a more rapid estimation of the optimal parameters.
 
-\phantom{x}\hspace{0.5cm} *Grid Search* - In order to conduct a grid search,
+\phantom{x}\hspace{0.5cm} *Grid Search* - To conduct a grid search,
 it is first necessary to create a parameter grid containing all possible
 combinations of the alpha and sigma parameters. The range of alpha is
 predetermined and fixed at 0.1 to 1.5, while the range of sigma is also
@@ -711,7 +711,7 @@ predetermined and fixed at 0 to 2, with both ranges incrementing by 0.1. This
 process yields a grid of 315 objects, which represent the potential parameter
 combinations to be tested. For each combination, a fitness value is calculated
 using the fitness function, with the entire parameter grid being scanned in
-sequence. In order to achieve a balance between the two objectives of attaining
+sequence. To achieve a balance between the two objectives of attaining
 circular shaped objects and detecting all objects, the fitness value
 representing the shape is combined with the number of detected objects. The
 results of this method are presented in Figure \@ref(fig:static). The image
@@ -763,7 +763,7 @@ noise or unwanted areas around the objects, which can lead to the merging of
 nearby objects as seen in normal thresholding. In grid search, combining both
 quality (shape features) and quantity (number of objects detected) measures into
 a single value while maintaining this balance is a significant challenge. These
-measures are controlled by the input parameters `alpha` and `sigma`. In order to
+measures are controlled by the input parameters `alpha` and `sigma`. To
 solve this problem, another method specifically designed to optimize multiple
 parameters, known as multi-objective optimization, has been used.
 
@@ -771,7 +771,7 @@ In `R`, this method is accessible through the `GPareto` package, which is
 designed for 'Gaussian process-based multi-objective optimization'. This approach
 is particularly suitable for computationally intensive optimization tasks. This
 criterion is met because finding an optimal parameter combination requires the
-extraction of shape features for each parameter combination in order to evaluate
+extraction of shape features for each parameter combination to evaluate
 them [@Binois2019].
 
 The Gaussian process is used to model the objective functions based on a limited
@@ -876,12 +876,12 @@ Graphical User Interface (GUI) is invoked via the
 `sigma` parameters of the `edgeDetection()` function, discussed in chapter
 \@ref(edge), represent the threshold adjustment factor and the smoothing factor,
 respectively. The corresponding sliders in the Tcl/Tk interface enable users to
-adjust these parameters in order to optimize object detection. The detected
+adjust these parameters to optimize object detection. The detected
 objects are highlighted with purple contours and green centers. The "Switch
 Method" button enables the user to toggle between edge detection and the
 threshold method for feature detection. Figure \@ref(fig:GUI) illustrates that the
 threshold adjustment factor - `alpha` - must be decreased, as not all microbeads
-are currently being detected. In order to facilitate the analysis of smaller
+are currently being detected. To facilitate the analysis of smaller
 images, a scaling slider was incorporated into the interface, utilizing the
 `imresize()` function from the `imager` package. This function employs bilinear
 interpolation to adjust the image size according to user input
@@ -993,7 +993,7 @@ distribution is plotted in the R environment, and the user is prompted in the
 console to enter the limits based on the visualized distribution. In the
 automated approach, which is applicable when the number of objects exceeds 50,
 the interquartile range (IQR) is used to calculate the limits. Specifically, the
-filter applies the 1.5 * IQR rule in order to determine the size thresholds.
+filter applies the 1.5 * IQR rule to determine the size thresholds.
 
 (ref:size) **Size Filtering Process**: The same input utilized for the previously demonstrated proximity filtering, obtained via the `objectDetection()` function, is employed in this instance. Due to an insufficient number of objects for automated calculation, the size limits are provided manually based on the size distribution shown on the left. On the right, the `changePixelColor()` visualization tool is employed to highlight the objects that meet the size criteria in different colors.
 
@@ -1530,7 +1530,7 @@ demonstrate the discrepancy and comprehend the capabilities, an experiment was
 conducted to compare the manual analysis of three microbead images (n=5) with
 the results obtained using the `biopixR` package.
 
-In order to compare the manual and software-based methods, the Intraclass
+To compare the manual and software-based methods, the Intraclass
 Correlation Coefficient (ICC) will be utilized. The statistical comparison of
 the data will be conducted using the `R` package `irr`, which includes various
 methods for analyzing interrater reliability [@irr].
