@@ -1,0 +1,52 @@
+---
+title: 'scanDir log file'
+output: pdf_document
+--- 
+# Analysis of directory /home/brauctim/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images 
+2024-06-27 13:22:59 Importing images from directory...   
+2024-06-27 13:23:00 Checking md5sums...   
+2024-06-27 13:23:00 Currently analyzing: /home/brauctim/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/beads_large1.bmp   
+2024-06-27 13:23:00 Currently analyzing: /home/brauctim/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/beads_large2.png   
+2024-06-27 13:23:04 Currently analyzing: /home/brauctim/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/beads.png   
+2024-06-27 13:23:04 Currently analyzing: /home/brauctim/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/droplet_beads.png   
+```{r, echo=FALSE}
+directory_path <- getwd()
+target_file_name <- 'result.RDS'
+all_files <- list.files(directory_path, recursive = TRUE, full.names = TRUE)
+matching_files <- all_files[grep(target_file_name, all_files, ignore.case = TRUE)]
+
+md5result <- readRDS(matching_files)
+name <- basename(md5result$file)
+md5result <- data.frame(name = name,
+                        amount = md5result$number_of_objects,
+                        size = md5result$mean_size,
+                        intensity = md5result$mean_intensity,
+                        rejected = md5result$estimated_rejected,
+                        coverage = md5result$coverage)
+md5result
+```  
+```{r, echo=FALSE}
+#library(biopixR)
+target_directory_name <- 'log_files'
+all_directories <- list.dirs(directory_path, recursive = TRUE, full.names = TRUE)
+matching_directories <- all_directories[grep(target_directory_name, all_directories, ignore.case = TRUE)]
+
+file_names <- list.files(directory_path, full.names = TRUE)
+file_names <- file_names[!file.info(file_names)$isdir]
+file_names <-
+  file_names[grep('\\.Rmd$', file_names, invert = TRUE)]
+file_names <- tools::file_path_sans_ext(basename(file_names))
+
+for (i in seq_len(nrow(md5result))) {
+file_path <- file.path(matching_directories, paste0('log_', file_names[i], '.RDS'))
+import <- readRDS(file_path)
+image <- import$image[[1]]
+data <- import$data
+name_i <- name[i]
+
+plot(image, main = name_i)
+with(data$unfiltered_centers, points(data$unfiltered_centers$mx, data$unfiltered_centers$my, col = 'darkred'))
+with(data$detailed, points(data$detailed$x, data$detailed$y, col = 'darkgreen'))
+#changePixelColor(image, data$coordinates, color = factor(data$coordinates$value), visualize = TRUE)
+}
+```  

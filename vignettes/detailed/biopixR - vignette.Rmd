@@ -818,8 +818,7 @@ gaussian_result <- objectDetection(beads_large1,
 tictoc::toc()
 ```
 
-(ref:gpareto) **Uncertainty Plot of the Objective Space** (left) & **Pareto Front Approximation** (right):
-The Uncertainty Plot provides a visualization of the confidence levels in the estimate of the Pareto front derived using Gaussian process modeling. The sample points used to construct the model are highlighted in yellow, while the actual realizations of the Pareto set are highlighted in green. In addition, the probability shades categorize regions of interest as white (indicating regions of high interest), black (indicating regions of low interest), and gray (indicating regions of uncertainty). The Pareto Front Plot visualizes the non-dominated solutions, known as the Pareto set. The optimal point within this set is highlighted in green. The input parameters 'alpha' and 'sigma' corresponding to this optimal point were used for the final analysis of the microbead image.
+(ref:gpareto) **Uncertainty Plot of the Objective Space** (left) & **Pareto Front Approximation** (right): The Uncertainty Plot provides a visualization of the confidence levels in the estimate of the Pareto front derived using Gaussian process modeling. The sample points used to construct the model are highlighted in yellow, while the actual realizations of the Pareto set are highlighted in green. In addition, the probability shades categorize regions of interest as white (indicating regions of high interest), black (indicating regions of low interest), and gray (indicating regions of uncertainty). The Pareto Front Plot visualizes the non-dominated solutions, known as the Pareto set. The optimal point within this set is highlighted in green. The input parameters 'alpha' and 'sigma' corresponding to this optimal point were used for the final analysis of the microbead image.
 
 ```{r gpareto, echo=FALSE, fig.cap="(ref:gpareto)", out.width="49%"}
 include_graphics("figures/fig18.png")
@@ -999,12 +998,24 @@ filter applies the 1.5 * IQR rule in order to determine the size thresholds.
 (ref:size) **Size Filtering Process**: The same input utilized for the previously demonstrated proximity filtering, obtained via the `objectDetection()` function, is employed in this instance. Due to an insufficient number of objects for automated calculation, the size limits are provided manually based on the size distribution shown on the left. On the right, the `changePixelColor()` visualization tool is employed to highlight the objects that meet the size criteria in different colors.
 
 ```{r size, fig.pos="ht", fig.cap="(ref:size)"}
-par(mfrow = c(1,2))
-filter_size <- sizeFilter(objects$centers, objects$coordinates, lowerlimit = 0, upperlimit = 150)
+par(mfrow = c(1, 2))
+filter_size <-
+  sizeFilter(
+    objects$centers,
+    objects$coordinates,
+    lowerlimit = 0,
+    upperlimit = 150
+  )
 
 plot(objects$centers$size, ylab = "size in px")
-changePixelColor(beads, filter_size$coordinates, color = factor(filter_size$coordinates$value), visualize = T)
-par(mfrow = c(1,1))
+abline(h = 150)
+changePixelColor(
+  beads,
+  filter_size$coordinates,
+  color = factor(filter_size$coordinates$value),
+  visualize = T
+)
+par(mfrow = c(1, 1))
 ```
 
 As has been demonstrated, the `biopixR` package is an effective tool for
@@ -1013,7 +1024,7 @@ package provides automated filter functions, some of which include interactive
 modules that facilitate applicability in laboratory settings.
 
 
-## Interpretation with `resultAnalytics()`
+## Interpretation with `resultAnalytics()` {#result}
 
 The `resultAnalytics()` function is designed to summarize the most important
 information about the extracted features. This includes details such as the
@@ -1077,45 +1088,263 @@ kable(
 
 ## Batch proccesing Functions within the `biopixR` package
 
-This section introduces two pipeline functions. The first is `imgPipe`, which integrates multiple functions from the `biopixR` package, allowing for the comprehensive analysis and filtering of an image within a single function. The second function, `scanDir`, is an extension of `imgPipe` designed for batch processing. It enables the analysis of entire directories with all the options, parameter adjustments, and individual filtering capabilities offered by `imgPipe`.
+This section presents two pipeline functions designed for the analysis of
+images. The initial function, termed `imgPipe()`, integrates a number of
+functions from the `biopixR` package, thereby enabling comprehensive analysis
+and filtering of an image through a single function. The second function,
+`scanDir`, expands the functionality of `imgPipe` to encompass batch processing.
+This functionality enables the analysis of entire directories, incorporating all
+the options, parameter adjustments, and individual filtering capabilities
+provided by the `imgPipe()` function.
 
 ### `imgPipe()`: One image One function 
 
-The `imgPipe()` function integrates various functions into a single streamlined pipeline, including `objectDetection()`, `sizeFilter()`, `proximityFilter()`, and `resultsAnalytics()`. It is designed to process multiple color channels simultaneously. For instance, if an image contains objects of two different colors, with each color detectable in separate channels, these two images can be input into the `imgPipe()` function. The function will then analyze both images and combine the results, providing a summary of the number of objects detected in each image. This feature is particularly useful for analyzing dual-colored microbeads.
+The `imgPipe()` function combines multiple functions into a unified pipeline,
+including `objectDetection()`, `sizeFilter()`, `proximityFilter()`, and
+`resultsAnalytics()`. This function is capable to analyse a single image, but
+was also designed to be capable of processing multiple color channels
+concurrently. As an illustration, if an image contains objects that are
+distinguishable by color, with each object detectable in a separate channel,
+these images can be submitted for analysis using the `imgPipe()` function. The
+function will analyze both images and combine the results, providing a summary
+of the number of objects detected in each image. This feature is particularly
+advantageous for the analysis of dual-colored microbeads.
 
-In the following example, the 'edge' method (edge detection) is utilized. Parameters such as alpha and sigma need to be specified, and the `sizeFilter()` is enabled to exclude doublets and multiplets from the analysis.
+This section illustrates the application of the `imgPipe()` function. Figure
+\@ref(fig:imgPipe1) presents the initial state, which depicts the dual-colored
+microbead image (A) and the two single-color channels (B & C). The images are
+imported via the `imageImport()` function, which automatically converts the
+imported TIFF image into a 'cimg' object. Subsequently, the images are
+transformed into grayscale and utilized as input for the `imgPipe()` function.
+Edge detection is employed for feature extraction, with the identical `alpha`
+and `sigma` parameters applied to both images (Figure \@ref(fig:imgPipe1)B and
+C). It can be observed in Figure\@ref(fig:imgPipe1)A that overlapping microbeads
+are present. To exclude these from the subsequent analysis, the
+`proximityFilter` is enabled within the `imgPipe()` function. The output is in
+similar format as presented in Chapter \@ref(result) (see Table
+\@ref(tab:imgPipe3)), with the addition of a data frame comparing the differently
+encoded microbeads (see Table \@ref(tab:imgPipe4)).
 
-```{r imgPipe1}
-res_pipe <- imgPipe(beads_large1,
-                    method = 'edge',
-                    alpha = 0.7,
-                    sigma = 0.1,
-                    sizeFilter = TRUE,
-                    upperlimit = 'auto',
-                    lowerlimit = 'auto')
+(ref:imgPipe1) **Dual Colored Microbeads**: Images to be analyzed using the `imgPipe()` function. **A**) The image displays both microbead populations with different emission spectra, as indicated by the green and red signals. **B**) Shows the first input image with only the green emission detected. **C**) Shows the second input image with only the red emission detected.
 
-# Create data for the visualization of lower and upper limit
-res_comp <- objectDetection(beads_large1, method = 'edge', alpha = 0.7, sigma = 0.1)
-```
-
-The remaining microbeads are highlighted in different colors to distinguish between individual objects. Alongside the image, a plot is provided showing the calculated size limits.
-
-```{r imgPipe2, fig.show='hold', out.width="99%", fig.align='center', fig.pos="ht"}
-par(mfrow = c(1,2))
-
-plot(beads_large1, axes = FALSE)
-points(res_pipe$detailed$x,
-       res_pipe$detailed$y,
-       pch = 19,
-       col = factor(res_pipe$detailed$objectnumber))
-
-plot(res_comp$centers$size, ylab = "size in px")
-abline(h = c(85, 109))
-
+```{r imgPipe1, warning=FALSE, fig.cap="(ref:imgPipe1)"}
+par(mfrow = c(1,3))
+dual_color <- importImage("figures/fig19.2_dual_color.tif")
+plot(dual_color, axes = FALSE)
+text(c(60), c(60), c("A"), col = "darkred", cex = 5)
+green_beads <- importImage("figures/fig19_green_channel.tif")
+plot(green_beads, axes = FALSE)
+text(c(60), c(60), c("B"), col = "darkred", cex = 5)
+red_beads <- importImage("figures/fig19.1_red_channel.tif")
+plot(red_beads, axes = FALSE)
+text(c(60), c(60), c("C"), col = "darkred", cex = 5)
 par(mfrow = c(1,1))
 ```
 
-### `scanDir()`
+```{r}
+green_beads <-
+  as.cimg(green_beads[1:dim(green_beads)[1], 
+                      1:dim(green_beads)[2], 
+                      1, 
+                      1:dim(green_beads)[4]]) |> 
+  grayscale()
+
+red_beads <-
+  as.cimg(red_beads[1:dim(red_beads)[1], 
+                    1:dim(red_beads)[2], 
+                    1, 
+                    1:dim(red_beads)[4]]) |> 
+  grayscale()
+```
+
+```{r imgPipe2}
+res_pipe <- imgPipe(green_beads,
+                    color1 = "green",
+                    red_beads,
+                    color2 = "red",
+                    method = 'edge',
+                    alpha = 0.7,
+                    sigma = 2,
+                    sizeFilter = FALSE,
+                    proximityFilter = TRUE)
+```
+
+```{r imgPipe3}
+kable(
+  res_pipe$summary,
+  format = "markdown",
+  booktabs = TRUE,
+  caption = "Summary of extracted Features",
+  col.names = c(
+    "number of objects",
+    "mean(size)",
+    "sd(size)",
+    "mean(intensity)",
+    "sd(intensity)",
+    "estimated rejected",
+    "coverage",
+    "of color 1",
+    "of color 2"
+  ),
+  align = "cccccc",
+  escape = FALSE
+)
+```
+
+```{r imgPipe4}
+kable(
+  res_pipe$dual,
+  format = "markdown",
+  booktabs = TRUE,
+  caption = "Detailed Information about encoded Objects",
+  col.names = c(
+    "color",
+    "number of objects",
+    "mean(size)",
+    "sd(size)",
+    "mean(intensity)",
+    "sd(intensity)"
+  ),
+  align = "cccccc",
+  escape = FALSE
+)
+```
+
+To provide a conclusive visual representation of the findings, the original
+image, which depicts both populations of microbeads, is presented. Each detected
+microbead is indicated by a colored circle: microbeads with green emission are
+highlighted with a blue circle, and those with red emission are marked with an
+orange circle. Overlapping microbeads are not marked, as they are excluded from
+the analysis (see Figure \@ref(fig:imgPipe5)).
+
+(ref:imgPipe5) **Result of the Analysis of dual colored Microbeads**: The original image showing both microbead populations is presented. Detected microbeads with green emission are circled in blue, and those with red emission are circled in orange. Overlapping microbeads are not circled, due to their proximity and the resulting exclusion from the analysis.
+
+```{r imgPipe5, fig.cap="(ref:imgPipe5)"}
+colors <- c("blue", "orange")
+plot(dual_color, axes = FALSE)
+points(res_pipe$detailed$x, res_pipe$detailed$y, col = colors[factor(res_pipe$detailed$color)], lwd = 3)
+```
+
+In conclusion, this function provides a comprehensive pipeline for image
+analysis, encompassing both the initial preprocessing tasks, such as filtering,
+and the final analysis. The function may be applied to a single image devoid of
+encoded objects or to multiple images representing a single population of
+encoded objects.
+
+
+### `scanDir()`: Whole Directory analysis
+
+The images provided by the `biopixR` package depict fluorescent microbeads in
+varying quantities and image dimensions.
+
+The `scanDir` function enables the analysis of images across entire directories.
+To ensure reliability and performance, the software includes a number of
+features designed to enhance the robustness and efficiency of the analysis
+process. These include double file checks via md5sum comparison, multi-core
+processing capabilities, and the option to generate a log file that documents
+the analysis process and results. The following section presents a simple
+example of the function being run on the provided images using the 'threshold'
+method without any filtering. A sample of the results is presented below.
+
+In order to guarantee the quality of the analyses, the function incorporates a
+verification process to ensure that the data is unique within the analysis
+directory. This is accomplished through the utilization of the Message Digest 5
+(MD5) algorithm, originally developed by @Rivest1992. The MD5 algorithm is a
+standard practice in computer science for ensuring file integrity and
+identifying identical files. The application of this algorithm results in the
+generation of a unique "fingerprint" for each file [@Rivest1992; @Cechova2020].
+In `R` this can be accomplished by invoking the `md5sum()` function from the
+`tools` package, which computes a 128-bit summary of the file contents,
+represented by 32 hexadecimal digits. Subsequently, the fingerprints are
+subjected to analysis to identify any duplicates. In the event that duplicate
+files are identified, the function is terminated and the user is prompted to
+remove the duplicated files.
+
+In R, each image and its respective analysis script is sequentially processed on
+a single core of the central processing unit (CPU), by default. This approach is
+especially time-consuming when analyzing multiple images from an entire
+experiment. The use of parallel processing in `R` allows for the simultaneous
+execution of multiple processes, thereby enhancing performance and speed. The
+use of packages such as `parallel`, `snow`, `foreach`, and `doParallel` allows
+computations to be distributed across multiple cores, within `R`. This is
+particularly advantageous for complex data analysis tasks and data-intensive
+applications, where parallel programming can significantly reduce computation
+time [@Weston2009; @Schmidberger2009; @Corporation2011;
+@Peng2022].^[https://nceas.github.io/oss-lessons/parallel-computing-in-r/parallel-computing-in-r.html]
+
+The `foreach` package provides a straightforward and efficient approach to
+implementing parallel processing. Consequently, this package was employed to
+enable parallel processing in the `scanDir()` function. The function was
+designed with the objective of achieving high parallelizability, thereby
+enabling each image to be analyzed on a separate core. For instance, if six
+cores are available, six images can be analyzed concurrently, thereby markedly
+accelerating the analysis process. The user may specify the number of cores to
+be utilized; alternatively, 75% of all cores are used for computation.
+
+The following section illustrates the functionality of the `scanDir()` function
+through an analysis of a directory containing the example images provided by the
+`biopixR` package (see Figure \@ref(fig:examples)). The threshold method is
+employed without enabling any additional filtering processes. The resulting
+Table \@ref(tab:scanDir1) will be saved in the working directory path in
+comma-separated value (CSV) format, if the `Rlog` parameter is set to `TRUE`.
+
+```{r scanDir1}
+path2dir <- system.file("images", package = "biopixR")
+
+res_scanDir <- scanDir(
+  path = path2dir,
+  method = 'threshold',
+  sizeFilter = FALSE,
+  proximityFilter = FALSE,
+  Rlog = FALSE
+)
+
+# First two columns contain file paths and md5 sums
+kable(
+  res_scanDir[, 3:9],
+  format = "markdown",
+  booktabs = TRUE,
+  caption = "Results obtained by the whole directory analysis",
+  col.names = c(
+    "number of objects",
+    "mean(size)",
+    "sd(size)",
+    "mean(intensity)",
+    "sd(intensity)",
+    "estimated rejected",
+    "coverage"
+  ),
+  align = "cccccc",
+  escape = FALSE
+)
+```
+
+As one of the fundamental principles of this package is to facilitate
+reproducible research, the function documents the analysis process in an
+`RMarkdown` file and generates a comprehensive log file in PDF format. `R` and
+`RMarkdown` are widely recognized tools for reproducible research [@Baumer2014;
+@Roediger2015; @CaleroValdez2020]. This package facilitates reproducibility
+through its open-source nature, which allows for the straightforward publication
+of analysis scripts. Furthermore, the log file provides visual quality control
+and comparability. Moreover, comprehensive data for each individual image within
+a directory are accessible via the RDS (R Data Serialization) files, saved as
+part of the logging process.
+
+The following pages present the log file generated from the `RMarkdown` file
+representing the results for this analysis. The directory of the analysis is
+first noted in the caption, followed by a series of logging steps that indicate
+the current status of the image being analyzed. Furthermore, the log will
+indicate any instances of analysis failure resulting from errors in image
+processing. Subsequently, all images within the specified directory are plotted
+with the file name serving as the title. The detection of objects is indicated
+by green circles around their centers, providing an expedient overview for
+verification of the analysis's compliance with expectations and the option of
+reanalyzing specific files if necessary.
+
+```{r, fig.cap="**Log file created by the `scanDir()` function.**"}
+include_graphics("data/log_file.pdf")
+```
+
 
 ## Functions for Droplet Analysis
 

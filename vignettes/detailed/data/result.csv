@@ -1,0 +1,5 @@
+"file","md5_sum","number_of_objects","mean_size","sd_size","mean_intensity","sd_intensity","estimated_rejected","coverage"
+"/home/brauctim/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/beads_large1.bmp","7b88193bf99c4efebb5e2e8f4b8066fe",80,99.325,47.3748250723199,0.71066956860771,0.158689048994209,0,0.042953208787407
+"/home/brauctim/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/beads_large2.png","b37015555151d6b387ea8a7ced30eaa3",667,90.5952023988006,38.3851335212861,0.215408246605773,0.0468841165918748,0,0.0423072937670834
+"/home/brauctim/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/beads.png","504d83fb571b8e8156f188b57733a60c",9,127.666666666667,86.1887463651723,0.677881875117323,0.14170252436065,0,0.0711631363805277
+"/home/brauctim/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/droplet_beads.png","67b542a4f0ec7f9f306dd9b0a4099dbc",5,89,2.91547594742265,0.182913417052214,0.0491495364128952,0,0.0263126773888363
