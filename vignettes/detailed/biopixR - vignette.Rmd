@@ -1097,7 +1097,7 @@ This functionality enables the analysis of entire directories, incorporating all
 the options, parameter adjustments, and individual filtering capabilities
 provided by the `imgPipe()` function.
 
-### `imgPipe()`: One image One function 
+### `imgPipe()` - One image One function 
 
 The `imgPipe()` function combines multiple functions into a unified pipeline,
 including `objectDetection()`, `sizeFilter()`, `proximityFilter()`, and
@@ -1232,7 +1232,7 @@ encoded objects or to multiple images representing a single population of
 encoded objects.
 
 
-### `scanDir()`: Whole Directory analysis
+### `scanDir()` - Whole Directory analysis
 
 The images provided by the `biopixR` package depict fluorescent microbeads in
 varying quantities and image dimensions.
@@ -1350,11 +1350,196 @@ include_graphics("data/log_file.pdf")
 
 
 
-### `fillLineGaps()` - 
+### `fillLineGaps()` - Restoring Edge-connectivity in an Image
+
+
+
+(ref:fLG1)
+
+```{r fLG1, fig.cap="(ref:fLG1)"}
+par(mfrow = c(1,2))
+plot(droplets, axes = FALSE)
+text(c(15), c(15), c("A"), col = "darkred", cex = 4)
+plot(droplet_beads, axes = FALSE)
+text(c(15), c(15), c("B"), col = "darkred", cex = 4)
+par(mfrow = c(1,1))
+```
+
+
+```{r fig.show='hold', out.width="49%"}
+closed_gaps <- fillLineGaps(droplets,
+  droplet_beads,
+  threshold = "13%",
+  alpha = 1,
+  sigma = 0.1,
+  radius = 5,
+  iterations = 3,
+  visualize = TRUE
+)
+
+closed_gaps |> plot()
+```
+
+
+```{r}
+# label resulting image with filled gaps
+lab_partitions <- label(closed_gaps)
+df_lab_part <- as.data.frame(lab_partitions) |>
+  subset(value > 0)
+```
+
+```{r}
+library(data.table)
+# summarizing data frame by cluster (value)
+DT_droplet <- data.table(df_lab_part)
+
+grouped_droplets <-
+  DT_droplet[, .(mx = mean(x), my = mean(y)), by = value]
+
+```
+
 
 ## Shape, Texture and unsupervised Machine Learning
 
+Images contain more information than just the objects themselves, including
+characteristics such as shape and texture, which enable further interpretation
+of the captured objects. To facilitate pattern recognition regarding these
+characteristics, the `biopixR` package incorporates two clustering algorithms
+that utilize unsupervised machine learning techniques, namely Self-Organizing
+Maps (SOM) and the Partitioning Around Medoids (PAM) algorithm.
+
 ### `shapeFeatures()` - Object clustering based on shape features
+
+The `shapeFeatures()` function employs the `objectDetection()` function to
+extract objects from an image. Subsequently, these objects are analyzed with
+respect to their individual shape characteristics, including features such as
+area, perimeter, radius, eccentricity, circularity, and aspect ratio.
+Subsequently, the extracted features are summarized by incorporating these
+characteristics into the `resultAnalytics()` output.
+
+The `shapeFeatures` function is capable of utilizing unsupervised machine
+learning techniques, specifically SOM. When SOMs are enabled, the function can
+classify detected objects based on their shape features, with the final output
+table including a row with classes that indicate the corresponding group for
+each object as determined by the SOM. This entails that the features are
+projected onto a two-dimensional plane, with similar features situated in close
+proximity and dissimilar features positioned at a greater distance. The features
+are mapped to specific positions, designated as units, with each unit being
+associated with a codebook vector, representing the average of all features
+mapped to that unit. The number of these codebook vectors can be controlled
+through the `somegrid()` function of the `kohonen` package [@Kohonen1990;
+@Wehrens2006; @Kohonen2013; @Wehrens2018]. In `biopixR`, this is managed via
+the `xdim` and `ydim` parameters, providing the dimensions for the codebook
+vector gird. To utilize SOMs in `R`, the `kohonen` package is employed
+[@Wehrens2006]. In the `biopixR` package, SOMs are used to access patterns in
+shape-related characteristics of image objects.
+
+The following section presents a brief illustration of the `shapeFeatures()`
+function in action, utilizing an example image from the `biopixR` package:
+
+(ref:SOM) **Clustering of Microbeads Using SOM within `shapeFeatures()`**: **A**) This simple example demonstrates the use of the `shapeFeature()` function to group microbeads. One group is marked by a green point at its center, and the other group is marked by a red circle. **B**) The different features used as input characteristics for analysis by the SOM are plotted to compare the different groups. Features corresponding to objects marked by red circles in **A** are highlighted in red.
+
+```{r}
+shape_features <-
+  shapeFeatures(beads,
+                alpha = 1,
+                sigma = 0,
+                xdim = 2,
+                ydim = 1,
+                SOM = TRUE)
+```
+
+```{r SOM, fig.cap="(ref:SOM)"}
+colors <- c("darkgreen", "darkred")
+beads |> plot(axes = FALSE)
+points(
+  shape_features$x,
+  shape_features$y,
+  col = colors[factor(shape_features$class)],
+  pch = 19,
+  cex = 1.2
+)
+text(c(25), c(25), c("A"), col = "darkred", cex = 5)
+
+df <- data.frame(
+  size = shape_features$size,
+  intensity = shape_features$intensity,
+  perimeter = shape_features$perimeter,
+  circularity = shape_features$circularity,
+  eccentricity = shape_features$eccentricity,
+  radius = shape_features$mean_radius,
+  aspectRatio = shape_features$aspect_ratio
+)
+
+# Min-Max Normalization Function
+min_max_norm <- function(x) {
+  (x - min(x)) / (max(x) - min(x))
+}
+
+# Applying the function to each column
+df_normalized <- as.data.frame(lapply(df, min_max_norm))
+boxplot(
+  df_normalized,
+  ylab = "normalized values",
+  xaxt = "n",
+  cex.lab = 1.25,
+  cex.axis = 1.25
+)
+axis(1, at = 1:ncol(df), labels = FALSE)  # Add axis ticks but no labels
+text(
+  cex = 1.2,
+  x = seq_len(ncol(df_normalized)),
+  y = -0.07,
+  labels = colnames(df_normalized),
+  adj = 0,
+  srt = -45,
+  xpd = TRUE
+)
+# Add diagonal labels
+
+highlight_rows <-
+  which(shape_features$class == 2)  # Example row indices to highlight
+
+# Add points for the specific rows
+# Adding points for each column
+for (col in 1:ncol(df_normalized)) {
+  points(
+    rep(col, length(highlight_rows)),
+    df_normalized[highlight_rows, col],
+    col = "red",
+    pch = 19,
+    cex = 1.5
+  )
+}
+
+text(c(0.5), c(1), c("B"), col = "darkred", cex = 5
+)
+```
+
+To validate the aspect ratio calculations performed using the `biopixR` package,
+a reference figure containing circles with known ground truth aspect ratios was
+employed for comparison (see Figure \@ref(fig:circ)). The aspect ratio (AR)
+represents the ratio of an object's dimensions and can be described as follows
+[@Takashimizu2016]:
+
+\begin{equation}
+  AR = \frac{length \; of \; major \; axis}{length \; of \; minor \; axis}
+  (\#eq:one)
+\end{equation}
+
+A simplified method is utilized to calculate the major and minor axes. The
+distance from each perimeter pixel to the object's center is measured, with the
+largest distance representing the major radius and the smallest distance
+representing the minor radius. This function is based on the assumption that the
+object is symmetrical. The major and minor axes are then obtained by multiplying
+the respective radii by a factor of two. The validity of this simplification for
+symmetrical objects is illustrated in the following comparison:
+
+(ref:circ) **Circles with different Aspect Ratios**: This is a modified image, originally derived from the publication of @Takashimizu2016.
+
+```{r circ, echo=FALSE, out.width="79%", fig.cap="(ref:circ)"}
+knitr::include_graphics("figures/fig2_circularity.png")
+```
 
 ```{r}
 circles <- importImage("figures/fig3_analysis_circ.png")
@@ -1371,28 +1556,30 @@ shapes[6, 2:12] <- six
 shapes[7, 2:12] <- seven
 ```
 
-```{r, echo=FALSE, fig.show='hold', fig.align='center', out.width="79%", fig.pos="ht"}
-knitr::include_graphics("figures/fig2_circularity.png")
-```
-
-```{r, echo=FALSE}
+```{r outp, echo=FALSE}
 data <- shapes[, c(1,8:12)]
 
 kable(
   data,
+  format = "markdown",
+  booktabs = TRUE,
   col.names = c(
     "objectnumber",
     "circularity",
     "eccentricity",
-    "mean radius",
-    "sd radius",
+    "mean(radius)",
+    "sd(radius)",
     "aspect ratio"
   ),
-  caption = "Comparison of Aspect Ratios"
+  align = "cccccc",
+  caption = "Comparison of Aspect Ratios",
+  escape = FALSE
 )
 ```
 
-```{r, echo=FALSE, out.width="79%", fig.align='center', fig.show='hold', fig.pos="ht"}
+(ref:comparison) **Performance of the `shapeFeatures()` function in regards to the Aspect Ratio**: This plot compares the aspect ratio calculated by the `biopixR` package with ground truth data from a publication [@Takashimizu2016]. The ground truth data is shown in blue, and the obtained results are shown in green.
+
+```{r comparison, echo=FALSE, fig.cap="(ref:comparison)"}
 truth <- data.frame(index = seq_len(nrow(shapes)),
                     AR = c(1, 10/9, 10/8, 10/7, 10/6, 2, 10/4, 10/3, 5, 10))
 
@@ -1403,13 +1590,26 @@ plot(truth$index, truth$AR, main = "Comparison of Dataframes",
 points(shapes$objectnumber, shapes$aspect_ratio, pch = 20, col = "green")
 
 # Add a legend to the plot
-legend("topleft", legend = c("Dataframe 1", "Dataframe 2"),
+legend("topleft", legend = c("Ground Truth", "shapeFeatures"),
        col = c("blue", "green"), pch = c(19, 20))
 ```
 
+In summary, the aspect ratio calculations performed by the `biopixR` package are
+found to be generally accurate in comparison to the ground truth data, with most
+calculations demonstrating close alignment with the reference data. Minor
+discrepancies were observed at aspect ratios of 10/6 and 2. The output obtained
+by the function is presented in Table \@ref(tab:outp). In the initial example,
+the `shapeFeatures()` function was successful in clustering the microbeads
+according to their shape characteristics, thereby demonstrating its utility as a
+tool for pattern recognition based on these features.
 
 
 ### `HaralickCluster()` - Image classification based on texture features
+
+
+
+
+
 
 ```{r haralickCluster2}
 path2dir <- system.file("images", package = "biopixR")
@@ -1584,7 +1784,7 @@ knitr::include_graphics("figures/fig1_DSB_analysis.png")
 
 # Summary and Conclusion
 
-Given that the `biopixR` package is work in progresss, there is
+Given that the `biopixR` package is work in progress, there is
 scope for optimization and further improvements. Ongoing testing continues to
 reveal bugs, which will be addressed in a timely manner. Some of the issues
 identified during the writing process include a problem with the `scanDir()`
