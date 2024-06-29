@@ -61,8 +61,9 @@ water-oil emulsions. The fundamental functionality of `biopixR` was recently
 employed in the study by @geithe_multiplex_2024 to perform quality control on
 microbeads. As the `biopixR` package provides access to a range of fundamental
 data, including object size, quantity, shape, and intensity, it is a valuable
-tool for researchers in the field. The `biopixR` package is in part based on the
-`imager` [@imager] and `magick` [@magick] packages.
+tool for researchers in the field. The `biopixR` package leverages capabilities 
+from the `imager` [@imager] and `magick` [@magick] packagesto perform its own 
+tasks related to biological image processing or analysis.
 
 # Statement of need
 
