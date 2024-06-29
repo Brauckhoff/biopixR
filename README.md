@@ -33,7 +33,7 @@ install.packages("biopixR")
 or try the latest version of biopixR:
 
 ```{r}
-install.package("devtools")
+install.packages("devtools")
 devtools::install_github("Brauckhoff/biopixR")
 ```
 
