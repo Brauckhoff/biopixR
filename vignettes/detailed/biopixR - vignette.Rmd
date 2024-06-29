@@ -1348,13 +1348,35 @@ include_graphics("data/log_file.pdf")
 
 ## Functions for Droplet Analysis
 
+A common and challenging problem encountered in image analysis is the presence
+of discontinuous contours. This phenomenon presents a significant challenge to
+image processing tasks, such as segmentation, labeling, and feature extraction.
+Consequently, ensuring edge connectivity is an essential aspect of an effective
+and reliable edge detector [@Mittal2019]. However, addressing low-level
+connectivity from the outset can present significant challenges, and there
+appear to be limited to no options available in `R` for addressing this issue.
+To address this issue, we propose the `fillLineGaps()` function.
 
+### `fillLineGaps()` - Restoring Edge-connectivity in compartimented Images
 
-### `fillLineGaps()` - Restoring Edge-connectivity in an Image
+In order to demonstrate the functionality of the `fillLineGaps()` function in
+restoring edge connectivity, a practical example will be presented from a
+microbead-based emulsion polymerase chain reaction (ePCR) assay. This area can
+benefit from imaging techniques, particularly to enhance applicability in
+point-of-care testing (POCT), as the current method, fluorescence-activated cell
+sorting (FACS), is less suited for this purpose. The following example
+demonstrates the integration of data from two images to quantify droplets and
+microbeads. The objective is to identify the frequency of events where a single
+microbead joins a droplet in comparison to those where multiple microbeads are
+present within a single droplet.
 
+The images utilized in this section comprise a brightfield view and a
+fluorescent channel image. The brightfield view displays droplets with
+fragmented edges, some of which contain microbeads. In contrast, the fluorescent
+channel image exclusively reveals the microbeads (see Figures \@ref(fig:fLG1)A
+and B).
 
-
-(ref:fLG1)
+(ref:fLG1) **Images from an ePCR Assay**: **A**) Brightfield view of a water-oil emulsion, showing droplets, some of which contain microbeads. The droplet contours are highly fragmented. **B**) Fluorescent channel of the same image, displaying only the microbeads.
 
 ```{r fLG1, fig.cap="(ref:fLG1)"}
 par(mfrow = c(1,2))
@@ -1365,8 +1387,30 @@ text(c(15), c(15), c("B"), col = "darkred", cex = 4)
 par(mfrow = c(1,1))
 ```
 
+The initial stage of the analysis involves the utilization of the
+`fillLineGaps()` function with the objective of restoring edge connectivity
+within the droplet image. This function identifies line endpoints and
+interpolates pixels to generate continuous contours. Initially, a threshold is
+applied to segment the contours and microbeads. Subsequently, edge detection is
+performed on the fluorescence image to extract the coordinates of the objects,
+which are then excluded from the droplet image to prevent false reconnections
+between partition contours and microbeads.
 
-```{r fig.show='hold', out.width="49%"}
+Subsequently, an iterative scanning for line ends is initiated using the
+`image_morphology()` function from the `magick` package. The area surrounding
+the line ends is scanned within a specific radius, and reconnected with the
+contour in closest proximity using the `adaptiveInterpolation()` helper
+function. Following the reconnection phase, the contours undergo a thinning
+process, which is carried out by the `image_morphology()` function. These staps
+are repeated until the predefined number of iterations has been reached. The
+function includes an internal visualization that highlights the added pixels in
+purple (see Figure \@ref(fig:closed)). The method creates discrete partitions by
+closing the gaps in their contours, thus facilitating the correct labeling of
+the droplet partitions.
+
+(ref:closed) **Image of Droplets with Restored Edge Connectivity**: The result of utilizing the `fillLineGaps()` function is displayed. The pixels added by the function are highlighted in purple. It can be seen that the performance is accurate in simpler regions where straight lines are reconnected. However, in areas where smaller droplets are present between larger droplets, the reconstruction appears to be more challenging.
+
+```{r closed, fig.cap="(ref:closed)", warning=FALSE}
 closed_gaps <- fillLineGaps(droplets,
   droplet_beads,
   threshold = "13%",
@@ -1376,37 +1420,110 @@ closed_gaps <- fillLineGaps(droplets,
   iterations = 3,
   visualize = TRUE
 )
-
-closed_gaps |> plot()
 ```
 
+Having addressed the initial issue of discontinuous edges, the focus now shifts
+back to characterizing the partitions. This is achieved by labeling the
+'closed_gaps' image. Once the partitions have been labeled and are therefore
+regarded as distinct, the next step is to ascertain the number of microbeads
+within each partition. This is achieved by utilizing the centroid coordinates of
+the microbeads, as opposed to analyzing each individual pixel. Each partition is
+then examined to identify which ones contain coordinates that correspond to the
+centers of the microbeads.
 
 ```{r}
 # label resulting image with filled gaps
 lab_partitions <- label(closed_gaps)
 df_lab_part <- as.data.frame(lab_partitions) |>
   subset(value > 0)
+
+e_beads <- objectDetection(droplet_beads)
+
+# Extract the relevant columns and round the coordinates from e_beads$centers
+coords1 <- df_lab_part[, 1:2]
+coords2 <- round(e_beads$centers[, 2:3])
+
+# Convert the coordinates to character strings for easy matching
+coords1_str <- apply(coords1, 1, paste, collapse = ",")
+coords2_str <- apply(coords2, 1, paste, collapse = ",")
+
+# Find the matching indices
+matches <- which(coords1_str %in% coords2_str)
+
+# Subset the data frame using the matching indices
+bead_partition <- df_lab_part[matches, ]
+numeration <- table(as.character(bead_partition$value))
 ```
 
-```{r}
-library(data.table)
-# summarizing data frame by cluster (value)
-DT_droplet <- data.table(df_lab_part)
+(ref:visual) **Visualizing the Result of the Droplet Analysis**: The visualization obtained by the `objectDetection()` function, representing the detected microbeads, is combined with the highlighting of microbead-containing droplets using the `changePixelColor()` function. The partitions formed by the droplets are highlighted in different colors, indicating that they are distinct from one another.
 
-grouped_droplets <-
-  DT_droplet[, .(mx = mean(x), my = mean(y)), by = value]
-
+```{r visual, fig.cap="(ref:visual)"}
+vis <- which(df_lab_part$value %in% bead_partition$value)
+add(list(
+  changePixelColor(
+    droplets,
+    df_lab_part[vis,],
+    color = factor(df_lab_part$value[vis]),
+    visualize = T
+  ),
+  e_beads$marked_objects
+)) |> plot()
 ```
 
+The results are presented in Table \@ref(tab:resfLG). The first column of the
+table specifies the number of partitions, and the second column lists those that
+are devoid of microbeads. Column three shows the number of partitions that
+contain microbeads. The final two columns indicate the frequency of occurrence
+of single microbeads within a droplet, as well as the occurrence of multiple
+microbeads within a single droplet.
+
+```{r resfLG}
+res_df <- data.frame(
+  partitions = length(unique(df_lab_part$value)),
+  empty_partitions = length(unique(df_lab_part$value)) - length(unique(bead_partition$value)),
+  bead_partitions = length(unique(bead_partition$value)),
+  single_bead = length(which(numeration == 1)),
+  muliple_beads = length(which(numeration > 1))
+)
+
+kable(
+  res_df,
+  format = "markdown",
+  booktabs = TRUE,
+  caption = "Analysis of microbead-based ePCR",
+  col.names = c(
+    "partitions",
+    "empty partitions",
+    "microbead partitions",
+    "single microbead",
+    "multiple microbeads"
+  ),
+  align = "cccc",
+  escape = FALSE
+)
+```
+
+In conclusion, this function displays considerable capacity to serve as a tool
+for image preprocessing, rendering more intricate images accessible for
+subsequent analysis. It enables the implementation of novel experimental
+approaches, as exemplified by the approach presented in this section. Moreover,
+it is currently the only available tool in `R` with a dedicated function for
+this purpose. It is important to note that the function does have certain
+limitations. One such limitation is that the restoration of connectivity can
+create small partitions that were not present in the original image.
 
 ## Shape, Texture and unsupervised Machine Learning
 
-Images contain more information than just the objects themselves, including
-characteristics such as shape and texture, which enable further interpretation
-of the captured objects. To facilitate pattern recognition regarding these
-characteristics, the `biopixR` package incorporates two clustering algorithms
-that utilize unsupervised machine learning techniques, namely Self-Organizing
-Maps (SOM) and the Partitioning Around Medoids (PAM) algorithm.
+Digital images are numerical representations of physical objects, combined with
+a point spread function (PSF). The PSF describes the intensity distribution of
+an image and serves as a physical reference, often utilized in image
+restoration, denoising, and object detection [@Siddik2023; @Song2024]. This
+numerical representation enables a variety of computational approaches to gain
+insights into the object's characteristics, such as texture and shape
+extraction. To facilitate pattern recognition of these characteristics, the
+`biopixR` package incorporates two clustering algorithms that employ
+unsupervised machine learning techniques, namely Self-Organizing Maps (SOM) and
+the Partitioning Around Medoids (PAM) algorithm.
 
 ### `shapeFeatures()` - Object clustering based on shape features
 
