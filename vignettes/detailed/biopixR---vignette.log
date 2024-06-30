@@ -1,9 +1,9 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.6.24)  29 JUN 2024 12:52
+This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.6.24)  30 JUN 2024 15:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**/tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette.tex
-(/tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette.tex
+**/tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette.tex
+(/tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette.tex
 LaTeX2e <2024-06-01> patch level 1
 L3 programming layer <2024-05-27>
 (/home/brauctim/.TinyTeX/texmf-dist/tex/latex/base/article.cls
@@ -821,7 +821,7 @@ LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
 File: figures/fig0_logo.png Graphic file (type bmp)
 <figures/fig0_logo.png>
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <14.4> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 170.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 183.
 
 
 [3]
@@ -835,23 +835,23 @@ File: figures/fig4_dependency.png Graphic file (type bmp)
 
 [6]
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 403.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 416.
 
 
 [7]
 
 [8]
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/examples-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/examples-1.pdf>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/examples-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/examples-1.pdf>
 
 
 [9]
 
 [10]
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/beads-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/beads-1.pdf>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/beads-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/beads-1.pdf>
 
-Underfull \hbox (badness 1478) in paragraph at lines 608--608
+Underfull \hbox (badness 1478) in paragraph at lines 621--621
 []\TU/lmr/m/n/10 Figure 3: []\TU/lmr/bx/n/10 Example images\TU/lmr/m/n/10 : Showcasing the functionality of the function for image import -
  []
 
@@ -863,17 +863,21 @@ File: figures/fig5.1_edgeDetection.png Graphic file (type bmp)
 
 
 [12]
-Underfull \vbox (badness 10000) detected at line 788
+Underfull \vbox (badness 10000) detected at line 801
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 801
  []
 
 
 
 [13]
-Underfull \vbox (badness 10000) detected at line 788
+Underfull \vbox (badness 10000) detected at line 801
  []
 
 
-Underfull \vbox (badness 10000) detected at line 788
+Underfull \vbox (badness 10000) detected at line 801
  []
 
 
@@ -884,226 +888,225 @@ File: figures/fig5_edgeDetection.png Graphic file (type bmp)
 
 
 [15]
+Underfull \vbox (badness 10000) detected at line 856
+ []
+
+
+Underfull \vbox (badness 10000) detected at line 856
+ []
+
+
+
+[16]
 File: figures/fig5.2_edgeDetection.png Graphic file (type bmp)
 <figures/fig5.2_edgeDetection.png>
 
 
-[16]
-
 [17]
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/static-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/static-1.pdf>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/static-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/static-1.pdf>
 
 
 [18]
 
 [19]
+
+[20]
 File: figures/fig18.png Graphic file (type bmp)
 <figures/fig18.png>
 File: figures/fig17.png Graphic file (type bmp)
 <figures/fig17.png>
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/multip-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/multip-1.pdf>
-
-
-[20]
-File: figures/fig7_transparent_beads.png Graphic file (type bmp)
-<figures/fig7_transparent_beads.png>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/multip-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/multip-1.pdf>
 
 
 [21]
+File: figures/fig7_transparent_beads.png Graphic file (type bmp)
+<figures/fig7_transparent_beads.png>
+
 
 [22]
 File: figures/fig8_GUI.png Graphic file (type bmp)
 <figures/fig8_GUI.png>
 
-Underfull \hbox (badness 10000) in paragraph at lines 1138--1138
+Underfull \hbox (badness 10000) in paragraph at lines 1151--1151
 []\TU/lmr/m/n/10 Figure 11: []\TU/lmr/bx/n/10 Graphical User Interface for Interactive Parameter Selection\TU/lmr/m/n/10 : The
  []
 
 
 
 [23]
-Underfull \vbox (badness 10000) detected at line 1190
- []
-
-
-Underfull \vbox (badness 10000) detected at line 1190
- []
-
-
 
 [24]
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/error-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/error-1.pdf>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/error-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/error-1.pdf>
 
 
 [25]
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/prox-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/prox-1.pdf>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/prox-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/prox-1.pdf>
 
 
 [26]
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/size-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/size-1.pdf>
-[27]
-Overfull \hbox (1.8731pt too wide) in paragraph at lines 1387--1388
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/size-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/size-1.pdf>
+
+
+[27] [28]
+Overfull \hbox (1.8731pt too wide) in paragraph at lines 1400--1401
  []\TU/lmr/m/n/10 mean(intensity) 
  []
 
 
-Overfull \hbox (1.8731pt too wide) in paragraph at lines 1405--1406
+Overfull \hbox (1.8731pt too wide) in paragraph at lines 1418--1419
  []\TU/lmr/m/n/10 mean(intensity) 
  []
 
-
-
-[28]
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/imgPipe1-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/imgPipe1-1.pdf>
 
 
 [29]
-Underfull \vbox (badness 1681) detected at line 1518
- []
-
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/imgPipe1-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/imgPipe1-1.pdf>
 
 
 [30]
-Overfull \hbox (10.22104pt too wide) in paragraph at lines 1559--1560
+Overfull \hbox (10.22104pt too wide) in paragraph at lines 1572--1573
  []\TU/lmr/m/n/10 mean(size) 
  []
 
 
-Overfull \hbox (2.29369pt too wide) in paragraph at lines 1561--1562
+Overfull \hbox (2.29369pt too wide) in paragraph at lines 1574--1575
  []\TU/lmr/m/n/10 sd(size) 
  []
 
 
-Overfull \hbox (17.45575pt too wide) in paragraph at lines 1563--1564
+Overfull \hbox (17.45575pt too wide) in paragraph at lines 1576--1577
  []\TU/lmr/m/n/10 mean(intensity) 
  []
 
 
-Overfull \hbox (9.52841pt too wide) in paragraph at lines 1565--1566
+Overfull \hbox (9.52841pt too wide) in paragraph at lines 1578--1579
  []\TU/lmr/m/n/10 sd(intensity) 
  []
 
 
-Overfull \hbox (7.54369pt too wide) in paragraph at lines 1569--1570
+Overfull \hbox (7.54369pt too wide) in paragraph at lines 1582--1583
  []\TU/lmr/m/n/10 coverage 
  []
 
 
-Overfull \hbox (10.22104pt too wide) in paragraph at lines 1581--1582
+Overfull \hbox (10.22104pt too wide) in paragraph at lines 1594--1595
  []\TU/lmr/m/n/10 mean(size) 
  []
 
 
-Overfull \hbox (2.29369pt too wide) in paragraph at lines 1583--1584
+Overfull \hbox (2.29369pt too wide) in paragraph at lines 1596--1597
  []\TU/lmr/m/n/10 sd(size) 
  []
 
 
-Overfull \hbox (17.45575pt too wide) in paragraph at lines 1585--1586
+Overfull \hbox (17.45575pt too wide) in paragraph at lines 1598--1599
  []\TU/lmr/m/n/10 mean(intensity) 
  []
 
 
-Overfull \hbox (9.52841pt too wide) in paragraph at lines 1587--1588
+Overfull \hbox (9.52841pt too wide) in paragraph at lines 1600--1601
  []\TU/lmr/m/n/10 sd(intensity) 
  []
 
 
-Overfull \hbox (7.54369pt too wide) in paragraph at lines 1591--1592
+Overfull \hbox (7.54369pt too wide) in paragraph at lines 1604--1605
  []\TU/lmr/m/n/10 coverage 
  []
 
 
 
 [31]
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/imgPipe5-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/imgPipe5-1.pdf>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/imgPipe5-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/imgPipe5-1.pdf>
 
 
 [32]
 
 [33]
-Overfull \hbox (5.96152pt too wide) in paragraph at lines 1807--1808
- []\TU/lmr/m/n/10 mean(size) 
- []
-
-
-Overfull \hbox (11.45204pt too wide) in paragraph at lines 1811--1812
- []\TU/lmr/m/n/10 mean(intensity) 
- []
-
-
-Overfull \hbox (4.21454pt too wide) in paragraph at lines 1813--1814
- []\TU/lmr/m/n/10 sd(intensity) 
- []
-
-
-Overfull \hbox (3.97989pt too wide) in paragraph at lines 1817--1818
- []\TU/lmr/m/n/10 coverage 
- []
-
-
-Overfull \hbox (5.96152pt too wide) in paragraph at lines 1826--1827
- []\TU/lmr/m/n/10 mean(size) 
- []
-
-
-Overfull \hbox (11.45204pt too wide) in paragraph at lines 1830--1831
- []\TU/lmr/m/n/10 mean(intensity) 
- []
-
-
-Overfull \hbox (4.21454pt too wide) in paragraph at lines 1832--1833
- []\TU/lmr/m/n/10 sd(intensity) 
- []
-
-
-Overfull \hbox (3.97989pt too wide) in paragraph at lines 1836--1837
- []\TU/lmr/m/n/10 coverage 
- []
-
-
-Overfull \hbox (12.24312pt too wide) in paragraph at lines 1842--1842
-[]|\TU/lmr/m/n/10 beads_large1|  
- []
-
-
-Overfull \hbox (12.24312pt too wide) in paragraph at lines 1843--1843
-[]|\TU/lmr/m/n/10 beads_large2|  
- []
-
-
-Overfull \hbox (17.25313pt too wide) in paragraph at lines 1845--1845
-[]|\TU/lmr/m/n/10 droplet_beads|  
+Overfull \vbox (1.20424pt too high) detected at line 1803
  []
 
 
 
 [34]
+Overfull \hbox (5.96152pt too wide) in paragraph at lines 1820--1821
+ []\TU/lmr/m/n/10 mean(size) 
+ []
+
+
+Overfull \hbox (11.45204pt too wide) in paragraph at lines 1824--1825
+ []\TU/lmr/m/n/10 mean(intensity) 
+ []
+
+
+Overfull \hbox (4.21454pt too wide) in paragraph at lines 1826--1827
+ []\TU/lmr/m/n/10 sd(intensity) 
+ []
+
+
+Overfull \hbox (3.97989pt too wide) in paragraph at lines 1830--1831
+ []\TU/lmr/m/n/10 coverage 
+ []
+
+
+Overfull \hbox (5.96152pt too wide) in paragraph at lines 1839--1840
+ []\TU/lmr/m/n/10 mean(size) 
+ []
+
+
+Overfull \hbox (11.45204pt too wide) in paragraph at lines 1843--1844
+ []\TU/lmr/m/n/10 mean(intensity) 
+ []
+
+
+Overfull \hbox (4.21454pt too wide) in paragraph at lines 1845--1846
+ []\TU/lmr/m/n/10 sd(intensity) 
+ []
+
+
+Overfull \hbox (3.97989pt too wide) in paragraph at lines 1849--1850
+ []\TU/lmr/m/n/10 coverage 
+ []
+
+
+Overfull \hbox (12.24312pt too wide) in paragraph at lines 1855--1855
+[]|\TU/lmr/m/n/10 beads_large1|  
+ []
+
+
+Overfull \hbox (12.24312pt too wide) in paragraph at lines 1856--1856
+[]|\TU/lmr/m/n/10 beads_large2|  
+ []
+
+
+Overfull \hbox (17.25313pt too wide) in paragraph at lines 1858--1858
+[]|\TU/lmr/m/n/10 droplet_beads|  
+ []
+
 File: data/log_file.pdf Graphic file (type pdf)
 <use data/log_file.pdf>
 
 
 [35]
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/fLG1-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/fLG1-1.pdf>
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/closed-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/closed-1.pdf>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/fLG1-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/fLG1-1.pdf>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/closed-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/closed-1.pdf>
 
 
 [36]
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/visual-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/visual-1.pdf>
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/visual-2.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/visual-2.pdf>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/visual-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/visual-1.pdf>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/visual-2.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/visual-2.pdf>
 
-LaTeX Warning: Float too large for page by 54.55765pt on input line 2043.
+LaTeX Warning: Float too large for page by 54.55765pt on input line 2056.
 
 
 
@@ -1112,81 +1115,53 @@ LaTeX Warning: Float too large for page by 54.55765pt on input line 2043.
 [38]
 
 [39]
-Underfull \vbox (badness 10000) detected at line 2253
+Underfull \vbox (badness 10000) detected at line 2266
  []
 
 
-Underfull \vbox (badness 10000) detected at line 2253
+Underfull \vbox (badness 10000) detected at line 2266
  []
 
 
 
 [40]
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/SOM-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/SOM-1.pdf>
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/SOM-2.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/SOM-2.pdf>
-
-LaTeX Warning: Float too large for page by 66.55765pt on input line 2262.
-
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/SOM-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/SOM-1.pdf>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/SOM-2.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/SOM-2.pdf>
 File: figures/fig2_circularity.png Graphic file (type bmp)
 <figures/fig2_circularity.png>
-File: /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/comparison-1.pdf Graphic file (type pdf)
-<use /tmp/RtmpxCmDsP/preview-184f37b9792f.dir/biopixR---vignette_files/figure-latex/comparison-1.pdf>
-
-
 [41]
-Overfull \hbox (28.99498pt too wide) in paragraph at lines 2405--2405
-[]                                                                                           \TU/lmtt/m/n/10 file[] 
- []
-
-
-Overfull \hbox (28.99498pt too wide) in paragraph at lines 2405--2405
-[]\TU/lmtt/m/n/10 beads_large1.bmp   /home/user/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/beads_large1.bmp[] 
- []
-
-
-Overfull \hbox (28.99498pt too wide) in paragraph at lines 2405--2405
-[]\TU/lmtt/m/n/10 beads_large2.png   /home/user/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/beads_large2.png[] 
- []
-
-
-Overfull \hbox (28.99498pt too wide) in paragraph at lines 2405--2405
-[]\TU/lmtt/m/n/10 beads.png                 /home/user/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/beads.png[] 
- []
-
-
-Overfull \hbox (28.99498pt too wide) in paragraph at lines 2405--2405
-[]\TU/lmtt/m/n/10 droplet_beads.png /home/user/R/x86_64-pc-linux-gnu-library/4.3/biopixR/images/droplet_beads.png[] 
- []
-
-File: figures/1update.png Graphic file (type bmp)
-<figures/1update.png>
-File: figures/2update.png Graphic file (type bmp)
-<figures/2update.png>
-File: figures/3update.png Graphic file (type bmp)
-<figures/3update.png>
-File: figures/4update.png Graphic file (type bmp)
-<figures/4update.png>
+File: /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/comparison-1.pdf Graphic file (type pdf)
+<use /tmp/RtmpXF9dOe/preview-47f63e3c5d1e.dir/biopixR---vignette_files/figure-latex/comparison-1.pdf>
 
 
 [42]
+File: figures/fig20.1_haralick.png Graphic file (type bmp)
+<figures/fig20.1_haralick.png>
+File: figures/fig20.2_haralick.png Graphic file (type bmp)
+<figures/fig20.2_haralick.png>
+File: figures/fig20.3_haralick.png Graphic file (type bmp)
+<figures/fig20.3_haralick.png>
+File: figures/fig20.4_haralick.png Graphic file (type bmp)
+<figures/fig20.4_haralick.png>
+
 
 [43]
 
 [44]
-Underfull \hbox (badness 2626) in paragraph at lines 2482--2485
+Underfull \hbox (badness 2626) in paragraph at lines 2584--2587
 [][][]$[][][][][] [] [] [] [][][][] [] [] [][] [][][][][][][] [] [][][] [] [][][] [] [][][][][][][][] [] [][][][] [] [][][][][] [] [][][][][] [] [][][][]$[][] [][]$[][][][][] [] [] [] [][][][] [] [] [][] [][][][][][][] [] [][][] [] [][][] [] [][][][][][][][] []
  []
 
 
 
 [45]
-
-[46]
 File: figures/fig1_DSB_analysis.png Graphic file (type bmp)
 <figures/fig1_DSB_analysis.png>
 
+
+[46]
 
 [47]
 
@@ -1214,19 +1189,23 @@ File: figures/fig1_DSB_analysis.png Graphic file (type bmp)
 
 [59]
 
-[60] (./biopixR---vignette.aux)
+[60]
+
+[61]
+
+[62] (./biopixR---vignette.aux)
  ***********
 LaTeX2e <2024-06-01> patch level 1
 L3 programming layer <2024-05-27>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 20484 strings out of 476255
- 388820 string characters out of 5787282
- 1947557 words of memory out of 5000000
- 42705 multiletter control sequences out of 15000+600000
+ 20487 strings out of 476255
+ 389519 string characters out of 5787282
+ 1949557 words of memory out of 5000000
+ 42708 multiletter control sequences out of 15000+600000
  564544 words of font info for 92 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  90i,8n,123p,1086b,577s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on biopixR---vignette.pdf (60 pages).
+Output written on biopixR---vignette.pdf (62 pages).

@@ -34,7 +34,7 @@ knitr::opts_chunk$set(
   cache = FALSE,
   comment = NA,
   verbose = TRUE,
-  out.width = '99%',
+  out.width = '75%',
   fig.align = 'center',
   fig.show = 'hold',
   fig.pos = 'ht'
@@ -1245,7 +1245,7 @@ encoded objects or to multiple images representing a single population of
 encoded objects.
 
 
-### `scanDir()` - Whole Directory analysis
+### `scanDir()` - Whole Directory analysis {#scan}
 
 The images provided by the `biopixR` package depict fluorescent microbeads in
 varying quantities and image dimensions.
@@ -1579,7 +1579,7 @@ shape_features <-
                 SOM = TRUE)
 ```
 
-```{r SOM, fig.cap="(ref:SOM)"}
+```{r SOM, fig.cap="(ref:SOM)", out.width="75%"}
 colors <- c("darkgreen", "darkred")
 beads |> plot(axes = FALSE)
 points(
@@ -1667,7 +1667,7 @@ symmetrical objects is illustrated in the following comparison:
 
 (ref:circ) **Circles with different Aspect Ratios**: This is a modified image, originally derived from the publication of @Takashimizu2016.
 
-```{r circ, echo=FALSE, out.width="79%", fig.cap="(ref:circ)"}
+```{r circ, echo=FALSE, out.width="69%", fig.cap="(ref:circ)"}
 knitr::include_graphics("figures/fig2_circularity.png")
 ```
 
@@ -1736,10 +1736,60 @@ tool for pattern recognition based on these features.
 
 ### `HaralickCluster()` - Image classification based on texture features
 
+One aspect of interest in bioimage informatics is texture-related information.
+To extract this information from images, several computational methods were
+proposed by @Haralick1973. The `haralickCluster()` function incorporates several
+of these calculations, including contrast, angular second moment, correlation,
+variance, sum average, and entropy. As proposed by @Haralick1973, these texture
+features are employed for image classification in the `biopixR` package.
+Consequently, the `haralickCluster()` function incorporates a clustering
+algorithm based on the unsupervised learning algorithm Partitioning Around
+Medoids (PAM).
 
+The `haralickCluster()` function accepts a directory path as input, ensuring
+file uniqueness through the use of MD5 sums, as detailed in Chapter \@ref(scan).
+In order to calculate the Haralick features, the image is first transformed into
+a Gray Level Co-occurrence Matrix (GLCM). Therefore an empty square matrix is
+generated with dimensions corresponding to the total number of gray levels in
+the image. This matrix records the frequency of specific pixel intensities being
+adjacent to each other. Subsequently, the matrix is normalized by dividing by
+the total number of co-occurrence pairs. Adjacency is considered in four
+directions: horizontal, vertical, left diagonal, and right diagonal
+[@Haralick1973; @BinoSebastian2012; @Loefstedt2019]. Subsequently, the
+features—contrast, angular second moment, correlation, variance, sum average,
+and entropy—are calculated. Some calculations were derived from the `radiomics`
+package, which also focuses on texture analysis but is currently not
+maintained.^[https://CRAN.R-project.org/package=radiomics] Subsequently, the
+extracted features are clustered using the PAM algorithm.
 
+The PAM algorithm consists of two parts: BUILD, which selects a specified number
+of objects as initial medoids, and SWAP, which improves the clustering process
+towards a local optimum by assigning each object to the closest medoid and
+recalculating the medoids to enhance within-cluster similarity. The algorithm
+starts this process by using a dissimilarity matrix as input which is the
+organized into defined clusters, with the medoids serving as robust
+representatives of cluster centres. The number of medoids is typically set with
+a predetermined number of groups (*k*) [@Maechler1999; @Reynolds2006;
+@Schubert2019]. In order to utilize the PAM algorithm and to determine the
+number of *k* the `cluster` package used [@Maechler1999]. The silhouette
+method, proposed by @Rousseeuw1987, provides a relative quality measure of the
+clustering, thereby providing a useful tool for approximating the optimal number
+of clusters (*k*). The `haralickCluster()` function in the `biopixR` package
+integrates the texture description of an image, as proposed by @Haralick1973,
+with PAM clustering, enabling the classification of images in a directory based
+on these characteristics.
 
-
+The following example illustrates the application of the `haralickCluster()`
+function to four images of microbeads, provided by the `biopixR` package. The
+resulting output is presented in Table \@ref(tab:haralickCluster3). The results
+of the Haralick texture feature calculations for the different images, which
+served as input for the PAM algorithm, are presented in Figure
+\@ref(fig:hCfeatures). The results presented in Table \@ref(tab:haralickCluster3)
+are represented in the plots, which illustrate the different texture features
+for the various images. Notably, *beads* and *beads_large1* are consistently
+quite similar, while *beads_large2* and *droplet_beads* also exhibit
+similarities with each other. However, these two groups differ between one
+another, as depicted in Figure \@ref(fig:hCfeatures).
 
 ```{r haralickCluster2}
 path2dir <- system.file("images", package = "biopixR")
@@ -1754,20 +1804,42 @@ img_clus$file <- new_file_paths
 ```
 
 ```{r haralickCluster3}
-img_clus
+kable(
+  img_clus[, 2:3],
+  format = "markdown",
+  booktabs = TRUE,
+  col.names = c(
+    "file name",
+    "md5sum",
+    "cluster"
+  ),
+  align = "llc",
+  caption = "Result of Grouping according to Texture Features",
+  escape = FALSE
+)
 ```
 
-```{r, echo=FALSE, out.width="99%", fig.show='hold', fig.align='center', fig.pos="ht"}
+(ref:hCfeatures) **Extracted Haralick Texture Features**: The scaled values of the calculated texture features for the four example images shown in Figure \@ref(fig:examples) are depicted. The results for the calculation of *Angular Second Moment*, *Correlation*, *Sum of Squares: Variance*, *Inverse Difference Moment*, *Sum Average*, *Sum Variance*, and *Entropy* are presented for each image. (These values were obtained during the function execution and are not included in the function's output.)
+
+```{r hCfeatures, echo=FALSE, fig.cap="(ref:hCfeatures)", out.width="60%"}
 include_graphics(
   c(
-    "figures/1update.png",
-    "figures/2update.png",
-    "figures/3update.png",
-    "figures/4update.png"
+    "figures/fig20.1_haralick.png",
+    "figures/fig20.2_haralick.png",
+    "figures/fig20.3_haralick.png",
+    "figures/fig20.4_haralick.png"
   )
 )
 ```
 
+To sum up, the `HaralickCluster()` function is capable of extracting texture
+features and clustering images based on these features. To describe the texture
+characteristics of an image, the Haralick features were employed
+[@Haralick1973]. For the purpose of clustering, a derivative of the *k-means*
+algorithm, PAM, was employed to classify the images according to the extracted
+features. The `haralickCluster()` function employs eight of the fourteen texture
+features proposed by @Haralick1973, thereby enabling the analysis and clustering
+of entire directories within a single, user-friendly function.
 
 
 ## Helper Functions of the `biopixR` Package
@@ -1908,7 +1980,7 @@ plot(colored_objects, axes = FALSE)
 text(c(50), c(60), c("B"), col = "darkred", cex = 6)
 ```
 
-```{r DSB, echo=FALSE, fig.show='hold', fig.align='center', out.width="99%", fig.pos="ht", fig.cap="(ref:DSB)"}
+```{r DSB, echo=FALSE, out.width="89%", fig.cap="(ref:DSB)"}
 knitr::include_graphics("figures/fig1_DSB_analysis.png")
 ```
 
