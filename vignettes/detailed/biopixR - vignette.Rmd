@@ -426,8 +426,10 @@ was frequently observed that images exhibited more than three dimensions within
 the color channel, specifically an additional transparency layer, also called
 alpha. Such images frequently give rise to challenging and elusive errors. To
 address this issue, the `imageImport()` function employs a process of detection
-and removal of a fourth color dimension, should it be present. The function
-supports importing images in JPEG, PNG, BMP, and TIFF formats.
+and removal of a fourth color dimension, should it be present. The function 
+supports the importation of digital images in various file formats, including 
+Joint Photographic Experts Group (JPEG), Portable Network Graphics (PNG), 
+Bitmap Image File (BMP), and Tagged Information Interchange Format (TIFF).
 
 ```{r}
 # Get the path to the "beads.png" image file within the `biopixR` package
