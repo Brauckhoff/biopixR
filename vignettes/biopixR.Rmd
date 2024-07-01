@@ -50,8 +50,10 @@ biological imaging applications.
 The `biopixR` package features an import function called `importImage`. This
 function acts as a wrapper, integrating the capabilities of the `magick` and
 `imager` packages. Since most image processing operations rely on `imager`, the
-`importImage` function converts all formats into the `imager` class 'cimg'. It
-supports importing images in JPEG, PNG, BMP, and TIFF formats.
+`importImage` function converts all formats into the `imager` class 'cimg'. The 
+package supports importing digital images in various file formats, including 
+Joint Photographic Experts Group (JPEG), Portable Network Graphics (PNG), 
+Bitmap Image File (BMP), and Tagged Information Interchange Format (TIFF).
 
 ```{r}
 library(biopixR)
