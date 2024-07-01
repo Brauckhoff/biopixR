@@ -88,7 +88,7 @@ version tagging, or continuous integration.
 As the algorithms developed proved inefficient and unable to meet current 
 scientific needs, we decided in 2023 to completely rewrite the software. 
 This effort gained momentum in October 2023 when we transitioned to open repositories 
-on GitHub, adopting modern approaches to ensure higher software quality and foster 
+on GitHub ([https://github.com](https://github.com)), adopting modern approaches to ensure higher software quality and foster 
 greater collaboration with the scientific and open-source communities.
 
 Our most important goal was to publish the package on the trend because the 
