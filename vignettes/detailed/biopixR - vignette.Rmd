@@ -67,13 +67,13 @@ results. Objective results refer to outcomes that are consistent across differen
 experiments or studies conducted under similar conditions. Reproducible results 
 ensure that a particular outcome can be replicated consistently, regardless of 
 the experimental setup or personnel involved in conducting the study. Here, 
-dedicated software is a key element to achieve this goal. In particular, bioimage 
+dedicated software is a key element in achieving this goal. In particular, bioimage 
 informatics plays a crucial role in edge detection and feature extraction due to its 
 ability to analyze large volumes of image data efficiently using computational methods. 
 These techniques enable researchers to identify specific features within an image that 
 may not be apparent through traditional manual analysis. This automated approach 
 ensures consistency, reproducibility, and objectivity in the results obtained. The 
-following section explain how the `biopixR` package contributes to these goals.
+following sections explain how the `biopixR` package contributes to these goals.
 
 # History, philosophy, and aims of the `biopixR` package
 
@@ -85,7 +85,7 @@ for internal projects and contributed to repositories like codeberg.org. However
 early work did not adhere to high standards of software engineering, such as unit testing, 
 version tagging, or continuous integration.
 
-As the algorithms developed proved inefficient and unable to meet current 
+As the algorithms developed, proved inefficient and unable to meet current 
 scientific needs, we decided in 2023 to completely rewrite the software. 
 This effort gained momentum in October 2023 when we transitioned to open repositories 
 on GitHub ([https://github.com](https://github.com)), adopting modern approaches to ensure higher software quality and foster 
@@ -210,7 +210,7 @@ For the purpose of version control, the widely used Git system, which is
 available on all major development platforms, was employed. Version control with
 Git enables the revision of changes and older versions of the code by providing
 complete repository copies. Additionally, it permits individual adaptation by
-creating distinct "branches" for the purpose of working on and experimenting
+creating distinct branches for the purpose of working on and experimenting
 with different versions while maintaining a stable one. Most importantly, it
 facilitates the organized sharing and merging of changes among team members,
 thereby significantly enhancing collaboration [@Lanubile2010; @Blischak2016;
@@ -227,11 +227,11 @@ of the `biopixR` package is accessible at:
 Continuous integration (CI) is widely regarded as a good practice in software
 development. As team members frequently integrate their code, sometimes multiple
 times a day, the combination of code from different contributors can lead to
-significant issues in the software's integrity and functionality. To address
+significant issues with the software's integrity and functionality. To address
 this issue, CI is employed as an automated build and test system. It verifies
 the package's functionality and compatibility across various operating systems
 (OS). This ensures that the code, package structure, metadata, and format remain
-functional. This process of error catching is simplified by CI, as it can
+functional. This process of error-catching is simplified by CI, as it can
 identify potential issues in the integration process [@Meyer2014; @Soares2022].
 
 For `R`, the standard test suite is the `R CMD check`, which includes over 50
@@ -258,7 +258,7 @@ was adapted. Underscore separation is employed solely for variables and
 parameters introduced within the package. In accordance with the nomenclature
 convention proposed by @Rasmus2012, the functions of the `biopixR` package
 adhere to the **lowerCamelCase** style (e.g., `objectDetection()`), with the
-exception of those designated to be interactive, which also utilize the
+exception to those designated to be interactive, which also utilize the
 **underscore_separated** style (e.g., `interactive_objectDetection()`).
 
 To enhance the formatting, consistency, and readability of the code,
@@ -687,7 +687,7 @@ include_graphics("figures/fig5.2_edgeDetection.png")
 ## `objectDetection()` - A Function for Feature extraction
 
 The `objectDetection()` function of the `biopixR` package serves as a
-segmentation tool, offering a variety of methods for the extraction of objects
+segmentation tool, offering various methods for the extraction of objects
 of interest from an image. The extracted information includes the coordinates,
 centers, and sizes of each detected object. In the case of microbeads, it is
 essential to distinguish between individual entities. Consequently, the
@@ -705,15 +705,15 @@ role in the performance of feature extraction. The objective is to modify the
 threshold (`alpha`) to detect all objects without detecting noise, and
 to maintain a minimal level of smoothing (`sigma`) to avoid merging
 proximate objects and to ensure accurate edge detection. To facilitate the
-parameter selection process, the `biopixR` package offers a variety of methods
+parameter selection process, the `biopixR` package offers various methods
 to assist with the parameter selection process:
 
 **Automated Parameter selection**:
 
 Both automation methods employ a fitness function to extract shape information
 via the `shapeFeatures` function. The fitness function evaluates the results
-using a variety of input parameters, operating under the assumption that the
-objects in question are circular in shape. While the grid search method is
+using various input parameters, operating under the assumption that the
+objects in question are circular. While the grid search method is
 time-consuming due to its exhaustive testing of every possible parameter
 combination, the Pareto front optimization method samples and analyzes a subset
 of combinations, allowing for a more rapid estimation of the optimal parameters.
@@ -794,7 +794,7 @@ number of sample points. Gaussian regression predicts unknown values by modeling
 the spatial correlation between sample points [@Binois2019]. The objectives to
 be optimized are the parameters `alpha` and `sigma`. The optimization task can
 be formulated as: detect as many objects as possible, while maintaining good
-shape characteristics for most of the detected objects and avoiding merging of
+shape characteristics for most of the detected objects and avoiding the merging of
 nearby objects (quality/quantity trade-off).
 
 The `GPareto` package aims to identify the set of optimal compromises, known as
@@ -860,9 +860,9 @@ contrast while preserving image details [@Morel2014]. Consequently, the method
 allows for the detection of low-contrast objects against inconsistent
 backgrounds, such as transparent microbeads (see Figure \@ref(fig:transparent)A).
 The thresholding method does not require any additional input, is highly robust
-and performs also well on fluorescent microbead images. However, this approach
+and also performs well on fluorescent microbead images. However, this approach
 has one disadvantage: the threshold is less strict than edge detection, which
-may result in the merging of objects in close proximity that would be regarded
+may result in the merging of objects in proximity that would be regarded
 as separate entities by the edge detection method.
 
 (ref:transparent) **Transparent Microbeads**: **A**) Original image of transparent microbeads, showing low contrast between the microbeads and the background. **B**) Application of the threshold method, resulting in the detection of the outer layer (halo) of the microbeads, successfully capturing the ligand signal. Detected coordinates are colored in purple, with centers marked in green.
@@ -926,7 +926,7 @@ thereby ensuring its adaptability for a broad range of applications.
 In microbead-based assays, two phenomena must be avoided to prevent the
 generation of low-quality or incorrect results. These issues are exemplified in
 one of the images provided by the package (see Figure \@ref(fig:error)). The
-first issue arises when microbeads are in close proximity to one another, which
+first issue arises when microbeads are in proximity to one another, which
 has the potential to induce fluorescence in adjacent beads and result in the
 generation of false positive signals. To address this issue, we developed the
 `proximityFilter()` function.
@@ -1261,7 +1261,7 @@ the analysis process and results. The following section presents a simple
 example of the function being run on the provided images using the 'threshold'
 method without any filtering. A sample of the results is presented below.
 
-In order to guarantee the quality of the analyses, the function incorporates a
+To guarantee the quality of the analyses, the function incorporates a
 verification process to ensure that the data is unique within the analysis
 directory. This is accomplished through the utilization of the Message Digest 5
 (MD5) algorithm, originally developed by @Rivest1992. The MD5 algorithm [@MD5] is a
@@ -1374,7 +1374,7 @@ To address this issue, we propose the `fillLineGaps()` function.
 
 ### `fillLineGaps()` - Restoring Edge-connectivity in compartimented Images
 
-In order to demonstrate the functionality of the `fillLineGaps()` function in
+To demonstrate the functionality of the `fillLineGaps()` function in
 restoring edge connectivity, a practical example will be presented from a
 microbead-based emulsion polymerase chain reaction (ePCR) assay. This area can
 benefit from imaging techniques, particularly to enhance applicability in
@@ -1416,7 +1416,7 @@ Subsequently, an iterative scanning for line ends is initiated using the
 the line ends is scanned within a specific radius, and reconnected with the
 contour in closest proximity using the `adaptiveInterpolation()` helper
 function. Following the reconnection phase, the contours undergo a thinning
-process, which is carried out by the `image_morphology()` function. These staps
+process, which is carried out by the `image_morphology()` function. These steps
 are repeated until the predefined number of iterations has been reached. The
 function includes an internal visualization that highlights the added pixels in
 purple (see Figure \@ref(fig:closed)). The method creates discrete partitions by
