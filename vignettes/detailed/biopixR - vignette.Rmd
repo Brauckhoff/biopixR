@@ -1135,7 +1135,7 @@ Edge detection is employed for feature extraction, with the identical `alpha`
 and `sigma` parameters applied to both images (Figure \@ref(fig:imgPipe1)B and
 C). It can be observed in Figure\@ref(fig:imgPipe1)A that overlapping microbeads
 are present. To exclude these from the subsequent analysis, the
-`proximityFilter` is enabled within the `imgPipe()` function. The output is in
+`proximityFilter()` is enabled within the `imgPipe()` function. The output is in
 similar format as presented in Chapter \@ref(result) (see Table
 \@ref(tab:imgPipe3)), with the addition of a data frame comparing the differently
 encoded microbeads (see Table \@ref(tab:imgPipe4)).
@@ -1264,7 +1264,7 @@ method without any filtering. A sample of the results is presented below.
 In order to guarantee the quality of the analyses, the function incorporates a
 verification process to ensure that the data is unique within the analysis
 directory. This is accomplished through the utilization of the Message Digest 5
-(MD5) algorithm, originally developed by @Rivest1992. The MD5 algorithm is a
+(MD5) algorithm, originally developed by @Rivest1992. The MD5 algorithm [@MD5] is a
 standard practice in computer science for ensuring file integrity and
 identifying identical files. The application of this algorithm results in the
 generation of a unique "fingerprint" for each file [@Rivest1992; @Cechova2020].
