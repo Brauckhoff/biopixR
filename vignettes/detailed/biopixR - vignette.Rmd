@@ -1354,8 +1354,8 @@ by green circles around their centers, providing an expedient overview for
 verification of the analysis's compliance with expectations and the option of
 reanalyzing specific files if necessary.
 
-```{r, fig.cap="**Log file created by the `scanDir()` function.**"}
-include_graphics("data/log_file.pdf")
+```{r, fig.cap="**Log file created by the `scanDir()` function.** (first page)"}
+include_graphics("figures/fig21_log_file.png")
 ```
 
 
@@ -1911,7 +1911,63 @@ https://cran.r-project.org/web/packages/disk.frame/index.html
 https://cran.r-project.org/web/packages/bigmemory/index.html
 https://cran.r-project.org/web/packages/ff/index.html
 
-## complexity
+## Cyclomatic Complexity in `biopixR`
+
+As previously stated, the `biopixR` package was designed with the intention of
+maintaining a minimalistic approach, with the objective of reducing dependencies
+and code complexity. It is of vital importance to ensure the reproducibility of
+software, not only for the advancement of our own work but also for the broader
+scientific community [@Gentleman2007; @Roediger2015]. One approach to
+achieving this objective involves minimizing dependencies on external packages
+or libraries, with the goal of relying on single archives whenever feasible.
+Consequently, the `biopixR` package requires the `R` programming language
+($\ge$ 4.2.0), the `imager`, `magick`, and `tcltk` libraries, the `data.table`
+and `cluster` packages, and suggests the use of the `knitr`, `rmarkdown`,
+`doParallel`, `kohonen`, `imagerExtra`, `GPareto`, and `foreach` packages, all
+of which are available exclusively from CRAN.
+
+A widely recognized metric used in both industry and research to evaluate code
+complexity is the cyclomatic complexity metric, also known as the McCabe Metric,
+which was introduced by @McCabe1976. This metric provides a quantitative measure
+of code complexity based on graph theory. Given the importance of ensuring
+long-term stability and reproducibility, it is crucial to maintain the
+complexity of individual package functions at a low level [@McCabe1976;
+@Ebert2016].
+
+The complexity of the `biopixR` package is quantified using the `cyclocomp`
+package, which measures the linearly independent paths through the code of a
+function, taking into account structures such as functions, loops, and control
+statements (e.g., if, break, next, and return)
+[@Csardi2016].^[https://github.com/MangoTheCat/cyclocomp] Higher cyclomatic
+complexity values indicate more complex functions. The resulting complexity
+values for the functions of the `biopixR` package are presented in Table
+\@ref(tab:cyclocomp). The user-accessible functions are highlighted, while the
+helper functions, which are part of the main functions, are also listed. In the
+context of the R programming language, cyclomatic complexity can be regarded as
+an indicator of code maintainability, readability, and scalability. In general,
+lower values indicate code that is logically structured and easy to maintain,
+whereas higher values suggest more complex code that may be less maintainable.
+
+```{r cyclocomp}
+library(kableExtra)
+cyclocomp_df <- cyclocomp::cyclocomp_package("biopixR")
+rownames(cyclocomp_df) <- NULL
+kable(
+  cyclocomp_df,
+  format = "markdown",
+  booktabs = TRUE,
+  align = "cc",
+  caption = "Cyclomatic Complexity in the `biopixR` package",
+  escape = FALSE,
+) |> row_spec(c(1,3:14,16,20), background = "yellow")
+```
+
+In summary, all functions in the `biopixR` package have a cyclomatic complexity
+value of less than 50, with complexity increasing in the pipeline functions. In
+comparison, the `pliman` package, which offers a comparable pipeline for object
+quantification as described in @Brauckhoff_unpublished, has its
+`analyze_objects()` function scoring a cyclomatic complexity of 107.
+
 
 ## Capabilities and Limitations - A Comparative Analysis of Human and Software Performance
 
@@ -1929,13 +1985,313 @@ if these aggregated microbeads are present. This variability could be addressed
 by integrating a watershed algorithm, a specialized segmentation algorithm
 capable of distinguishing touching objects [@Beucher1992; @Pau2010]. To
 demonstrate the discrepancy and comprehend the capabilities, an experiment was
-conducted to compare the manual analysis of three microbead images (n=5) with
-the results obtained using the `biopixR` package.
+conducted to compare the manual analysis of three microbead images (see Figure
+\@ref(fig:comp2)) (n=5) with the results obtained using the `biopixR` package.
 
-To compare the manual and software-based methods, the Intraclass
-Correlation Coefficient (ICC) will be utilized. The statistical comparison of
-the data will be conducted using the `R` package `irr`, which includes various
-methods for analyzing interrater reliability [@irr].
+To compare the manual and software-based methods, the Intraclass Correlation
+Coefficient (ICC) will be utilized. The statistical comparison of the data will
+be conducted using the `R` package `irr`, which includes various methods for
+analyzing interrater reliability [@irr]. In order to further assess the
+differences between the two analyses, a paired Student's t-test will be applied
+to determine whether there are any statistically significant differences in the
+obtained results.
+
+The manual analysis was conducted using a Shiny app (accessible at:
+[https://brauckhoff.shinyapps.io/umfrage/]; language: German). The survey was
+conducted by three colleagues in the same field of study (biotechnology),
+myself, and an independent individual from a completely different field of
+study. The initial objective of this survey was to enumerate each microbead,
+including those that are part of doublets or multiplets. The second task was to
+enumerate only the individual microbeads that are part of the aforementioned
+clotted structures. The aforementioned tasks were completed for three images,
+which are displayed in Figure \@ref(fig:comp2). The images were selected for
+analysis because they depict varying amounts of microbeads and the phenomena of
+clotted microbeads.
+
+(ref:comp2) **Microbead Images for Manual Analysis**: These three images represent varying quantities of microbeads. Each image displays a unique combination of dimensions and the presence of doublets and multiplets at varying amounts.
+
+```{r comp2, out.width="49%", fig.cap="(ref:comp2)"}
+include_graphics(c(
+  "figures/fig21.1_comparison.bmp",
+  "figures/fig21.2_comparison.png",
+  "figures/fig21.3_comparison.bmp"
+))
+```
+
+### Preprocessing the manual analysis and performing analysis with `biopixR`
+
+In the initial step of comparing the manual analysis with the software results,
+the data must be preprocessed in order to facilitate the display of results.
+This process entails combining the results of the five individual analyses and
+running the `biopixR` package on the same images in order to obtain the
+comparative data frame. Subsequently, the two data frames, derived from the
+manual and software analyses, are merged for further processing. The individual
+processing steps are illustrated in the code below, and the final data utilized
+for analysis is depicted in Tables \@ref(tab:tabcom1) and \@ref(tab:tabcom2).
+
+```{r}
+n1 <- read.csv("data/comparison/combined_data.csv")
+n2 <- read.csv("data/comparison/combined_data_20240107084710.csv")
+n3 <- read.csv("data/comparison/combined_data_20240302124005.csv")
+n4 <- read.csv("data/comparison/combined_data_20240304210901.csv")
+n5 <- read.csv("data/comparison/combined_data_20240701124906.csv")
+
+manual_all <-
+  data.frame(
+    image1_all = c(mean(
+      n1$Clicks[1], n2$Clicks[1], n3$Clicks[1], n4$Clicks[1], n5$Clicks[1]
+    ), sd(
+      c(n1$Clicks[1], n2$Clicks[1], n3$Clicks[1], n4$Clicks[1], n5$Clicks[1])
+    )),
+    
+    image2_all = c(mean(
+      n1$Clicks[3], n2$Clicks[3], n3$Clicks[3], n4$Clicks[3], n5$Clicks[3]
+    ), sd(
+      c(n1$Clicks[3], n2$Clicks[3], n3$Clicks[3], n4$Clicks[3], n5$Clicks[3])
+    )),
+    
+    image3_all = c(mean(
+      n1$Clicks[5], n2$Clicks[5], n3$Clicks[5], n4$Clicks[5], n5$Clicks[5]
+    ), sd(
+      c(n1$Clicks[5], n2$Clicks[5], n3$Clicks[5], n4$Clicks[5], n5$Clicks[5])
+    ))
+  )
+
+manual_clott <-
+  data.frame(
+    image1_clot = c(mean(
+      n1$Clicks[2], n2$Clicks[2], n3$Clicks[2], n4$Clicks[2], n5$Clicks[2]
+    ), sd(
+      c(n1$Clicks[2], n2$Clicks[2], n3$Clicks[2], n4$Clicks[2], n5$Clicks[2])
+    )),
+    
+    image2_clot = c(mean(
+      n1$Clicks[4], n2$Clicks[4], n3$Clicks[4], n4$Clicks[4], n5$Clicks[4]
+    ), sd(
+      c(n1$Clicks[4], n2$Clicks[4], n3$Clicks[4], n4$Clicks[4], n5$Clicks[4])
+    )),
+    
+    image3_clot = c(mean(
+      n1$Clicks[6], n2$Clicks[6], n3$Clicks[6], n4$Clicks[6], n5$Clicks[6]
+    ), sd(
+      c(n1$Clicks[6], n2$Clicks[6], n3$Clicks[6], n4$Clicks[6], n5$Clicks[6])
+    ))
+  )
+
+manual_all <- t(manual_all)
+colnames(manual_all) <- c("Count", "sd")
+
+manual_clott <- t(manual_clott)
+colnames(manual_clott) <- c("Count", "sd")
+
+image1 <- importImage("figures/fig21.1_comparison.bmp")
+image2 <- importImage("figures/fig21.2_comparison.png")
+image3 <- importImage("figures/fig21.3_comparison.bmp")
+
+comparison1_img1 <- objectDetection(image1, alpha = 0.8, sigma = 0.7)
+comparison1_img2 <- objectDetection(image2, alpha = 0.4, sigma = 0)
+comparison1_img3 <- objectDetection(image3, alpha = 1, sigma = 0)
+
+comparison2_img1 <- imgPipe(image1,
+                            alpha = 0.8,
+                            sigma = 0.7,
+                            sizeFilter = T)
+comparison2_img2 <- imgPipe(image2,
+                            alpha = 0.4,
+                            sigma = 0,
+                            sizeFilter = T)
+comparison2_img3 <- imgPipe(image3,
+                            alpha = 1,
+                            sigma = 0,
+                            sizeFilter = T)
+
+df_comparison1 <- data.frame(
+  factor = c("image1", "image2", "image3"),
+  software = c(
+    length(comparison1_img1$centers$value),
+    length(comparison1_img2$centers$value),
+    length(comparison1_img3$centers$value)
+  ),
+  manual = as.numeric(manual_all[, 1]),
+  manual_sd = as.numeric(manual_all[, 2])
+)
+
+df_comparison2 <- data.frame(
+  factor = c("image1", "image2", "image3"),
+  software = c(
+    comparison2_img1$summary$estimated_rejected,
+    comparison2_img2$summary$estimated_rejected,
+    comparison2_img3$summary$estimated_rejected
+  ),
+  manual = as.numeric(manual_clott[, 1]),
+  manual_sd = as.numeric(manual_clott[, 2])
+)
+```
+
+```{r tabcom1}
+kable(
+  df_comparison1,
+  format = "markdown",
+  booktabs = TRUE,
+  align = "cccc",
+  col.names = c("factor", "software", "manual", "sd(manual)"),
+  caption = "Comparison in object quantification for task 1",
+  escape = FALSE,
+)
+```
+
+```{r tabcom2}
+kable(
+  df_comparison2,
+  format = "markdown",
+  booktabs = TRUE,
+  align = "cccc",
+  col.names = c("factor", "software", "manual", "sd(manual)"),
+  caption = "Comparison in object quantification for task 2",
+  escape = FALSE,
+)
+```
+
+### Visualization of Comparison between Human and Software analysis
+
+
+
+
+```{r comp1}
+library(irr)
+# 
+icc_result1 <- icc(df_comparison1[, 2:3])
+print(icc_result1)
+
+# Vectorized approach for running Shapiro-Wilk tests and checking normality
+normality_p_values <- sapply(1:6, function(i) {
+  shapiro.test(c(n1$Clicks[i], n2$Clicks[i], n3$Clicks[i], n4$Clicks[i], n5$Clicks[i]))$p.value
+})
+
+# Check normality and print results
+for (i in 1:6) {
+  if (normality_p_values[i] < 0.05) {
+    message <- "Data is not normally distributed."
+  } else {
+    message <- "Data is normally distributed."
+  }
+  print(paste("Test", i, ":", message, "(p-value =", normality_p_values[i], ")"))
+}
+
+
+indices1 <- c(1, 3, 5)
+indices2 <- 1:3  # Running variable from 1 to 3
+
+# Perform paired t-test for each selected pair of indices
+p_values <- mapply(function(i, j) {
+  t.test(
+    rep(df_comparison1$software[j], 5),
+    c(n1$Clicks[i], n2$Clicks[i], n3$Clicks[i], n4$Clicks[i], n5$Clicks[i]),
+    paired = TRUE
+  )$p.value
+}, indices1, indices2)
+
+# Significance threshold
+significance_threshold <- 0.05
+
+# Set up the plot area
+plot(1:nrow(df_comparison1), df_comparison1$software,
+     type = "n", xaxt = "n",
+     xlim = c(0.5, nrow(df_comparison1) + 0.5),
+     ylim = range(c(df_comparison1$software, df_comparison1$manual + df_comparison1$manual_sd)),
+     main = "Comparison of Methods",
+     xlab = "Factors",
+     ylab = "Counts")
+
+# Add custom x-axis labels
+axis(1, at = 1:nrow(df_comparison1), labels = df_comparison1$factor)
+
+# Add points for Method1
+points(1:nrow(df_comparison1), df_comparison1$software,
+       pch = 16, col = "steelblue", cex = 1.5)
+
+# Add points for Method2
+points(1:nrow(df_comparison1), df_comparison1$manual,
+       pch = 16, col = "darkred", cex = 1.5)
+
+# Add error bars for Method2
+arrows(x0 = 1:nrow(df_comparison1),
+       y0 = df_comparison1$manual- df_comparison1$manual_sd,
+       x1 = 1:nrow(df_comparison1),
+       y1 = df_comparison1$manual + df_comparison1$manual_sd,
+       angle = 90, code = 3, length = 0.1, col = "darkred")
+
+for (i in 1:nrow(df_comparison1)) {
+  if (p_values[i] < significance_threshold) {
+    text(i, max(df_comparison1$software[i], df_comparison1$manual[i]) + 40, "*", cex = 1.5, col = "black")
+  }
+}
+
+# Add legend
+legend("topright", legend = c("Software", "Manual"),
+       col = c("steelblue", "darkred"), pch = 16)
+```
+
+```{r}
+library(irr)
+
+# 
+icc_result2 <- icc(df_comparison2[, 2:3])
+print(icc_result2)
+
+# Perform paired t-test for each factor
+p_values <- sapply(1:nrow(df_comparison2), function(i) {
+  t.test(
+    rep(df_comparison2$software[i], 5),
+    c(n1$Clicks[i * 2], n2$Clicks[i * 2], n3$Clicks[i * 2], n4$Clicks[i *
+                                                                        2], n5$Clicks[i * 2]),
+    paired = TRUE
+  )$p.value
+})
+
+# Significance threshold
+significance_threshold <- 0.05
+
+# Set up the plot area
+plot(1:nrow(df_comparison2), df_comparison2$software,
+     type = "n", xaxt = "n",
+     xlim = c(0.5, nrow(df_comparison2) + 0.5),
+     ylim = range(c(df_comparison2$software, df_comparison2$manual + df_comparison2$manual_sd)),
+     main = "Comparison of Methods",
+     xlab = "Factors",
+     ylab = "Counts")
+
+# Add custom x-axis labels
+axis(1, at = 1:nrow(df_comparison2), labels = df_comparison2$factor)
+
+# Add points for Method1
+points(1:nrow(df_comparison2), df_comparison2$software,
+       pch = 16, col = "steelblue", cex = 1.5)
+
+# Add points for Method2
+points(1:nrow(df_comparison2), df_comparison2$manual,
+       pch = 16, col = "darkred", cex = 1.5)
+
+# Add error bars for Method2
+arrows(x0 = 1:nrow(df_comparison2),
+       y0 = df_comparison2$manual- df_comparison2$manual_sd,
+       x1 = 1:nrow(df_comparison2),
+       y1 = df_comparison2$manual + df_comparison2$manual_sd,
+       angle = 90, code = 3, length = 0.1, col = "darkred")
+
+# Annotate p-values
+for (i in 1:nrow(df_comparison2)) {
+  if (p_values[i] < significance_threshold) {
+    text(i, max(df_comparison2$software[i], df_comparison2$manual[i]) - 90, "*", cex = 1.5, col = "black")
+  }
+}
+
+# Add legend
+legend("topright", legend = c("Software", "Manual"),
+       col = c("steelblue", "darkred"), pch = 16)
+```
+
+
 
 
 ## outside the box applicability
