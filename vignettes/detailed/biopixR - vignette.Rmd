@@ -114,8 +114,14 @@ of microplastics [@Ding2020], the real-time localization of microbead-based
 drug delivery systems [@Bannerman2016], and other fields within the life
 sciences, such as cell biology.
 
-- Convenient import ...
-- Batch processing (scanDir) ...
+The aim of the `biopixR` package is to provide the features needed for comprehensive image processing in the field of life science like:
+
+- Convenient import of images in most used format
+- provide tools for preprocessing of images with highly fragmented contours
+- provide versatile image processing functions for customizable workflows
+- include interactive approaches to feature extraction
+- Combination of these functions to archive user friendly pipelines
+- enable batch processing and automatization for medium-throughput analysis
 
 All technical and experimental aspects of `biopixR` are aimed to adhere to the
 principles of reproducible research. The development process was guided by the
@@ -931,7 +937,7 @@ has the potential to induce fluorescence in adjacent beads and result in the
 generation of false positive signals. To address this issue, we developed the
 `proximityFilter()` function.
 
-(ref:error) **Unwanted Microbead Phenomena**: The image is part of the biopixR package and illustrates the various occurrences within a microbead sample. It is evident that some microbeads are situated in close proximity to one another, as indicated by the green arrow. Moreover, the microbeads have the potential to aggregate, forming clusters such as doublets (highlighted by the red arrow) and multiplets (marked by the cyan arrow).
+(ref:error) **Unwanted Microbead Phenomena**: The image is part of the biopixR package and illustrates the various occurrences within a microbead sample. It is evident that some microbeads are situated in proximity to one another, as indicated by the green arrow. Moreover, the microbeads have the potential to aggregate, forming clusters such as doublets (highlighted by the red arrow) and multiplets (marked by the cyan arrow).
 
 ```{r error, out.width="79%", fig.pos="ht", fig.cap="(ref:error)"}
 plot(beads)
@@ -1414,7 +1420,7 @@ between partition contours and microbeads.
 Subsequently, an iterative scanning for line ends is initiated using the
 `image_morphology()` function from the `magick` package. The area surrounding
 the line ends is scanned within a specific radius, and reconnected with the
-contour in closest proximity using the `adaptiveInterpolation()` helper
+closest contour using the `adaptiveInterpolation()` helper
 function. Following the reconnection phase, the contours undergo a thinning
 process, which is carried out by the `image_morphology()` function. These steps
 are repeated until the predefined number of iterations has been reached. The
@@ -1554,7 +1560,7 @@ learning techniques, specifically SOM. When SOMs are enabled, the function can
 classify detected objects based on their shape features, with the final output
 table including a row with classes that indicate the corresponding group for
 each object as determined by the SOM. This entails that the features are
-projected onto a two-dimensional plane, with similar features situated in close
+projected onto a two-dimensional plane, with similar features situated in
 proximity and dissimilar features positioned at a greater distance. The features
 are mapped to specific positions, designated as units, with each unit being
 associated with a codebook vector, representing the average of all features
@@ -1990,13 +1996,30 @@ demonstrate the discrepancy and comprehend the capabilities, an experiment was
 conducted to compare the manual analysis of three microbead images (see Figure
 \@ref(fig:comp2)) (n=5) with the results obtained using the `biopixR` package.
 
-To compare the manual and software-based methods, the Intraclass Correlation
-Coefficient (ICC) will be utilized. The statistical comparison of the data will
-be conducted using the `R` package `irr`, which includes various methods for
-analyzing interrater reliability [@irr]. In order to further assess the
-differences between the two analyses, a paired Student's t-test will be applied
-to determine whether there are any statistically significant differences in the
-obtained results.
+A statistical comparison of the data will be conducted using the `R` package
+`irr`, which includes various methods for analyzing interrater reliability
+[@irr]. To compare the manual and software-based methods, the Intraclass
+Correlation Coefficient (ICC) will be utilized. The ICC was originally
+introduced by @Fisher1992 and measures the correlation within a class of data,
+such as repeated measurements of the same objective. Typically, ICC values range
+between 0 and 1. Values below 0.5 indicate low reliability, while values
+above 0.8 or 0.9 indicate good to excellent reliability [@Liljequist2019]. The
+ICC is based on the analysis of variances and, for the chosen one-way model, can
+be defined as the ratio of variances [@Bartko1966]. In the calculation, the
+software is considered to be one rater, and the mean of the five manual analyses
+is considered to be the other rater.
+
+To further assess the differences between the two methods, a paired Student's
+t-test will be applied to determine whether there are any statistically
+significant differences in the obtained results. This test compares the mean
+differences and is designed for paired data, such as pre- and post-treatment
+measurements on a single individual [@Hsu2014]. To perform the test, the
+single result obtained by the software was replicated five times, matching the
+five measurements derived from the manual analysis. Both methods are regarded as
+paired observations derived from the same images but employing different methods
+(treatments). To ensure the accuracy of this test, the data from the manual
+analysis will be tested for normal distribution using the Shapiro-Wilk normality
+test [@SHAPIRO1965].
 
 The manual analysis was conducted using a Shiny app (accessible at:
 [https://brauckhoff.shinyapps.io/umfrage/]; language: German). The survey was
@@ -2156,10 +2179,40 @@ kable(
 
 ### Visualization of Comparison between Human and Software analysis
 
+The design of the algorithm suggests that the software will yield lower count
+values for the first task. This discrepancy can be attributed to the algorithm's
+approach to doublets and multiplets, which are treated as single entities. In
+contrast, humans are able to visually distinguish individual microbeads even
+when they are part of doublets or multiplets. The results of task 1 are
+presented in Table \@ref(tab:tabcom1). It is evident that manual counting for the
+smaller image with fewer microbeads was accurate, with a standard deviation
+of 3.27. However, for the two larger images with higher numbers of microbeads,
+the standard deviation of the manual analysis increased to approximately 30. As
+anticipated, the algorithmic analysis produced a smaller number of object counts
+than that obtained via manual counting for the first two images. To interpret
+these findings, a statistical analysis was conducted and the results were
+visualized.
 
+To assess the reliability of the software in comparison to manual analysis, the
+ICC was calculated. The count data for both tasks were subjected to a
+Shapiro-Wilk test to ascertain their normal distribution. The resulting
+p-values, all greater than 0.05, indicate that the data are normally
+distributed. Subsequently, a paired Student's t-test was conducted to compare
+the two methods. The results are presented in the corresponding plots for each
+task, with statistically significant differences marked with an asterisk (*) (p
+< 0.05).
 
+In the first image, the software produced a significantly lower result compared
+to manual counting, which is an expected outcome. In contrast, for the other two
+images, the software results fall within the standard deviation of the manual
+analysis, with no statistically significant difference (see Figure
+\@ref(fig:comp1)). The ICC calculated for the first task was 0.998, indicating
+excellent reliability between the results obtained by the software and those
+obtained through manual analysis.
 
-```{r comp1}
+(ref:comp2) **Comparison of Software and Manual Object Quantification** (Task 1): All microbeads, including those in doublets or multiplets, are quantified manually by five different individuals (n = 5) and by the software `biopixR`. The resulting counts for each method are shown, with software results in blue and manual analysis results in red. The manual analysis is shown as mean $\pm$ standard deviation. *Note*: Statistical significance was calculated using a paired Student's t-test, with * p < 0.05.
+
+```{r comp1, fig.cap="(ref:comp1)"}
 library(irr)
 # 
 icc_result1 <- icc(df_comparison1[, 2:3])
@@ -2234,7 +2287,28 @@ legend("topright", legend = c("Software", "Manual"),
        col = c("steelblue", "darkred"), pch = 16)
 ```
 
-```{r}
+The second task is to estimate the number of microbeads present within doublets
+and multiplets. The data for this analysis is presented in Table
+\@ref(tab:tabcom2). The results from both the software and manual analysis of
+images one and three are comparable, with a low standard deviation for the
+latter. The first image, with lower image dimensions, and the third, with a low
+number of doublets and multiplets, are comparatively straightforward to analyze.
+In contrast, the second image depicts a larger number of these structures,
+resulting in greater variability in the results obtained by manual analysis,
+with a standard deviation of nearly 30. In order to create a comparable software
+results for this task, the `imgPipe()` function with an enabled `sizeFilter()`
+was employed. The algorithm estimates the number of rejected microbeads within
+these structures by dividing the number of discarded pixels by the mean size of
+the remaining objects (microbeads). The aforementioned results are illustrated
+in Figure \@ref(fig:comp2), which demonstrates that the software and manual
+analysis yield nearly identical outcomes for images one and three. However, the
+differing outcome for image two is illustrated, with a statistically significant
+difference between the methods. The calculated ICC for task 2 indicates a high
+degree of reliability between the methods, with a score of 0.86.
+
+(ref:comp2) **Comparison of Software and Manual Object Quantification** (Task 2): Only microbeads that are part of doublets or multiplets are counted. Manual analysis was conducted by five different individuals (n = 5) and compared to the software `biopixR`. The resulting counts for each method are shown, with software results in blue and manual analysis results in red. The manual analysis is depicted as mean $\pm$ standard deviation. *Note*: Statistical significance was calculated using a paired Student's t-test, with * p < 0.05.
+
+```{r comp2, fig.cap="(ref:comp2)"}
 library(irr)
 
 # 
@@ -2284,7 +2358,13 @@ arrows(x0 = 1:nrow(df_comparison2),
 # Annotate p-values
 for (i in 1:nrow(df_comparison2)) {
   if (p_values[i] < significance_threshold) {
-    text(i, max(df_comparison2$software[i], df_comparison2$manual[i]) - 90, "*", cex = 1.5, col = "black")
+    text(
+      i,
+      max(df_comparison2$software[i], df_comparison2$manual[i]) - 90,
+      "*",
+      cex = 1.5,
+      col = "black"
+    )
   }
 }
 
@@ -2293,46 +2373,79 @@ legend("topright", legend = c("Software", "Manual"),
        col = c("steelblue", "darkred"), pch = 16)
 ```
 
+In conclusion, as the complexity of images increases, as evidenced by an
+elevated number of objects and the occurrence of phenomena such as doublets and
+multiplets, manual analysis becomes increasingly inaccurate, resulting in high
+standard deviations and compromised reproducibility. This highlights the
+necessity of the `biopixR` package for the reproducible quantification of image
+objects. In terms of reliability, the results obtained using the `biopixR`
+package are comparable to those obtained through manual analysis, but without
+the variation introduced by human error, as indicated by the calculated ICC. In
+conclusion, this section demonstrates the significance of the `biopixR` package
+in enhancing the reliability, quality, and reproducibility of object
+quantification in image analysis.
 
 
+## Exploring new areas of applicability
 
-## outside the box applicability
+The `biopixR` package was initially designed and developed with a primary focus
+on microbeads. However, its applicability extends beyond this area of research.
+The package can be utilized for any image analysis task requiring feature
+extraction of spherical or round objects, including fields such as microplastic
+analysis and tracking [@Bannerman2016; @Ding2020] and cell biology
+[@Schneider2019]. To illustrate the diverse applications of the `biopixR`
+package beyond microbeads, we present an example of its use in analyzing images
+obtained from cell biology studies.
 
-(ref:DSB)
+DNA Double-strand breaks (DSBs) represent a particularly severe form of DNA
+damage, frequently resulting in apoptotic cell death in the absence of repair.
+The quantification of these breaks can be achieved through immunofluorescence
+staining, which employs antibodies directed against the phosphorylated histone
+protein H2AX ($\gamma$H2AX). This staining technique results in the formation of
+$\gamma$H2AX foci, which serve as a quantitative representation of the number of
+DNA DSBs. The number of double-strand breaks is proposed to reflect the efficacy
+of anti-tumor agents and, therefore, facilitate the assessment of individual
+patient responses to therapies. Furthermore, the number of double-strand brakes
+may be used to evaluate the general cytotoxic effects of treatments *in vivo*.
+This approach allows for the precise modulation of therapy according to the
+individual needs of patients [@Roediger2018; @Ruhe2019;
+@sSchneider2019].
 
-```{r eval=FALSE}
+In the following example, the `biopixR` package was employed to highlight
+extracted $\gamma$H2AX foci (see Figure \@ref(fig:DSB)).
+
+(ref:DSB) **Visualization of the Application of `biopixR` in Cell Biology**: **A**) The image shows HepG2 cells with nuclei stained using DAPI. The quantitative marker for DNA double-strand breaks, $\gamma$H2AX, is targeted with a specific antibody and appears as green fluorescent foci. The experimental procedure adheres to the method described in @Roediger2018. **B**) The $\gamma$H2AX foci are quantified using the `biopixR` package, with the detected foci highlighted in different colors by the `changePixelColor()` function.
+
+```{r , eval=FALSE}
 # Import the image from the specified file path
-img <- importImage("figures/tim_242602_c_s6c1+2+3m3.tif")
+DSB_img <- importImage("figures/tim_242602_c_s6c1+2+3m3.tif")
 
-# Plot the imported image without axes
-plot(img, axes = FALSE)
-
-# Add a text annotation "A" at coordinates (50, 60) with dark red color and size 6
-text(c(50), c(60), c("A"), col = "darkred", cex = 6)
-
-# Extract the green channel from the image (assuming the image has multiple color channels)
-img_g <- img[, , , 2]
-
-# Convert the green channel to a 'cimg' object for further processing
-cimg_g <- as.cimg(img_g)
+# Extract the green channel from the image representing yH2AX
+yH2AX <- DSB_img[, , , 2] |> as.cimg()
 
 # Perform object detection on the green channel image using the 'edge' method
 # with specified parameters alpha and sigma
-detected <-
-  objectDetection(cimg_g,
+DSB <-
+  objectDetection(yH2AX,
                   method = 'edge',
                   alpha = 1.3,
                   sigma = 0)
 
 # Change the pixel colors of the detected objects
-colored_objects <-
-  changePixelColor(cimg_g,
-                   detected$coordinates,
-                   color = factor(detected$coordinates$value),
+colored_DSB <-
+  changePixelColor(yH2AX,
+                   DSB$coordinates,
+                   color = factor(DSB$coordinates$value),
                    vis = FALSE)
 
+# Plot the imported image without axes
+plot(DSB_img, axes = FALSE)
+
+# Add a text annotation "A" at coordinates (50, 60) with dark red color and size 6
+text(c(50), c(60), c("A"), col = "darkred", cex = 6)
+
 # Plot the image with colored objects without axes
-plot(colored_objects, axes = FALSE)
+plot(colored_DSB, axes = FALSE)
 
 # Add a text annotation "B" at coordinates (50, 60) with dark red color and size 6
 text(c(50), c(60), c("B"), col = "darkred", cex = 6)
@@ -2341,6 +2454,7 @@ text(c(50), c(60), c("B"), col = "darkred", cex = 6)
 ```{r DSB, echo=FALSE, out.width="89%", fig.cap="(ref:DSB)"}
 knitr::include_graphics("figures/fig1_DSB_analysis.png")
 ```
+
 
 # Summary and Conclusion
 

@@ -186,7 +186,7 @@ combinations, estimating the optimal parameters more quickly.
 
 It should be noted that the threshold function can also be employed, which does
 not require any additional input. Although the threshold method is a valid
-approach for segmentation, it has the disadvantage of merging objects in close
+approach for segmentation, it has the disadvantage of merging objects in
 proximity that would be considered distinct by the edge detector. Consequently,
 the decision between greater accuracy with parameter input or time-consuming
 calculation and the more straightforward thresholding approach depends on the
@@ -440,7 +440,7 @@ text(
 ```
 
 As expected, the `proximityFilter` excluded microbeads that were close to each
-other. In this situation, a doublet is in close proximity to a single microbead,
+other. In this situation, a doublet is in proximity to a single microbead,
 so both the doublet and its neighboring microbead are rejected by the filter.
 
 ```{r}

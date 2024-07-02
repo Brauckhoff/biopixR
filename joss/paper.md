@@ -235,7 +235,19 @@ of the image.
 
 # Conclusion
 
-In summary, `biopixR` represents a significant advancement in image analysis capabilities for `R` users. By providing both automation methods and interactive tools, the package empowers researchers to extract valuable insights from images with ease. Its adaptability across various research fields makes it a valuable tool for researchers seeking efficient solutions. Leveraging the power of `R` and its extensive library of packages, users can seamlessly integrate `biopixR` into their existing workflows, streamlining data analysis and visualization tasks. Moreover, the package's minimal dependencies ensure long-term stability and maintainability over time, making it an attractive choice for researchers seeking reproducible software.
+In summary, `biopixR` represents a significant advancement in image analysis
+capabilities for `R` users. By providing both automation methods and interactive
+tools, the package empowers researchers to extract valuable insights from images
+with ease. Its adaptability across various research fields makes it a valuable
+tool for researchers seeking efficient solutions. Leveraging the power of `R`
+and its extensive library of packages, users can seamlessly integrate `biopixR`
+into their existing workflows, streamlining data analysis and visualization
+tasks. Moreover, the package's minimal dependencies ensure long-term stability
+and maintainability over time, making it an attractive choice for researchers
+seeking reproducible software. A comparative analysis between human and
+software-based object quantification from images underscores the importance of
+the `biopixR` package in terms of accuracy and reproducibility (see extended
+vignette).
 
 # Acknowledgments
 
