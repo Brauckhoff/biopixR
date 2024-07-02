@@ -116,7 +116,7 @@ package (S3 class system). To ensure code quality, we employed various methodolo
 including [Continuous Integration](https://github.com/Brauckhoff/biopixR/blob/main/.github/workflows/R-CMD-check.yml)
 (CI), unit testing [@testthat], adherence to naming conventions
 [@Rasmus_2012], and the application of style guidelines [@Wickham_2019]. The choice of `R` as a programming language for image
-processing is based on its open-source framework, advanced packages such as
+processing is based on its open-source framework, bindings to other languages [@Reimert2024] to improve perfomance, advanced packages such as
 `imager` [@imager] and `magick` [@magick], and its strong support for
 reproducible research [@Xie_2019]. The importance of ensuring software 
 reproducibility is widely recognized, not only for our own work but also 
