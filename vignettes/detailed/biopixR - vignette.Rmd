@@ -73,28 +73,30 @@ guarantee the objectivity and reproducibility of the results.
 
 The demand for quantitative information from images to understand and develop
 biological concepts has led to the emergence of bioimage informatics as a
-specialized field[@Eliceiri2012; @Murphy2014]. Bioimage informatics is a field
+specialized field [@Eliceiri2012; @Murphy2014]. Bioimage informatics is a field
 of study that focuses on the extraction of quantitative data from images with
 the objective of interpreting or developing biological concepts [@Chessel2017;
 @Moen2019; @Schneider2019]. The objective of this field is to automate and
 objectively analyze image data, as well as to create tools for visualization,
-storage, processing, and analysis [@Swedlow2009; @Peng2012]. One of the
-primary objectives in this field is to achieve reproducible results, which are
+storage, processing, and analysis [@Swedlow2009; @Peng2012]. One objectives in 
+this field is to achieve reproducible results, which are
 defined as consistent outcomes across experiments or studies conducted under
 similar conditions. In this endeavor, dedicated software plays a crucial role.
 
-In light of recent developments, the utilization of microscopy in the field of
-biology has undergone a transformation, shifting from a predominantly visual
+In light of recent developments, the utilization of microscopy in biomedical
+research has undergone a transformation, shifting from a predominantly visual
 approach to a quantitative one [@PaulGilloteaux2023]. Bioimage informatics
-plays a pivotal role in these quantitative approaches, as it enables the
-efficient analysis of large volumes of image data through the application of
-computational methods. One of the principal techniques employed in the
+plays a pivotal role in these quantitative approaches, as it uses computational methods 
+for the efficient analysis of large volumes of image data through the application of
+computational methods. Key aspects of bioimage informatics include 
+image processing,, machine learning, data management and sharing and 
+quantitative analysis. One of the principal techniques employed in the
 extraction of features from images is image segmentation, which is a
 prerequisite for subsequent quantification. It involves the division of an image
-into distinct regions by the assignment of labels to each pixel. The primary
-objective is to identify regions pertinent to the specific task [@Peng2008;
-@Ghosh2019; @Niedballa2022]. Thresholding represents a relatively
-straightforward segmentation method. This approach involves comparing pixel
+into distinct regions of interes (ROI) by the assignment of labels to each pixel. The primary
+objective is to identify ROIs pertinent to the specific task [@Peng2008;
+@Ghosh2019; @Niedballa2022]. Thresholding is a straightforward segmentation method. 
+This approach involves comparing pixel
 values against one or more intensity thresholds, which typically results in the
 image being partitioned into foreground and background regions [@Sonka2000;
 @Jaehne2002]. Another common approach is the use of edge detection algorithms
@@ -104,11 +106,15 @@ image that may not be apparent through traditional manual analysis in a fast,
 reliable, and reproducible manner. The use of automated software ensures the
 consistency, reproducibility, and objectivity of the results obtained.
 
-The following sections explain how the `biopixR` package contributes to these
-goals by providing tools for feature extraction and automation approaches for
-analyzing round, spherical objects in images, such as microbeads, cells, seeds,
-or microplastics, which have quite similar characteristics in regards to their
-appearances in images.
+Numerous packages are available for `R` that address various tasks such as image 
+import, segmentation and annotation related to bioimage informatics. Some of 
+these will be mentioned in the following sections. However, they do 
+not cover all aspects.The following sections explain how the `biopixR` package 
+contributes to these goals by providing tools for feature extraction and automation 
+approaches. One importend use case for use is analyzing round, spherical objects
+in images, such as microbeads, cells, seeds, or microplastics, which have 
+quite similar characteristics in regards to their appearances in images. Therefore,
+this vignette will dominantly use examples from this field.
 
 
 # History, philosophy, and aims of the `biopixR` package
@@ -132,8 +138,8 @@ traction with a transition to open repositories on GitHub
 to ensure enhanced software quality and facilitate greater collaboration with
 both the scientific and open-source communities.
 
-Our primary objective was to publish the package on the Comprehensive R Archive
-Network (CRAN), which mandates high-quality software. This objective has been
+Our primary objective was to publish the package on the **C**omprehensive **`R`** **A**rchive
+**N**etwork (CRAN), which mandates high-quality software. This objective has been
 successfully achieved. Since then, multiple versions of the package have been
 released, including the initial milestone release (0.2.4) on April 2, 2024, and
 the subsequent stable version (1.0) on June 3, 2024. Since our initial
@@ -241,7 +247,7 @@ A summary of the functions present in the `biopixR` package is provided in
 Figure \@ref(fig:depend), as the function in relation to the `imgPipe()` function
 are displayed.
 
-(ref:depend) **Dependency Graph of Functions in the `biopixR` Package**: This graph illustrates the levels of complexity by depicting the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package (version 0.1.1) from @AppletonFox2022, with RStudio 2023.09.0+463 and R 4.3.2 on Linux (Ubuntu 22.04.3 LTS).
+(ref:depend) **Dependency Graph of Functions in the `biopixR` Package**: This graph illustrates the levels of complexity by depicting the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package (version 0.1.1) from @AppletonFox2022, with RStudio 2023.09.0+463 and4.3.2 on Linux (Ubuntu 22.04.3 LTS).
 
 ```{r, eval=FALSE}
 foodweb(biopixR::imgPipe) |> plot()
@@ -301,7 +307,7 @@ as well as the test history can be accessed at:
 `biopixR` is an `R` package ($\ge$ 4.2.0), designed using the S3 object system.
 S3 incorporates object-oriented programming features while simplifying
 development through naming conventions [@Chambers2014]. Typically, functions
-and parameters in R packages are written using underscore separation
+and parameters in `R` packages are written using underscore separation
 [@Rasmus2012]. However, for the purpose of differentiation, this convention
 was adapted. Underscore separation is employed solely for variables and
 parameters introduced within the package. In accordance with the nomenclature
@@ -312,7 +318,7 @@ exception to those designated to be interactive, which also utilize the
 
 To enhance the formatting, consistency, and readability of the code,
 the `styler` package by @Mueller2017 was employed and applied to the code. The
-`styler` package performs "non-invasive pretty printing of R code", whereby the
+`styler` package performs "non-invasive pretty printing of `R` code", whereby the
 code is formatted according to the *tidyverse style guide* (<https://style.tidyverse.org/>).
 
 Literate programming, introduced by @Knuth1984, combines source code and
@@ -414,21 +420,20 @@ install.packages("devtools")
 devtools::install_github("Brauckhoff/biopixR")
 ```
 
-The `biopixR` package is available on The **C**omprehensive **R** **A**rchive
-**N**etwork (CRAN), which can be accessed at
+The `biopixR` package is available on CRAN, which can be accessed at
 [https://CRAN.R-project.org/package=biopixR]. CRAN employs rigorous testing
 procedures to ensure that the package can be downloaded and built on all major
 operating systems. Additionally, it validates the examples and documentation
 through the `R CMD check`. To utilize the `biopixR` package, it is
-first necessary to install R (version 4.2.0 or higher) and then to execute the
+first necessary to install `R` (version 4.2.0 or higher) and then to execute the
 following code:
 
 ```{r, eval=FALSE}
-# Install the 'biopixR' package from the Comprehensive R Archive Network (CRAN).
+# Install the 'biopixR' package from CRAN.
 install.packages("biopixR")
 ```
 
-The results of the R CMD check conducted by CRAN can be accessed via the
+The results of the `R CMD check` conducted by CRAN can be accessed via the
 following link:
 <https://cran.r-project.org/web/checks/check_results_biopixR.html>
 
@@ -465,7 +470,7 @@ par(mfrow = c(1, 1))
 A selection of these images will be employed in the forthcoming demonstration of
 the `biopixR` functions.
 
-## `importImage()` - Importing Images into the R Environment
+## `importImage()` - Importing Images into the `R` Environment
 
 The `biopixR` package features an import function called `importImage()`. This
 function acts as a wrapper, integrating the capabilities of the `magick` and
@@ -934,7 +939,7 @@ include_graphics("figures/fig7_transparent_beads.png")
 ### Interactive Approach in `objectDetection`
 
 To facilitate parameter selection, an interactive feature detection function was
-developed using the R package `tcltk`, which provides access to Tcl/Tk in R. The
+developed using the `R` package `tcltk`, which provides access to Tcl/Tk in R. The
 Graphical User Interface (GUI) is invoked via the
 `interactive_objectDetection()` function (see Figure \@ref(fig:GUI)). The `alpha` and
 `sigma` parameters of the `edgeDetection()` function, discussed in chapter
@@ -951,7 +956,7 @@ images, a scaling slider was incorporated into the interface, utilizing the
 interpolation to adjust the image size according to user input
 [@Barthelme2015].
 
-(ref:GUI) **Graphical User Interface for Interactive Parameter Selection**: The `interactive_objectDetection()` function offers a user-friendly interface with sliders to adjust threshold, smoothing, and scale. It also includes a button to switch between edge detection and thresholding methods. Object contours are highlighted in purple and centers in green for easy visualization. This example was executed in RStudio 2023.09.0+463 with R 4.3.2 on Linux (Ubuntu 22.04.3 LTS), displaying fluorescent microbeads. The rendering process, including timestamps and the current state, is shown in the console.
+(ref:GUI) **Graphical User Interface for Interactive Parameter Selection**: The `interactive_objectDetection()` function offers a user-friendly interface with sliders to adjust threshold, smoothing, and scale. It also includes a button to switch between edge detection and thresholding methods. Object contours are highlighted in purple and centers in green for easy visualization. This example was executed in RStudio 2023.09.0+463 with `R` 4.3.2 on Linux (Ubuntu 22.04.3 LTS), displaying fluorescent microbeads. The rendering process, including timestamps and the current state, is shown in the console.
 
 ```{r, eval=FALSE}
 interactive_objectDetection(beads_large1)
@@ -1053,7 +1058,7 @@ microbeads. To address this issue, the `sizeFilter` function was developed (see
 Figure \@ref(fig:size)). This function filters objects based on their individual
 sizes, using specified lower and upper limits. These limits can be set manually,
 interactively, or automatically. In the interactive approach, the size
-distribution is plotted in the R environment, and the user is prompted in the
+distribution is plotted in the `R` environment, and the user is prompted in the
 console to enter the limits based on the visualized distribution. In the
 automated approach, which is applicable when the number of objects exceeds 50,
 the interquartile range (IQR) is used to calculate the limits. Specifically, the
@@ -1986,7 +1991,7 @@ and file system levels, as well as access pattern optimization [@Folk2011;
 be a task for future analysis projects.
 
 Another objective for optimization could be the controlled import of images to
-prevent RAM overload. Given that R utilizes memory to store imported and
+prevent RAM overload. Given that `R` utilizes memory to store imported and
 generated data, directories containing a substantial volume of images can
 readily overload the RAM, leading to process termination and software crashes
 [@Prajapati2013]. At present, the issue can only be mitigated manually by
@@ -2031,7 +2036,7 @@ complexity values indicate more complex functions. The resulting complexity
 values for the functions of the `biopixR` package are presented in Table
 \@ref(tab:cyclocomp1). The user-accessible functions are highlighted, while the
 helper functions, which are part of the main functions, are also listed. In the
-context of the R programming language, cyclomatic complexity can be regarded as
+context of the `R` programming language, cyclomatic complexity can be regarded as
 an indicator of code maintainability, readability, and scalability. In general,
 lower values indicate code that is logically structured and easy to maintain,
 whereas higher values suggest more complex code that may be less maintainable.
