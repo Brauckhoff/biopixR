@@ -114,7 +114,7 @@ of microplastics [@Ding2020], the real-time localization of microbead-based
 drug delivery systems [@Bannerman2016], and other fields within the life
 sciences, such as cell biology.
 
-The aim of the `biopixR` package is to provide the features needed for comprehensive image processing in the field of life science like:
+The aims of the `biopixR` package are to provide the functions needed for comprehensive image processing like:
 
 - Convenient import of images in most used format
 - provide tools for preprocessing of images with highly fragmented contours
