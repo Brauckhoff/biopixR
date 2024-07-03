@@ -247,7 +247,7 @@ A summary of the functions present in the `biopixR` package is provided in
 Figure \@ref(fig:depend), as the function in relation to the `imgPipe()` function
 are displayed.
 
-(ref:depend) **Dependency Graph of Functions in the `biopixR` Package**: This graph illustrates the levels of complexity by depicting the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package (version 0.1.1) from @AppletonFox2022, with RStudio 2023.09.0+463 and4.3.2 on Linux (Ubuntu 22.04.3 LTS).
+(ref:depend) **Dependency Graph of Functions in the `biopixR` Package**: This graph illustrates the levels of complexity by depicting the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package (version 0.1.1) from @AppletonFox2022, with RStudio 2023.09.0+463 and `R` 4.3.2 on Linux (Ubuntu 22.04.3 LTS).
 
 ```{r, eval=FALSE}
 foodweb(biopixR::imgPipe) |> plot()
