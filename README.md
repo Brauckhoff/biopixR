@@ -242,7 +242,7 @@ The following functions are inherited functionality from other packages and were
 
 - Geithe, C., Zeng, B., Schmidt, C., Dinter, F., Roggenbuck, D., Lehmann, W., Dame, G., Schierack, P., Hanack, K., Rödiger, S., 2024. A multiplex microchamber diffusion assay for the antibody-based detection of microRNAs on randomly ordered microbeads. Biosensors and Bioelectronics: X 18, 100484. [https://doi.org/10.1016/j.biosx.2024.100484](https://doi.org/10.1016/j.biosx.2024.100484)
 
-## Previous (providing research data and mehtods for `biopixR`)
+## Previous (providing research data and methods for `biopixR`)
 
 - Reimann, R., Zeng, B., Jakopec, M., Burdukiewicz, M., Petrick, I., Schierack, P., Rödiger, S., 2020. Classification of dead and living microalgae Chlorella vulgaris by bioimage informatics and machine learning. Algal Research 48, 101908. [https://doi.org/10.1016/j.algal.2020.101908](https://doi.org/10.1016/j.biosx.2024.100484)
 - Schneider, J., Weiss, R., Ruhe, M., Jung, T., Roggenbuck, D., Stohwasser, R., Schierack, P., Rödiger, S., 2019. Open source bioimage informatics tools for the analysis of DNA damage and associated biomarkers. Journal of Laboratory and Precision Medicine 4, 1–27. [https://doi.org/10.21037/jlpm.2019.04.05](https://doi.org/10.21037/jlpm.2019.04.05)
