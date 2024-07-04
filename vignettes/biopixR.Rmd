@@ -1,6 +1,6 @@
 ---
 title: "biopixR - Introduction"
-author: "Tim Brauckhoff"
+author: "Tim Brauckhoff and Stefan Rödiger"
 date: "`r Sys.Date()`"
 output:
   html_document:
