@@ -9,9 +9,9 @@
 # biopixR - Package for analysis of bioimage image data
 
 ## Introduction
-In the rapidly evolving landscape of scientific research and technology, the field of image analysis and processing has become indispensable, providing unprecedented insight into complex phenomena. This project aims to utilize image processing techniques, using the R programming language, to analyze and characterize bead microparticles. Microparticles find extensive utility in various scientific domains, including medical diagnostics, environmental monitoring, and materials science.
+In the rapidly evolving landscape of scientific research and technology, the field of image analysis and processing has become indispensable, providing unprecedented insight into complex phenomena. This project aims to utilize image processing techniques, using the [`R` statistical programming language](https://www.r-project.org/), to analyze and characterize bead microparticles. Microparticles find extensive utility in various scientific domains, including medical diagnostics, environmental monitoring, and materials science.
 
-The rise of high-resolution imaging technologies has led to an exponential increase in the volume and complexity of image data, requiring sophisticated computational methods for efficient analysis. In this context, R is a standout programming language that excels in statistical computing and graphics. Leveraging the rich ecosystem of R packages, this project aims to develop an automated image analysis pipeline for bead microparticles. 
+The rise of high-resolution imaging technologies has led to an exponential increase in the volume and complexity of image data, requiring sophisticated computational methods for efficient analysis. In this context, `R` is a standout programming language that excels in statistical computing and graphics. Leveraging the rich ecosystem of R packages, this project aims to develop an automated image analysis pipeline for bead microparticles. 
 
 **The primary objectives of this project include**:
  - *Image Preprocessing*: Implementing techniques to fill and reconnect discontinuous lines and edges. Discard coagulated duplets, multiplets, and beads that are too close together as they may excite each other and produce a false positive signal.
@@ -238,10 +238,16 @@ The following functions are inherited functionality from other packages and were
 
 # Related Research
 
-- Reimann, R., Zeng, B., Jakopec, M., Burdukiewicz, M., Petrick, I., Schierack, P., Rödiger, S., 2020. Classification of dead and living microalgae Chlorella vulgaris by bioimage informatics and machine learning. Algal Research 48, 101908. https://doi.org/10.1016/j.algal.2020.101908
-- Schneider, J., Weiss, R., Ruhe, M., Jung, T., Roggenbuck, D., Stohwasser, R., Schierack, P., Rödiger, S., 2019. Open source bioimage informatics tools for the analysis of DNA damage and associated biomarkers. Journal of Laboratory and Precision Medicine 4, 1–27. https://doi.org/10.21037/jlpm.2019.04.05
-- Weiss, R., Karimijafarbigloo, S., Roggenbuck, D., Rödiger, S., 2022. Applications of Neural Networks in Biomedical Data Analysis. Biomedicines 10, 1469. https://doi.org/10.3390/biomedicines10071469
-- Rödiger, S., Böhm, A., Schimke, I., 2013. Surface Melting Curve Analysis with R. The R Journal 5, 37–53. https://doi.org/10.32614/RJ-2013-024
-- Rödiger, S., Liebsch, C., Schmidt, C., Lehmann, W., Resch-Genger, U., Schedler, U., Schierack, P., 2014. Nucleic acid detection based on the use of microbeads: a review. Microchim Acta 181, 1151–1168. https://doi.org/10.1007/s00604-014-1243-4
-- Rödiger, S., Schierack, P., Böhm, A., Nitschke, J., Berger, I., Frömmel, U., Schmidt, C., Ruhland, M., Schimke, I., Roggenbuck, D., Lehmann, W., Schröder, C., 2013. A highly versatile microscope imaging technology platform for the multiplex real-time detection of biomolecules and autoimmune antibodies. Adv Biochem Eng Biotechnol 133, 35–74. https://doi.org/10.1007/10_2011_132
+## Most recent (publications using `biopixR`)
+
+- Geithe, C., Zeng, B., Schmidt, C., Dinter, F., Roggenbuck, D., Lehmann, W., Dame, G., Schierack, P., Hanack, K., Rödiger, S., 2024. A multiplex microchamber diffusion assay for the antibody-based detection of microRNAs on randomly ordered microbeads. Biosensors and Bioelectronics: X 18, 100484. [https://doi.org/10.1016/j.biosx.2024.100484](https://doi.org/10.1016/j.biosx.2024.100484)
+
+## Previous (providing research data and methods for `biopixR`)
+
+- Weiss, R., Karimijafarbigloo, S., Roggenbuck, D., Rödiger, S., 2022. Applications of Neural Networks in Biomedical Data Analysis. Biomedicines 10, 1469. [https://doi.org/10.3390/biomedicines10071469](https://doi.org/10.3390/biomedicines10071469)
+- Reimann, R., Zeng, B., Jakopec, M., Burdukiewicz, M., Petrick, I., Schierack, P., Rödiger, S., 2020. Classification of dead and living microalgae Chlorella vulgaris by bioimage informatics and machine learning. Algal Research 48, 101908. [https://doi.org/10.1016/j.algal.2020.101908](https://doi.org/10.1016/j.biosx.2024.100484)
+- Schneider, J., Weiss, R., Ruhe, M., Jung, T., Roggenbuck, D., Stohwasser, R., Schierack, P., Rödiger, S., 2019. Open source bioimage informatics tools for the analysis of DNA damage and associated biomarkers. Journal of Laboratory and Precision Medicine 4, 1–27. [https://doi.org/10.21037/jlpm.2019.04.05](https://doi.org/10.21037/jlpm.2019.04.05)
+- Rödiger, S., Liebsch, C., Schmidt, C., Lehmann, W., Resch-Genger, U., Schedler, U., Schierack, P., 2014. Nucleic acid detection based on the use of microbeads: a review. Microchim Acta 181, 1151–1168. [https://doi.org/10.1007/s00604-014-1243-4](https://doi.org/10.32614/RJ-2013-024)
+- Rödiger, S., Böhm, A., Schimke, I., 2013. Surface Melting Curve Analysis with R. The R Journal 5, 37–53. [https://doi.org/10.32614/RJ-2013-024](https://doi.org/10.32614/RJ-2013-024)
+- Rödiger, S., Schierack, P., Böhm, A., Nitschke, J., Berger, I., Frömmel, U., Schmidt, C., Ruhland, M., Schimke, I., Roggenbuck, D., Lehmann, W., Schröder, C., 2013. A highly versatile microscope imaging technology platform for the multiplex real-time detection of biomolecules and autoimmune antibodies. Adv Biochem Eng Biotechnol 133, 35–74. [https://doi.org/10.1007/10_2011_132](https://doi.org/10.1007/10_2011_132)
 
