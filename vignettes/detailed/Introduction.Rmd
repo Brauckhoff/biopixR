@@ -1,0 +1,132 @@
+---
+output: pdf_document
+---
+
+The volume of image data has increased significantly due to the advancement of
+imaging technologies, including microscopy, confocal microscopy, and
+super-resolution techniques [@Peng2008; @Swedlow2009; @Eliceiri2012;
+@Sydor2015], as well as improvements in cell and tissue staining
+[@Swedlow2009a; @Moen2019]. These advancements have broad applicability in
+fields such as protein localization [@Rigo2015], the environmental and
+cellular effects of microplastics [@Cao2023; @Jiang2024], diagnostics through
+microbead-assays [@Dinter2023], DNA damage assessment [@Reddig2018;
+@Schneider2019], and general cell biology [@Ecke2019]. The exponential growth
+in image data has rendered manual processing impractical, thereby risking
+accuracy and reproducibility [@Caicedo2017]. Consequently, the implementation
+of automated image data processing is of paramount importance in order to
+guarantee the objectivity and reproducibility of the results.
+
+The demand for quantitative information from images to understand and develop
+biological concepts has led to the emergence of bioimage informatics as a
+specialized field [@Eliceiri2012; @Murphy2014]. Bioimage informatics is a field
+of study that focuses on the extraction of quantitative data from images with
+the objective of interpreting or developing biological concepts [@Chessel2017;
+@Moen2019; @Schneider2019]. The objective of this field is to automate and
+objectively analyze image data, as well as to create tools for visualization,
+storage, processing, and analysis [@Swedlow2009; @Peng2012]. One objective in 
+this field is to achieve reproducible results, which are
+defined as consistent outcomes across experiments or studies conducted under
+similar conditions. In this endeavor, dedicated software plays a crucial role.
+
+In light of recent developments, the utilization of microscopy in biomedical
+research has undergone a transformation, shifting from a predominantly visual
+approach to a quantitative one [@PaulGilloteaux2023]. Bioimage informatics
+plays a pivotal role in these quantitative approaches, employing computational
+methods to enable the efficient analysis of large volumes of image data. Key
+aspects of bioimage informatics include image processing, machine learning, data
+management and quantitative analysis. One of the principal techniques employed
+in the extraction of features from images is image segmentation, which is a
+prerequisite for subsequent quantification. It involves the division of an image
+into distinct regions of interest (ROI) by the assignment of labels to each
+pixel. The primary objective is to identify ROIs pertinent to the specific task
+[@Peng2008; @Ghosh2019; @Niedballa2022]. Thresholding is a straightforward
+segmentation method. This approach involves comparing pixel values against one
+or more intensity thresholds, which typically results in the image being
+partitioned into foreground and background regions [@Sonka2000; @Jaehne2002].
+Another common approach is the use of edge detection algorithms to outline
+objects of interest within an image [@Canny1986; @Mittal2019]. These
+techniques permit researchers to identify specific features within an image that
+may not be apparent through traditional manual analysis in a fast, reliable, and
+reproducible manner. The use of automated software ensures the consistency,
+reproducibility, and objectivity of the results obtained.
+
+Numerous packages are available for `R` to address various tasks in bioimage
+informatics, including image import, segmentation, and annotation. While some of
+these techniques will be discussed in the following sections, it is important to
+note that the existing packages do not cover all aspects. The subsequent
+sections will elucidate how the `biopixR` package contributes to the open-source
+image processing community by offering tools for feature extraction and
+automation. One significant application of the `biopixR` package is the analysis
+of round, spherical objects in images, such as microbeads, cells, seeds, or
+microplastics, which exhibit similar characteristics in their visual
+representations. Consequently, this vignette will predominantly feature examples
+from this domain.
+
+
+# History, philosophy, and aims of the `biopixR` package
+
+In 2018, we initiated the development of algorithms within the `R` programming
+language as part of our research in bioimage informatics. The primary objective
+was the analysis of data derived from microbead-based assays (for the
+quantification of nucleic acid and protein biomarkers) and cell-based assays
+(such as the analysis of DNA damage). During this period, we developed numerous
+scripts tailored to internal research projects and contributed to various
+repositories, including [Codeberg.org](https://codeberg.org/). It is noteworthy
+that our initial endeavors did not fully adhere to established software
+engineering practices, including unit testing, version tagging, and continuous
+integration.
+
+As the algorithms we developed proved to be inefficient and inadequate for
+meeting current scientific needs, we resolved in 2023 to undertake a complete
+rewrite of the software. In October 2023, the initiative gained significant
+traction with a transition to open repositories on GitHub
+(<https://github.com>). The adoption of contemporary methodologies was intended
+to ensure enhanced software quality and facilitate greater collaboration with
+both the scientific and open-source communities.
+
+Our primary objective was to publish the package on the **C**omprehensive
+**`R`** **A**rchive **N**etwork (CRAN), which mandates high-quality software.
+This objective has been successfully achieved. Since then, multiple versions of
+the package have been released, including the initial milestone release (0.2.4)
+on April 2, 2024, and the subsequent stable version (1.0) on June 3, 2024. Since
+our initial contributions to CRAN, we have received valuable feedback and
+contributions from other package authors, including the author of the data.table
+package.
+
+The `biopixR` package was initially utilized for the analysis of microbeads,
+(@Geithe2021, posted March 20, 2021), and further exemplified in a recent
+quality control use case for microbeads [@Geithe2024]. The `biopixR` package
+has also been utilized in a recent publication [@Dinter2023] for the precise
+quantification of signal intensities. This study aimed to develop novel
+hydrophobic microbeads for the precise quantification of amphiphile molecules,
+such as phospholipids, on surfaces. These molecules are crucial in the
+development of a multitude of pathological conditions, including
+atherosclerosis, cardiovascular disease, infections, inflammatory disorders,
+cancer, and autoimmune diseases [@Dinter2023]. Furthermore, the applications
+of `biopixR` can be extended to any research problem involving feature
+extraction from images and the quantification of related image data. Such
+applications include the assessment of wastewater for the detection of
+microplastics [@Ding2020], the real-time localization of microbead-based drug
+delivery systems [@Bannerman2016], and other fields within the life sciences,
+such as cell biology [@Schneider2019].
+
+The aims of the `biopixR` package are to provide the functions needed for
+comprehensive image processing like:
+
+- Convenient import of images in widely used formats.
+- Tools for preprocessing images with highly fragmented contours.
+- Versatile image processing functions for quantitative analysis.
+- Interactive approaches to feature extraction.
+- Integration of these functions to create user-friendly pipelines.
+- Enabling batch processing and automation for medium-throughput analysis.
+
+All technical and experimental aspects of `biopixR` are aimed to adhere to the
+principles of reproducible research. The development process was guided by the
+work of @Wickham2023 and the Guidelines provided by the @R_Core_Team.
+Encompassing the package building, metastructure, licencing, testing,
+documentation and distribution of the software. In accordance with the
+principles of *Agile Software Development* and *Extreme Programming*, several
+practices were implemented with the objective of ensuring the delivery of
+high-quality software that meets the needs of both end users and developers.
+These practices include version control, literate programming, unit testing, and
+continuous integration [@Lanubile2010; @Myers2012; @Roediger2015; @Gregory2021].
