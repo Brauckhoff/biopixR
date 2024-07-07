@@ -2,19 +2,30 @@
 output: pdf_document
 ---
 
+An overview of the functions present in the `biopixR` package is provided in
+Figure \@ref(fig:foodweb1), as the function in relation to the `imgPipe()` function
+are displayed.
 
-The `biopixR` package includes a series of microbead images to
-demonstrate its capabilities in the analysis and processing of biological
-imagery. The sample images illustrate the package's functionalities, allowing
-users to explore and experiment with image analysis and manipulation within the
-context of biotechnology and life sciences. Researchers and practitioners may
-utilize these illustrations to comprehend the applicability of `biopixR` to
-their particular imaging requirements, whether pertaining to cell biology,
-microscopy, or other biological imaging applications.
+(ref:foodweb1) **Dependency Graph of Functions in the `biopixR` Package**: This graph illustrates the levels of complexity by depicting the descendants and ancestors of the `imgPipe()` function. The figure was created using the `foodwebr` package (version 0.1.1) from @AppletonFox2022, with RStudio 2023.09.0+463 and `R` 4.3.2 on Linux (Ubuntu 22.04.3 LTS).
 
-(ref:examples) **Examples**: Images of microbeads provided by the `biopixR` package.
+```{r foodweb0, eval=FALSE}
+foodweb(biopixR::imgPipe) |> plot()
+```
 
-```{r examples, fig.cap="(ref:examples)", out.width="99%"}
+```{r foodweb1, echo=FALSE, fig.show='hold', fig.cap="(ref:foodweb1)", out.width="99%"}
+include_graphics("figures/fig4_dependency.png")
+```
+
+The `biopixR` package includes a series of microbead images to demonstrate its
+capabilities in the analysis and processing of biological images (see Figure
+\@ref(fig:examples2)). The sample images illustrate the package's functionalities,
+allowing users to explore and experiment with image analysis and manipulation
+within the context of biotechnology and life sciences. Researchers and
+practitioners may utilize these illustrations to comprehend the applicability of
+`biopixR` to their particular imaging requirements, whether pertaining to cell
+biology, microscopy, or other biological imaging applications.
+
+```{r examples0, eval=FALSE}
 # Load the biopixR package
 library(biopixR)
 
@@ -31,38 +42,51 @@ plot(droplet_beads, axes = FALSE, main = "droplet_beads")
 par(mfrow = c(1, 1))
 ```
 
-```{r}
-include_graphics("figures/test1.png")
+(ref:examples2) **Examples**: Images of microbeads provided by the `biopixR` package.
+
+```{r examples1, echo=FALSE, out.width="95%"}
+include_graphics("figures/fig24.1_example.png")
 ```
 
+```{r examples2, echo=FALSE, fig.cap="(ref:examples2)", out.width="95%"}
+include_graphics("figures/fig24.2_example.png")
+```
 
-A selection of these images will be employed in the forthcoming demonstration of
-the `biopixR` functions.
+A selection of these microbead images will be employed in the forthcoming
+demonstration of the `biopixR` functions. As previously mentioned, the primary
+development objective was to analyze data derived from microbead-based and
+cell-based assays. Therefore this vignette will primarily focus on the analysis
+of microbead particles made of polymethylmethacrylate (PMMA), which are
+approximately 12 µm in size [@Geithe2024].
 
 ## `importImage()` - Importing Images into the `R` Environment
 
 The `biopixR` package features an import function called `importImage()`. This
 function acts as a wrapper, integrating the capabilities of the `magick` and
 `imager` packages. Since most image processing operations rely on `imager`, the
-`importImage` function converts all formats into the `imager` class 'cimg'. It
-was frequently observed that images exhibited more than three dimensions within
-the color channel, specifically an additional transparency layer, also called
-alpha. Such images frequently give rise to challenging and elusive errors. To
-address this issue, the `imageImport()` function employs a process of detection
-and removal of a fourth color dimension, should it be present. The function 
-supports the importation of digital images in various file formats, including 
-Joint Photographic Experts Group (JPEG), Portable Network Graphics (PNG), 
-Bitmap Image File (BMP), and Tagged Information Interchange Format (TIFF).
+`importImage()` function converts all formats into the `imager` class 'cimg'.
+During the development process, it was frequently observed that images exhibited
+more than three dimensions within the color channel, specifically an additional
+transparency layer, also known as alpha. Such images often lead to challenging
+and elusive errors. To address this issue, the `imageImport()` function employs
+a process of detection and removal of the fourth color dimension, if present.
+The function supports the importation of digital images in various file formats,
+including Joint Photographic Experts Group (JPEG), Portable Network Graphics
+(PNG), Bitmap Image File (BMP), and Tagged Information Interchange Format
+(TIFF).
+
+The import function is demonstrated in Figure \@ref(fig:import2), where it is
+used to import two microbead images in BMP and PNG formats.
 
 ```{r import0}
-# Get the path to the "beads.png" image file within the `biopixR` package
+# Get the path to the 'beads.png' image file within the 'biopixR' package
 path2img <- system.file("images/beads.png", package = "biopixR")
 
 # Import the image from the path specified by 'path2img' and store it in the 
 # 'microbeads' object
 microbeads <- importImage(path2img)
 
-# Import the image "fig6.1_transparent.bmp" from the "figures" directory and 
+# Import the image 'fig6.1_transparent.bmp' from the 'figures' directory and 
 # store it in the 'transparent_bead' object
 transparent_bead <- importImage("figures/fig6.1_transparent.bmp")
 
@@ -82,27 +106,28 @@ plot(transparent_bead, axes = FALSE)
 par(mfrow = c(1, 1))
 ```
 
-(ref:import2) **Example images**: Showcasing the functionality of the function for image import - `importImages()`.
+(ref:import2) **Example images**: Showcasing the functionality of the function for image import - `importImages()`, with two images of microbeads.
 
 ```{r import2, echo=FALSE, out.width="99%", fig.cap="(ref:import2)"}
 include_graphics("figures/fig22_import.png")
 ```
 
 
-## `edgeDetection()` - A modified Canny edge Detector {#edge}
+## `edgeDetection()` - A modified Canny Edge Detector {#edge}
 
-Various edge detection algorithms are available in the `R` programming
-language, with the Canny edge detector, developed by @Canny1986, being the most
-widely implemented across multiple packages, including those by @Barthelme2015;
-@Ooms2016; @Mouselimis2016; and @Beare2018. Other noteworthy edge detectors in
-the `R` package `OpenImageR` includes those by @Prewitt1970, @Sobel2014,
-@Roberts1980, and @Scharr2000 [@Mouselimis2016]. After evaluating the
-different results (exemplary see \@ref(fig:edge1)), the Canny edge detection
-algorithm from the `imager` package was selected for edge detection. The
-resulting binary image serves as a foundation for subsequent feature detection.
-Furthermore, the `cannyEdges()` function in `imager` offers adjustable
-parameters for alpha and sigma, enabling users to customize thresholding and
-smoothing, providing the desired flexibility.
+Various edge detection algorithms are available in the `R` programming language,
+with the Canny edge detector, developed by @Canny1986, being the most widely
+implemented across multiple packages, including those by @Barthelme2015
+(`imager`); @Ooms2016 (`magick`); @Mouselimis2016 (`OpenImageR`); and @Beare2018
+(`SimpleITK`). Other noteworthy edge detection algorithms in the `R` package
+`OpenImageR` includes those by @Prewitt1970, @Sobel2014, @Roberts1980, and
+@Scharr2000. After evaluating the different results (exemplary see Figure
+\@ref(fig:edge1)), the Canny edge detection algorithm from the `imager` package
+was selected for edge detection. The resulting binary image serves as a
+foundation for subsequent feature extraction. Furthermore, the `cannyEdges()`
+function in `imager` offers adjustable parameters for `alpha` and `sigma`,
+enabling users to customize thresholding and smoothing, providing the desired
+flexibility.
 
 The process of Canny edge detection using the `imager` package comprises a
 series of steps. Initially, a Gaussian filter is applied to the image, resulting
@@ -112,9 +137,9 @@ intensity gradient is calculated to determine the magnitude of the
 edges. This is followed by the application of non-maximum suppression, which
 serves to minimize the blur introduced previously. Subsequently, a double
 threshold is applied. In the absence of provided thresholds, they are estimated
-through k-means clustering. The calculated threshold can be adjusted using the
+through *k-means* clustering. The calculated threshold can be adjusted using the
 `alpha` parameter. These thresholds are employed to classify edges as either
-weak or strong. Finally, hysteresis is employed to integrate these edges, with
+weak or strong. Finally, hysteresis is employed to combine these edges, with
 weak edges being discarded if they are not in proximity to strong edges
 [@Barthelme2015; @Barthelme2019].^[http://dahtah.github.io/imager/canny.html]
 
@@ -143,21 +168,20 @@ text(c(13), c(13), c("B"), col = "darkred", cex = 4.5)
 par(mfrow = c(1, 1))
 ```
 
-```{r edge1, echo = FALSE, out.width="99%", fig.cap="(ref:edge1)"}
+```{r edge1, echo = FALSE, out.width="86%", fig.cap="(ref:edge1)"}
 include_graphics("figures/fig5.1_edgeDetection.png")
 ```
 
 In the context of microbead images, the contours that were identified frequently
-exhibited gaps, rendering them inaccessible for subsequent labeling (see
+exhibited gaps, rendering them inaccessible for subsequent labeling (see Figure
 \@ref(fig:edge3)A). The figure depicts filled circles representing successfully
 labeled microbeads, while the contours indicate unsuccessful labeling.
 Consequently, segmentation with fragmented contours is incomplete, rendering the
 objects inaccessible for further analysis. To address this issue, the `magick`
-package was employed to identify line ends (see \@ref(fig:edge3)B). Line ends
-can then be reconnected to a neighboring line, provided that the line end does
-not share the same label. This process of reconnection is constrained by a
-specific radius to prevent line ends from connecting across the entire
-image.
+package was employed to identify line ends (see Figure \@ref(fig:edge3)B). Line
+ends can then be reconnected to a neighboring line, provided that the line end
+does not share the same label. This process of reconnection is constrained by a
+specific radius to prevent line ends from connecting across the entire image.
 
 (ref:edge3) **Segmentation Result with Canny Edge Detector**: **A**) Segmentation result using the `label()` function. The segmentation is incomplete, as not all microbeads are identified as foreground. Only the contours are detected in these cases (highlighted by red arrows). **B**) Result of the `cannyEdges()` function, showing detected line end pixels, which are colored and circled in green.
 
@@ -173,8 +197,6 @@ labeled_canny <- label(edge_canny)
 
 # Plot the labeled edges without axes
 plot(labeled_canny, axes = FALSE)
-
-# Add a text label "A" in dark red color at coordinates (475, 360)
 text(c(475), c(355), c("A"), col = "darkred", cex = 5)
 
 # Draw red arrows at specified coordinates
@@ -230,6 +252,7 @@ endpoints_img <- changePixelColor(as.cimg(edge_canny),
 
 # Plot the image with highlighted line ends without axes
 plot(endpoints_img, axes = FALSE)
+text(c(475), c(355), c("B"), col = "darkred", cex = 5)
 
 # Highlight the line ends in green color on the original edge image
 points(end_points_df$x, end_points_df$y, col = "green", lwd = 2)
@@ -260,9 +283,6 @@ arrows(
   lwd = 3
 )
 
-# Add a text label "B" in dark red color at coordinates (475, 360)
-text(c(475), c(355), c("B"), col = "darkred", cex = 5)
-
 # Set up the plotting area back to normal
 par(mfrow = c(1, 1))
 ```
@@ -271,12 +291,12 @@ par(mfrow = c(1, 1))
 include_graphics("figures/fig5.0_edgeDetection.png")
 ```
 
-As illustrated in \@ref(fig:edge5)A, the modified Canny edge detector,
+As illustrated in Figure \@ref(fig:edge5)A, the modified Canny edge detector,
 `edgeDetection()`, is capable of successfully rejoining line ends, thereby
-enabling the detection of previously unlabeled microbeads, as shown in
+enabling the detection of previously unlabeled microbeads, as shown in Figure
 \@ref(fig:edge3)A. For further visualization, the `objectDetection()` function
 was employed. This function employs the `edgeDetection()` function and provides
-visual feedback as an output (\@ref(fig:edge5)B).
+visual feedback as an output (see Figure \@ref(fig:edge5)B).
 
 (ref:edge5) **Segmentation Result with Modified Canny Edge Detector**: **A**) Segmentation result using the `label()` function, showing successful segmentation with all microbeads identified as part of the foreground. **B**) Successful segmentation visualized using the `objectDetection()` function, with purple contours around each microbead and green dots indicating their centers.
 
@@ -301,14 +321,10 @@ labeled_biopixR <- label(edge_biopixR)
 
 # Plot the labeled edges without axes
 plot(labeled_biopixR, axes = FALSE)
-
-# Add text "A" to the plot at coordinates (475, 360) with dark red color and size 4
 text(c(475), c(355), c("A"), col = "darkred", cex = 5)
 
 # Plot the marked objects from the object detection without axes
 plot(object_biopixR$marked_objects, axes = FALSE)
-
-# Add text "B" to the plot at coordinates (475, 360) with dark red color and size 4
 text(c(475), c(355), c("B"), col = "darkred", cex = 5)
 
 # Reset the plotting area to a single plot
@@ -320,7 +336,7 @@ include_graphics("figures/fig5.2_edgeDetection.png")
 ```
 
 
-## `objectDetection()` - A Function for Feature extraction
+## `objectDetection()` - A Function for Feature Extraction
 
 The `objectDetection()` function of the `biopixR` package serves as a
 segmentation tool, offering various methods for the extraction of objects
@@ -332,32 +348,34 @@ thresholding or edge detection. Both methods have distinct advantages depending
 on the specific application, and their respective use cases will be presented in
 the following sections.
 
-### Edge Detection Method in `objectDetection`
+### Edge Detection Method in `objectDetection()`
 
 When edge detection is selected, the modified Canny edge detector, provided by
 the `edgeDetection()` function, is used. As previously described in chapter
 \@ref(edge), the selection of the `alpha` and `sigma` parameters plays a pivotal
 role in the performance of feature extraction. The objective is to modify the
-threshold (`alpha`) to detect all objects without detecting noise, and
-to maintain a minimal level of smoothing (`sigma`) to avoid merging
-proximate objects and to ensure accurate edge detection. To facilitate the
-parameter selection process, the `biopixR` package offers various methods
-to assist with the parameter selection process:
+threshold (`alpha`) to detect all objects without detecting noise, and to
+maintain a minimal level of smoothing (`sigma`) to avoid merging proximate
+objects and to ensure accurate edge detection. To facilitate the selection of
+parameters, the `biopixR` package offers a range of methods designed to assist
+users in this process:
 
 **Automated Parameter selection**:
 
-Both automation methods employ a fitness function to extract shape information
-via the `shapeFeatures` function. The fitness function evaluates the results
-using various input parameters, operating under the assumption that the
-objects in question are circular. While the grid search method is
-time-consuming due to its exhaustive testing of every possible parameter
-combination, the Pareto front optimization method samples and analyzes a subset
-of combinations, allowing for a more rapid estimation of the optimal parameters.
+The `biopixR` package encompasses two distinct methods for the automated
+parameter selection process. Both automation methods employ a fitness function
+to extract shape information via the `shapeFeatures` function. The fitness
+function evaluates the results using various input parameters, operating under
+the assumption that the objects in question are circular. While the grid search
+method is time-consuming due to its exhaustive testing of every possible
+parameter combination, the Pareto front optimization method samples and analyzes
+a subset of combinations, allowing for a more rapid estimation of the optimal
+parameters.
 
 \phantom{x}\hspace{0.5cm} *Grid Search* - To conduct a grid search,
 it is first necessary to create a parameter grid containing all possible
-combinations of the alpha and sigma parameters. The range of alpha is
-predetermined and fixed at 0.1 to 1.5, while the range of sigma is also
+combinations of the `alpha` and `sigma` parameters. The range of `alpha` is
+predetermined and fixed at 0.1 to 1.5, while the range of `sigma` is also
 predetermined and fixed at 0 to 2, with both ranges incrementing by 0.1. This
 process yields a grid of 315 objects, which represent the potential parameter
 combinations to be tested. For each combination, a fitness value is calculated
@@ -411,41 +429,34 @@ arrows(50, 170, 49, 171, col = "red", lwd = 2)
 automation must strike a balance between detecting only objects with perfect
 shapes (losing information about the phenomena discussed above) and detecting
 noise or unwanted areas around the objects, which can lead to the merging of
-nearby objects as seen in normal thresholding. In grid search, combining both
-quality (shape features) and quantity (number of objects detected) measures into
-a single value while maintaining this balance is a significant challenge. These
-measures are controlled by the input parameters `alpha` and `sigma`. To
-solve this problem, another method specifically designed to optimize multiple
-parameters, known as multi-objective optimization, has been used.
+nearby objects as seen in normal thresholding (see Figure \@ref(fig:object7)). In
+grid search, combining both quality (shape features) and quantity (number of
+objects detected) measures into a single value while maintaining this balance is
+a significant challenge. These measures are controlled by the input parameters
+`alpha` and `sigma`. To solve this problem, another method specifically designed
+to optimize multiple parameters, known as multi-objective optimization, has been
+used.
 
 In `R`, this method is accessible through the `GPareto` package, which is
-designed for 'Gaussian process-based multi-objective optimization'. This approach
-is particularly suitable for computationally intensive optimization tasks. This
-criterion is met because finding an optimal parameter combination requires the
-extraction of shape features for each parameter combination to evaluate
-them [@Binois2019].
+designed for 'Gaussian process-based multi-objective optimization'. This
+approach is particularly well-suited to computationally intensive optimization
+tasks [@Binois2019]. This criterion is met because the optimal parameter
+combination must be identified through the extraction of shape features for each
+parameter combination, which is a process that requires significant
+computational resources.
 
-The Gaussian process is used to model the objective functions based on a limited
+The objectives to be optimized are the parameters `alpha` and `sigma`. The
+Gaussian process is used to model the objective functions based on a limited
 number of sample points. Gaussian regression predicts unknown values by modeling
-the spatial correlation between sample points [@Binois2019]. The objectives to
-be optimized are the parameters `alpha` and `sigma`. The optimization task can
-be formulated as: detect as many objects as possible, while maintaining good
-shape characteristics for most of the detected objects and avoiding the merging of
-nearby objects (quality/quantity trade-off).
+the spatial correlation between sample points [@Binois2019]. The optimization
+task can be formulated as follows: to detect all objects while maintaining
+circular shape characteristics and avoiding the merging of nearby objects
+(quality/quantity trade-off).
 
 The `GPareto` package aims to identify the set of optimal compromises, known as
 the Pareto set, consisting of non-dominated points (points where no other point
 has better objectives). The visualization of the Pareto set in the objective
-space is called the Pareto front [@Binois2019].
-
-The principle of this method involves:
-1. Generating an initial set of observations.
-2. Fitting the Gaussian process models to each objective independently.
-3. Running an inner optimization loop to find the best point (new point as the maximizer of an infill criterion).
-4. Obtaining a new observation by running the simulator and updating the models accordingly.
-
-The last two steps are repeated until the simulation budget of 20 is exhausted
-or a stopping criterion is met [@Binois2019].
+space is called the Pareto front [@Binois2019] (see Figure \@ref(fig:object4)).
 
 The default criterion selected is SMS-(EGO) - S-metric Selection Efficient
 Global Optimization, an extension of the EGO algorithm tailored for
@@ -454,6 +465,15 @@ new sample points by maximizing hypervolume improvement, effectively balancing
 exploration (finding new areas) and exploitation (refining known good areas).
 Particle Swarm Optimization (PSO) is used as the internal optimization routine
 to find the optimal sampling point [@Binois2019].
+
+The principle of this method involves: \linebreak
+1. Generating an initial set of observations. \linebreak
+2. Fitting the Gaussian process models to each objective independently. \linebreak
+3. Running an inner optimization loop to find the best point (new point as the maximizer of an infill criterion). \linebreak
+4. Obtaining a new observation by running the simulator and updating the models accordingly.   
+
+The last two steps are repeated until the simulation budget of 20 is exhausted
+or a stopping criterion is met [@Binois2019].
 
 ```{r object3}
 # Start the timer to measure the execution time of the code block
@@ -469,40 +489,45 @@ gaussian_result <- objectDetection(beads_large1,
 tictoc::toc()
 ```
 
-(ref:object4) **Uncertainty Plot of the Objective Space** (left) & **Pareto Front Approximation** (right): The Uncertainty Plot provides a visualization of the confidence levels in the estimate of the Pareto front derived using Gaussian process modeling. The sample points used to construct the model are highlighted in yellow, while the actual realizations of the Pareto set are highlighted in green. In addition, the probability shades categorize regions of interest as white (indicating regions of high interest), black (indicating regions of low interest), and gray (indicating regions of uncertainty). The Pareto Front Plot visualizes the non-dominated solutions, known as the Pareto set. The optimal point within this set is highlighted in green. The input parameters 'alpha' and 'sigma' corresponding to this optimal point were used for the final analysis of the microbead image.
+(ref:object4) **Uncertainty Plot of the Objective Space** (left) & **Pareto Front Approximation** (right): The Uncertainty Plot provides a visualization of the confidence levels in the estimate of the Pareto front using Gaussian process modeling (x-axis: `alpha`; y-axis: `sigma`). The sample points used to construct the model are highlighted in yellow, while the actual realizations of the Pareto set are highlighted in green. In addition, the probability shades categorize regions of interest as white (indicating regions of high interest), black (indicating regions of low interest), and gray (indicating regions of uncertainty). The Pareto Front Plot visualizes the non-dominated solutions, known as the Pareto set. The optimal point within this set is highlighted in green. The input parameters `alpha` and `sigma` corresponding to this optimal point were used for the final analysis of the microbead image.
 
 ```{r object4, echo=FALSE, fig.cap="(ref:object4)", out.width="49%"}
 include_graphics("figures/fig18.png")
 include_graphics("figures/fig17.png")
 ```
 
+The optimal `alpha` and `sigma` parameters, obtained through Gaussian process
+modeling, are utilized as input for the `edgeDetection()` algorithm within the
+`objectDetection()` function. The microbeads are displayed in Figure
+\@ref(fig:object5), with all microbeads successfully identified.
+
 (ref:object5) **Results of Automated Feature Extraction Using Multi-objective Optimization**:  The successfully detected microbeads are highlighted through the internal visualization of the `objectDetection()` function. The contours are outlined in purple, and the center of each object is marked with a green circle. Notably, all the microbeads are detected.
 
-```{r object5, fig.cap="(ref:object5)", out.width="99%"}
+```{r object5, fig.cap="(ref:object5)", out.width="86%"}
 # Display the result of the automated parameter calculation using multi-objective 
 # optimization
 plot(gaussian_result$marked_objects, axes = FALSE)
 ```
 
 
-### Thresholding Method in `objectDetection`
+### Thresholding Method in `objectDetection()`
 
 The thresholding method is particularly well-suited for images with high and
 inhomogeneous backgrounds, as it incorporates background correction by solving
-the Screened Poisson Equation before applying the threshold. This correction is
-achieved through the use of the `SPE()` function from the `imagerExtra` package
-[@Ochi2018], which is based on the method described by @Morel2014. This
-approach addresses image artifacts such as inhomogeneous illumination and low
-contrast while preserving image details [@Morel2014]. Consequently, the method
-allows for the detection of low-contrast objects against inconsistent
-backgrounds, such as transparent microbeads (see Figure \@ref(fig:object7)A).
-The thresholding method does not require any additional input, is highly robust
-and also performs well on fluorescent microbead images. However, this approach
-has one disadvantage: the threshold is less strict than edge detection, which
-may result in the merging of objects in proximity that would be regarded
-as separate entities by the edge detection method.
+the Screened Poisson Equation (SPE) before applying the threshold. This
+correction is achieved through the use of the `SPE()` function from the
+`imagerExtra` package [@Ochi2018], which is based on the method described by
+@Morel2014. This approach addresses image artifacts such as inhomogeneous
+illumination and low contrast while preserving image details [@Morel2014].
+Consequently, the method allows for the detection of low-contrast objects
+against inconsistent backgrounds, such as transparent microbeads (see Figure
+\@ref(fig:object7)A). The thresholding method does not require any additional
+input, is highly robust and also performs well on fluorescent microbead images.
+However, this approach has one disadvantage: the threshold is less strict than
+edge detection, which may result in the merging of objects in proximity that
+would be regarded as separate entities by the edge detection method.
 
-(ref:object7) **Transparent Microbeads**: **A**) Original image of transparent microbeads, showing low contrast between the microbeads and the background. **B**) Application of the threshold method, resulting in the detection of the outer layer (halo) of the microbeads, successfully capturing the ligand signal. Detected coordinates are colored in purple, with centers marked in green.
+(ref:object7) **Transparent Microbeads**: **A**) Original image of transparent microbeads, showing low contrast between the microbeads and the background. **B**) Application of the threshold method, resulting in the detection of the outer layer (halo) of the microbeads, successfully capturing the ligand signal. Detected coordinates are colored in purple, with centers marked in green. The merging of proximate microbeads into a single entity is exemplified by the red arrow.
 
 ```{r object6, eval=FALSE}
 # Set up the plotting area to have 1 row and 2 columns
@@ -514,7 +539,7 @@ transparant_beads <-
 
 # Plot the imported image without axes
 plot(transparant_beads, axes = FALSE)
-text(c(80), c(80), c("A"), col = "darkred", cex = 5)
+text(c(70), c(70), c("A"), col = "darkred", cex = 5)
 
 # Perform object detection on the transparent beads image using the 'threshold'
 # method
@@ -523,31 +548,34 @@ result_transparant <-
 
 # Plot the marked objects from the object detection result without axes
 plot(result_transparant$marked_objects, axes = FALSE)
-text(c(80), c(80), c("B"), col = "darkred", cex = 5)
+text(c(70), c(70), c("B"), col = "darkred", cex = 5)
+
+# Visualize merged microbeads
+arrows(900, 800, 899, 801, col = "red", lwd = 7.5)
 
 # Reset the plotting area to the default 1 row and 1 column
 par(mfrow = c(1, 1))
 ```
 
-```{r object7, echo=FALSE, fig.cap="(ref:object7)", out.width="99%", fig.pos="ht"}
-include_graphics("figures/fig7_transparent_beads.png")
+```{r object7, echo=FALSE, fig.cap="(ref:object7)", out.width="99%"}
+include_graphics("figures/fig7.1_transparent_beads.png")
 ```
 
-### Interactive Approach in `objectDetection`
+### Interactive Approach in `objectDetection()`
 
-To facilitate parameter selection, an interactive feature detection function was
-developed using the `R` package `tcltk`, which provides access to Tcl/Tk in R. The
-Graphical User Interface (GUI) is invoked via the
-`interactive_objectDetection()` function (see Figure \@ref(fig:object9)). The `alpha` and
-`sigma` parameters of the `edgeDetection()` function, discussed in chapter
-\@ref(edge), represent the threshold adjustment factor and the smoothing factor,
-respectively. The corresponding sliders in the Tcl/Tk interface enable users to
-adjust these parameters to optimize object detection. The detected
+To facilitate parameter selection, an interactive object detection function was
+developed using the `R` package `tcltk`, which provides access to Tcl/Tk in `R`.
+The Graphical User Interface (GUI) is invoked via the
+`interactive_objectDetection()` function (see Figure \@ref(fig:object9)). The
+`alpha` and `sigma` parameters of the `edgeDetection()` function, discussed in
+chapter \@ref(edge), represent the threshold adjustment factor and the smoothing
+factor, respectively. The corresponding sliders in the Tcl/Tk interface enable
+users to adjust these parameters to optimize object detection. The detected
 objects are highlighted with purple contours and green centers. The "Switch
 Method" button enables the user to toggle between edge detection and the
-threshold method for feature detection. Figure \@ref(fig:object9) illustrates that the
-threshold adjustment factor - `alpha` - must be decreased, as not all microbeads
-are currently being detected. To facilitate the analysis of smaller
+threshold method for object detection. Figure \@ref(fig:object9) illustrates
+that the threshold adjustment factor - `alpha` - must be decreased, as not all
+microbeads are currently being detected. To facilitate the analysis of smaller
 images, a scaling slider was incorporated into the interface, utilizing the
 `imresize()` function from the `imager` package. This function employs bilinear
 interpolation to adjust the image size according to user input
@@ -560,7 +588,7 @@ interpolation to adjust the image size according to user input
 interactive_objectDetection(beads_large1)
 ```
 
-```{r object9, echo=FALSE, out.width="99%", fig.pos="ht", fig.cap="(ref:object9)"}
+```{r object9, echo=FALSE, out.width="99%", fig.cap="(ref:object9)"}
 include_graphics("figures/fig8_GUI.png")
 ```
 
@@ -573,19 +601,19 @@ function provides a variety of methods for extracting objects within an image,
 thereby ensuring its adaptability for a broad range of applications.
 
 
-## Dealing with induced Fluorescence and Clotting with `sizeFilter()` and `proximityFilter()`
+## Dealing with induced Fluorescence and Aggregation with `sizeFilter()` and `proximityFilter()`
 
 In microbead-based assays, two phenomena must be avoided to prevent the
 generation of low-quality or incorrect results. These issues are exemplified in
 one of the images provided by the package (see Figure \@ref(fig:filter0)). The
 first issue arises when microbeads are in proximity to one another, which
-has the potential to induce fluorescence in adjacent beads and result in the
+has the potential to induce fluorescence in adjacent microbeads and result in the
 generation of false positive signals. To address this issue, we developed the
 `proximityFilter()` function.
 
-(ref:filter0) **Unwanted Microbead Phenomena**: The image is part of the biopixR package and illustrates the various occurrences within a microbead sample. It is evident that some microbeads are situated in proximity to one another, as indicated by the green arrow. Moreover, the microbeads have the potential to aggregate, forming clusters such as doublets (highlighted by the red arrow) and multiplets (marked by the cyan arrow).
+(ref:filter0) **Unwanted Microbead Phenomena**: The image is part of the `biopixR` package and illustrates the various occurrences within a microbead sample. It is evident that some microbeads are situated in proximity to one another, as indicated by the green arrow. Moreover, the microbeads have the potential to aggregate, forming clusters such as doublets (highlighted by the red arrow) and multiplets (marked by the cyan arrow).
 
-```{r filter0, out.width="89%", fig.pos="ht", fig.cap="(ref:filter0)"}
+```{r filter0, out.width="85%", fig.cap="(ref:filter0)"}
 # Highlight unwanted microbead phenomena
 plot(beads, axes = FALSE)
 arrows(
@@ -622,7 +650,7 @@ user has the option to specify the radius in pixels, or alternatively, it can be
 calculated automatically by the algorithm. In the case of the latter, the
 algorithm assumes that the objects are circular and determines the radius based
 on their size. The calculated radius is then extended by a factor called
-"elongation." The default elongation factor is 2, which means that an area of
+`elongation`. The default elongation factor is 2, which means that an area of
 two radii (with one radius overlapping with the object) around the object must
 be free of other objects for the object to pass the filter. The elongation
 factor can be adjusted according to the user's specific requirements (see Figure
@@ -630,7 +658,7 @@ factor can be adjusted according to the user's specific requirements (see Figure
 
 (ref:filter1) **Proximity Filtering Process**: The `objectDetection()` function is initially employed for the purpose of identifying all objects within the image. The resulting data from this function is then employed as input for the `proximityFilter()`, with the radius set to automatic calculation. The final result is represented through the use of the `changePixelColor()` function, wherein each passing object is highlighted in a distinct color.
 
-```{r filter1, out.width="89%", fig.pos="ht", fig.cap="(ref:filter1)"}
+```{r filter1, out.width="85%", fig.cap="(ref:filter1)"}
 # Perform object detection on the 'beads' image using the 'edge' method
 objects <-
   objectDetection(beads,
@@ -660,7 +688,7 @@ plot(visual, axes = FALSE)
 The second phenomenon is the aggregation of microbeads, which results in the
 formation of doublets and multiplets. These aggregated microbeads must be
 discarded to achieve consistent and reproducible results consisting of single
-microbeads. To address this issue, the `sizeFilter` function was developed (see
+microbeads. To address this issue, the `sizeFilter()` function was developed (see
 Figure \@ref(fig:filter2)). This function filters objects based on their individual
 sizes, using specified lower and upper limits. These limits can be set manually,
 interactively, or automatically. In the interactive approach, the size
@@ -675,9 +703,9 @@ conventional statistical threshold of n = 50 was selected [@Miller1991;
 @Iglewicz1993; @pittir7948]. This implies that at least 25 objects must be
 included in the IQR in order to produce a representative range.
 
-(ref:filter2) **Size Filtering Process**: The same input utilized for the previously demonstrated proximity filtering, obtained via the `objectDetection()` function, is employed in this instance. Due to an insufficient number of objects for automated calculation, the size limits are provided manually based on the size distribution shown on the left. The provided limit is visualized through a red horizontal line. On the right, the `changePixelColor()` visualization tool is employed to highlight the objects that meet the size criteria in different colors.
+(ref:filter2) **Size Filtering Process**: The same input utilized for the previously demonstrated proximity filtering, obtained via the `objectDetection()` function, is employed in this instance. Due to an insufficient number of objects for automated calculation, the size limits are provided manually based on the size distribution shown on the left (in pixel - px). The provided limit is visualized through a red horizontal line. On the right, the `changePixelColor()` visualization tool is employed to highlight the objects that meet the size criteria in different colors.
 
-```{r filter2, fig.pos="ht", fig.cap="(ref:filter2)", out.width="89%"}
+```{r filter2, fig.cap="(ref:filter2)", out.width="89%"}
 # Set up the plotting area to have 1 row and 2 columns
 par(mfrow = c(1, 2))
 
@@ -719,18 +747,19 @@ modules that facilitate applicability in laboratory settings.
 
 The `resultAnalytics()` function is designed to summarize the most important
 information about the extracted features. This includes details such as the
-number of objects, coordinates, size, intensity, and the number of objects that
-did not pass the filtering process, if applied. It also provides coverage
-information, which indicates the percentage of the image that is considered part
-of the objects. The function takes the object coordinates and the image as input
-and calculates these properties. The results are divided into two tables: one
-representing the average of all features, providing a comprehensive summary of
-the entire image in a single row (see Table \@ref(tab:result4)), and the second
-providing detailed information about each detected object (see Table
-\@ref(tab:result2)), which is useful but can be overwhelming when there are hundreds
-of objects in the image. Users can also provide the unfiltered coordinates if
-filtering was used; in this case, the function estimates the number of rejected
-objects based on the average size of all detected objects.
+number of objects, center coordinates, size, intensity, and the number of
+objects that did not pass the filtering process, if applied. It also provides
+coverage information, which indicates the percentage of the image that is
+considered part of the objects. The function takes the object coordinates and
+the image as input and calculates these properties. The results are presented in
+the form of a list comprising two tables: one representing the average of all
+features, providing a comprehensive summary of the entire image in a single row
+(see Table \@ref(tab:result2)), and the second providing detailed information
+about each detected object (see Table \@ref(tab:result4)), which is useful but
+can be overwhelming when there are hundreds of objects in the image. Users can
+also provide the unfiltered coordinates if filtering was used; in this case, the
+function estimates the number of rejected objects based on the average size of
+all detected objects.
 
 ```{r result0}
 # Extract the results from the previous extraction and filtering in a concise manner
@@ -740,37 +769,12 @@ result <- resultAnalytics(beads,
 ```
 
 ```{r result1, eval=FALSE}
-# The output is obtained as list
-# Displaying the detailed results for every microbead
-result$detailed
-```
-
-```{r result2, echo=FALSE}
-kable(
-  result$detailed,
-  format = "markdown",
-  booktabs = TRUE,
-  caption = "Detailed Results of extracted Features",
-  col.names = c(
-    "objectnumber",
-    "size in px",
-    "intensity",
-    "sd(intensity)",
-    "x",
-    "y"
-  ),
-  align = "cccccc",
-  escape = FALSE
-)
-```
-
-```{r result3, eval=FALSE}
 # Displaying the summarized results for the whole image
 result$summary
 ```
 
-```{r result4, echo=FALSE}
-kable(
+```{r result2, echo=FALSE}
+summary <- kable(
   result$summary,
   format = "markdown",
   booktabs = TRUE,
@@ -787,21 +791,52 @@ kable(
   align = "cccccc",
   escape = FALSE
 )
+
+footnote(summary, general = "sd: standard deviation",
+         general_title = "Abbreviations: ")
+```
+
+```{r result3, eval=FALSE}
+# The output is obtained as list
+# Displaying the detailed results for every microbead
+result$detailed
+```
+
+```{r result4, echo=FALSE}
+detailed <- kable(
+  result$detailed,
+  format = "markdown",
+  booktabs = TRUE,
+  caption = "Detailed Results of extracted Features",
+  col.names = c(
+    "objectnumber",
+    "size in px",
+    "intensity",
+    "sd(intensity)",
+    "x",
+    "y"
+  ),
+  align = "cccccc",
+  escape = FALSE
+)
+
+footnote(detailed, general = "px: pixel, sd: standard deviation",
+         general_title = "Abbreviations: ")
 ```
 
 
-## Batch proccesing Functions within the `biopixR` package
+## Batch Proccesing Functions within the `biopixR` Package
 
 This section presents two pipeline functions designed for the analysis of
 images. The initial function, termed `imgPipe()`, integrates a number of
 functions from the `biopixR` package, thereby enabling comprehensive analysis
 and filtering of an image through a single function. The second function,
-`scanDir`, expands the functionality of `imgPipe` to encompass batch processing.
+`scanDir()`, expands the functionality of `imgPipe()` to encompass batch processing.
 This functionality enables the analysis of entire directories, incorporating all
 the options, parameter adjustments, and individual filtering capabilities
 provided by the `imgPipe()` function.
 
-### `imgPipe()` - One image One function 
+### `imgPipe()` - One Image, One Function 
 
 The `imgPipe()` function combines multiple functions into a unified pipeline,
 including `objectDetection()`, `sizeFilter()`, `proximityFilter()`, and
@@ -867,6 +902,10 @@ par(mfrow = c(1, 1))
 include_graphics("figures/fig19.0_dualcolor.png")
 ```
 
+```{r, out.width="99%", echo=TRUE}
+include_graphics("figures/fig19.1_dualcolor.png")
+```
+
 ```{r imgPipe3}
 # Discard second image present in image depth and transform into grayscale (green)
 green_beads <-
@@ -899,8 +938,8 @@ res_pipe <- imgPipe(green_beads,
                     proximityFilter = TRUE)
 ```
 
-```{r imgPipe5}
-kable(
+```{r imgPipe5, echo=FALSE}
+extr_features <- kable(
   res_pipe$summary,
   format = "markdown",
   booktabs = TRUE,
@@ -919,10 +958,13 @@ kable(
   align = "cccccc",
   escape = FALSE
 )
+
+footnote(extr_features, general = "sd: standard deviation",
+         general_title = "Abbreviations: ")
 ```
 
-```{r imgPipe6}
-kable(
+```{r imgPipe6, echo=FALSE}
+dual_col <- kable(
   res_pipe$dual,
   format = "markdown",
   booktabs = TRUE,
@@ -938,6 +980,9 @@ kable(
   align = "cccccc",
   escape = FALSE
 )
+
+footnote(dual_col, general = "sd: standard deviation",
+         general_title = "Abbreviations: ")
 ```
 
 To provide a conclusive visual representation of the findings, the original
@@ -949,7 +994,7 @@ the analysis (see Figure \@ref(fig:imgPipe7)).
 
 (ref:imgPipe7) **Result of the Analysis of dual colored Microbeads**: The original image showing both microbead populations is presented. Detected microbeads with green emission are circled in blue, and those with red emission are circled in orange. Overlapping microbeads are not circled, due to their proximity and the resulting exclusion from the analysis.
 
-```{r imgPipe7, fig.cap="(ref:imgPipe7)", out.width="99%"}
+```{r imgPipe7, fig.cap="(ref:imgPipe7)", out.width="85%"}
 # Define a vector of colors
 colors <- c("blue", "orange")
 
@@ -972,44 +1017,40 @@ encoded objects or to multiple images representing a single population of
 encoded objects.
 
 
-### `scanDir()` - Whole Directory analysis {#scan}
-
-The images provided by the `biopixR` package depict fluorescent microbeads in
-varying quantities and image dimensions.
+### `scanDir()` - Whole Directory Analysis {#scan}
 
 The `scanDir` function enables the analysis of images across entire directories.
 To ensure reliability and performance, the software includes a number of
 features designed to enhance the robustness and efficiency of the analysis
-process. These include double file checks via md5sum comparison, multi-core
-processing capabilities, and the option to generate a log file that documents
-the analysis process and results. The following section presents a simple
-example of the function being run on the provided images using the 'threshold'
-method without any filtering. A sample of the results is presented below.
+process. These include double file checks via Message Digest 5 (MD5) sum
+comparison, multi-core processing capabilities, and the option to generate a log
+file that documents the analysis process and results.
 
-To guarantee the quality of the analyses, the function incorporates a
-verification process to ensure that the data is unique within the analysis
-directory. This is accomplished through the utilization of the Message Digest 5
-(MD5) algorithm, originally developed by @Rivest1992. The MD5 algorithm [@MD5] is a
-standard practice in computer science for ensuring file integrity and
-identifying identical files. The application of this algorithm results in the
-generation of a unique "fingerprint" for each file [@Rivest1992; @Cechova2020].
-In `R` this can be accomplished by invoking the `md5sum()` function from the
-`tools` package, which computes a 128-bit summary of the file contents,
-represented by 32 hexadecimal digits. Subsequently, the fingerprints are
-subjected to analysis to identify any duplicates. In the event that duplicate
-files are identified, the function is terminated and the user is prompted to
-remove the duplicated files.
+\phantom{x}\hspace{0.5cm} *MD5 sum* - To guarantee the quality of the
+analyses, the function incorporates a verification process to ensure that the
+data is unique within the analysis directory. This is accomplished through the
+utilization of the MD5 algorithm, originally developed by @Rivest1992. The MD5
+algorithm [@Rivest1992] is a standard practice in computer science for
+ensuring file integrity and identifying identical files. The application of this
+algorithm results in the generation of a unique "fingerprint" for each file
+[@Rivest1992; @Cechova2020]. In `R` this can be accomplished by invoking the
+`md5sum()` function from the `tools` package, which computes a 128-bit summary
+of the file contents, represented by 32 hexadecimal digits. Subsequently, the
+fingerprints are subjected to analysis to identify any duplicates. In the event
+that duplicate files are identified, the function is terminated and the user is
+prompted to remove the duplicated files.
 
-In R, each image and its respective analysis script is sequentially processed on
-a single core of the central processing unit (CPU), by default. This approach is
-especially time-consuming when analyzing multiple images from an entire
-experiment. The use of parallel processing in `R` allows for the simultaneous
-execution of multiple processes, thereby enhancing performance and speed. The
-use of packages such as `parallel`, `snow`, `foreach`, and `doParallel` allows
-computations to be distributed across multiple cores, within `R`. This is
-particularly advantageous for complex data analysis tasks and data-intensive
-applications, where parallel programming can significantly reduce computation
-time [@Weston2009; @Schmidberger2009; @Corporation2011;
+\phantom{x}\hspace{0.5cm} *Parallel Processing* - In `R`, each image and its
+respective analysis script is sequentially processed on a single core of the
+Central Processing Unit (CPU), by default. This approach is especially
+time-consuming when analyzing multiple images from an entire experiment. The use
+of parallel processing in `R` allows for the simultaneous execution of multiple
+processes, thereby enhancing performance and speed. The use of packages such as
+`parallel`, `snow`, `foreach`, and `doParallel` allows computations to be
+distributed across multiple cores, within `R`. This is particularly advantageous
+for complex data analysis tasks and data-intensive applications, where parallel
+programming can significantly reduce computation time [@Weston2009;
+@Schmidberger2009; @Corporation2011;
 @Peng2022].^[https://nceas.github.io/oss-lessons/parallel-computing-in-r/parallel-computing-in-r.html]
 
 The `foreach` package provides a straightforward and efficient approach to
@@ -1023,7 +1064,7 @@ be utilized; alternatively, 75% of all cores are used for computation.
 
 The following section illustrates the functionality of the `scanDir()` function
 through an analysis of a directory containing the example images provided by the
-`biopixR` package (see Figure \@ref(fig:examples)). The threshold method is
+`biopixR` package (see Figure \@ref(fig:examples2)). The 'threshold' method is
 employed without enabling any additional filtering processes. The resulting
 Table \@ref(tab:scan2) will be saved in the working directory path in
 comma-separated value (CSV) format, if the `Rlog` parameter is set to `TRUE`.
@@ -1049,9 +1090,7 @@ res_scanDir[, 3:9]
 ```
 
 ```{r scan2, echo=FALSE}
-library(kableExtra)
-
-kable(
+tab_scan <- kable(
   res_scanDir[, 3:9],
   format = "markdown",
   booktabs = TRUE,
@@ -1068,18 +1107,22 @@ kable(
   align = "cccccc",
   escape = FALSE
 )
+
+footnote(tab_scan, general = "sd: standard deviation",
+         general_title = "Abbreviations: ")
 ```
 
-As one of the fundamental principles of this package is to facilitate
-reproducible research, the function documents the analysis process in an
-`RMarkdown` file and generates a comprehensive log file in PDF format. `R` and
-`RMarkdown` are widely recognized tools for reproducible research [@Baumer2014;
-@Roediger2015; @CaleroValdez2020]. This package facilitates reproducibility
-through its open-source nature, which allows for the straightforward publication
-of analysis scripts. Furthermore, the log file provides visual quality control
-and comparability. Moreover, comprehensive data for each individual image within
-a directory are accessible via the RDS (R Data Serialization) files, saved as
-part of the logging process.
+\phantom{x}\hspace{0.5cm} *Log File* - As one of the fundamental principles of
+this package is to facilitate reproducible research, the function documents the
+analysis process in an `RMarkdown` file and generates a comprehensive log file
+in Portable Document Format (PDF) format. `R` and `RMarkdown` are widely
+recognized tools for reproducible research [@Baumer2014; @Roediger2015;
+@CaleroValdez2020]. This package facilitates reproducibility through its
+open-source nature, which allows for the straightforward publication of analysis
+scripts. Furthermore, the log file provides visual quality control and
+comparability. Moreover, the detailed results (see Table \@ref(tab:result4)) for
+each individual image within a directory are accessible via the `R` Data
+Serialization (RDS) files, saved as part of the logging process.
 
 The following pages present the log file generated from the `RMarkdown` file
 representing the results for this analysis (see Figure \@ref(fig:scan3)). The
@@ -1110,14 +1153,14 @@ connectivity from the outset can present significant challenges, and there
 appear to be limited to no options available in `R` for addressing this issue.
 To address this issue, we propose the `fillLineGaps()` function.
 
-### `fillLineGaps()` - Restoring Edge-connectivity in compartimented Images
+### `fillLineGaps()` - Restoring Edge-Connectivity in Compartmented Images
 
 To demonstrate the functionality of the `fillLineGaps()` function in
 restoring edge connectivity, a practical example will be presented from a
-microbead-based emulsion polymerase chain reaction (ePCR) assay. This area can
+microbead-based emulsion Polymerase Chain Reaction (ePCR) assay. This area can
 benefit from imaging techniques, particularly to enhance applicability in
-point-of-care testing (POCT), as the current method, fluorescence-activated cell
-sorting (FACS), is less suited for this purpose. The following example
+Point-of-Care Testing (POCT), as the current method, Fluorescence-Activated Cell
+Sorting (FACS), is less suited for this purpose. The following example
 demonstrates the integration of data from two images to quantify droplets and
 microbeads. The objective is to identify the frequency of events where a single
 microbead joins a droplet in comparison to those where multiple microbeads are
@@ -1151,10 +1194,10 @@ The initial stage of the analysis involves the utilization of the
 `fillLineGaps()` function with the objective of restoring edge connectivity
 within the droplet image. This function identifies line endpoints and
 interpolates pixels to generate continuous contours. Initially, a threshold is
-applied to segment the contours and microbeads. Subsequently, edge detection is
-performed on the fluorescence image to extract the coordinates of the objects,
-which are then excluded from the droplet image to prevent false reconnections
-between partition contours and microbeads.
+applied to segment the contours and microbeads. Subsequently, object detection
+is performed on the fluorescence image to extract the coordinates of the
+objects, which are then excluded from the droplet image to prevent false
+reconnections between partition contours and microbeads.
 
 Subsequently, an iterative scanning for line ends is initiated using the
 `image_morphology()` function from the `magick` package. The area surrounding
@@ -1171,7 +1214,7 @@ the droplet partitions.
 (ref:fill1) **Image of Droplets with Restored Edge Connectivity**: The result of utilizing the `fillLineGaps()` function is displayed. The pixels added by the function are highlighted in purple. It can be seen that the performance is accurate in simpler regions where straight lines are reconnected. However, in areas where smaller droplets are present between larger droplets, the reconstruction appears to be more challenging.
 
 ```{r fill1, fig.cap="(ref:fill1)", warning=FALSE, out.width="89%"}
-# Restore edge connectivity with the `fillLineGaps()` function
+# Restoring edge connectivity
 closed_gaps <- fillLineGaps(droplets,
   droplet_beads,
   threshold = "13%",
@@ -1183,7 +1226,9 @@ closed_gaps <- fillLineGaps(droplets,
 )
 ```
 
-
+```{r}
+include_graphics("figures/fig25_fill.png")
+```
 
 Having addressed the initial issue of discontinuous edges, the focus now shifts
 back to characterizing the partitions. This is achieved by labeling the
@@ -1232,7 +1277,10 @@ Table specifies the number of partitions, and the second column lists those that
 are devoid of microbeads. Column three shows the number of partitions that
 contain microbeads. The final two columns indicate the frequency of occurrence
 of single microbeads within a droplet, as well as the occurrence of multiple
-microbeads within a single droplet.
+microbeads within a single droplet. Figure \@ref(fig:fill6) provides a visual
+representation of the result. The different microbeads containing droplets are
+highlighted in distinct colors, demonstrating the successful restoration of
+partition contours and subsequent labeling process.
 
 ```{r fill3}
 # Create resulting data frame highlighting the number of events with one 
@@ -1310,16 +1358,16 @@ extraction. To facilitate pattern recognition of these characteristics, the
 unsupervised machine learning techniques, namely Self-Organizing Maps (SOM) and
 the Partitioning Around Medoids (PAM) algorithm.
 
-### `shapeFeatures()` - Object clustering based on shape features
+### `shapeFeatures()` - Object Clustering Based on Shape Features
 
 The `shapeFeatures()` function employs the `objectDetection()` function to
 extract objects from an image. Subsequently, these objects are analyzed with
 respect to their individual shape characteristics, including features such as
-area, perimeter, radius, eccentricity, circularity, and aspect ratio.
+area, perimeter, radius, eccentricity, circularity, and aspect ratio (AR).
 Subsequently, the extracted features are summarized by incorporating these
 characteristics into the `resultAnalytics()` output.
 
-The `shapeFeatures` function is capable of utilizing unsupervised machine
+The `shapeFeatures()` function is capable of utilizing unsupervised machine
 learning techniques, specifically SOM. When SOMs are enabled, the function can
 classify detected objects based on their shape features, with the final output
 table including a row with classes that indicate the corresponding group for
@@ -1336,8 +1384,18 @@ vector gird. To utilize SOMs in `R`, the `kohonen` package is employed
 [@Wehrens2006]. In the `biopixR` package, SOMs are used to access patterns in
 shape-related characteristics of image objects.
 
-The following section presents a brief illustration of the `shapeFeatures()`
-function in action, utilizing an example image from the `biopixR` package:
+The aforementioned characteristics can be employed to distinguish image objects
+such as microbeads. The functionality of this classification is illustrated in
+Figure \@ref(fig:shape2)A, where non-circular objects (doublets and multiplets)
+are classified as a distinct group in comparison to single microbeads. The
+individual shape features of each microbead in the image are displayed as
+boxplots (see Figure \@ref(fig:shape2)B). The characteristics of the microbeads
+marked with a red point in Figure \@ref(fig:shape2)A are also highlighted with a
+red point within the boxplot. The distinction between doublets and multiplets is
+readily apparent. Doublets and multiplets are characterized by their larger
+size, perimeter, and radius, as well as lower circularity and higher
+eccentricity. This reflects their oval appearance, which differentiates them
+from single microbeads.
 
 ```{r shape0}
 # Extract shape related features and group them using SOM
@@ -1368,7 +1426,7 @@ points(
   pch = 19,
   cex = 1.2
 )
-text(c(20), c(20), c("A"), col = "darkred", cex = 5)
+text(c(15), c(15), c("A"), col = "darkred", cex = 4)
 
 # Create a data frame from 'shape_features' with selected columns
 shape_df <- data.frame(
@@ -1393,15 +1451,12 @@ df_normalized <- as.data.frame(lapply(shape_df, min_max_norm))
 boxplot(
   df_normalized,
   ylab = "normalized values",
-  xaxt = "n",
-  cex.lab = 1.25,
-  cex.axis = 1.25
+  xaxt = "n"
 )
 
 # Add axis ticks and diagonal labels
 axis(1, at = 1:ncol(shape_df), labels = FALSE)  # Add axis ticks but no labels
 text(
-  cex = 1.2,
   x = seq_len(ncol(df_normalized)),
   y = -0.1,
   labels = colnames(df_normalized),
@@ -1424,20 +1479,20 @@ for (col in 1:ncol(df_normalized)) {
     cex = 1.5
   )
 }
-text(c(0.5), c(0.9), c("B"), col = "darkred", cex = 5)
+text(c(0.5), c(0.9), c("B"), col = "darkred", cex = 4)
 ```
 
 (ref:shape2) **Clustering of Microbeads Using SOM within `shapeFeatures()`**: **A**) This simple example demonstrates the use of the `shapeFeature()` function to group microbeads. One group is marked by a green point at its center, and the other group is marked by a red circle. **B**) The different features used as input characteristics for analysis by the SOM are plotted to compare the different groups. Features corresponding to objects marked by red circles in **A** are highlighted in red.
 
-```{r shape2, out.width="89%", fig.cap="(ref:shape2)", echo=FALSE, fig.pos="H"}
-include_graphics("figures/fig23_shape.png")
+```{r shape2, out.width="89%", fig.cap="(ref:shape2)", echo=FALSE}
+include_graphics("figures/fig23.1_shape.png")
 ```
 
-To validate the aspect ratio calculations performed using the `biopixR` package,
-a reference figure containing circles with known ground truth aspect ratios was
-employed for comparison (see Figure \@ref(fig:shape3)). The aspect ratio (AR)
-represents the ratio of an object's dimensions and can be described as follows
-[@Takashimizu2016]:
+To validate the AR calculations performed using the `biopixR`
+package, a reference figure containing circles with known ground truth aspect
+ratios was employed for comparison (see Figure \@ref(fig:shape3)). The aspect
+ratio represents the ratio of an object's dimensions and can be described as
+follows [@Takashimizu2016]:
 
 \begin{equation}
   AR = \frac{length \; of \; major \; axis}{length \; of \; minor \; axis}
@@ -1450,13 +1505,26 @@ largest distance representing the major radius and the smallest distance
 representing the minor radius. This function is based on the assumption that the
 object is symmetrical. The major and minor axes are then obtained by multiplying
 the respective radii by a factor of two. The validity of this simplification for
-symmetrical objects is illustrated in the following comparison:
+symmetrical objects is illustrated in the following comparison.
 
-(ref:shape3) **Circles with different Aspect Ratios**: This is a modified image, originally derived from the publication of @Takashimizu2016.
+(ref:shape3) **Circles with different Aspect Ratios** (ARs): This is a modified image, originally derived from the publication of @Takashimizu2016. The enumeration of objects is read from left to right, beginning with the object in the top left (see Table \@ref(tab:shape7)).
 
 ```{r shape3, echo=FALSE, out.width="69%", fig.cap="(ref:shape3)"}
 include_graphics("figures/fig2_circularity.png")
 ```
+
+The results of the analysis of Figure \@ref(fig:3) using the `shapeFeatures()`
+function are presented in Table \@ref(tab:shape7), which demonstrates the ability
+to access shape-related information. It is noteworthy that circularity begins at
+a value of approximately one, which represents a perfect circle, and then
+decreases with an increasing AR. In contrast, eccentricity begins at zero and
+reaches 0.8 for the final circle. The radius represents the mean of the largest
+and smallest distances from a perimeter pixel to the microbeads' center. As the
+circle becomes more oval, the standard deviation increases, which can be
+explained by the aforementioned calculation. The AR is compared with the ground
+truth data (see Figure \@ref(fig:shape8)). Notably, the calculations for the
+individual circles are accurate, with the exception of objects 5 and 6, where
+the AR deviates by 0.3 and 0.5, respectively.
 
 ```{r shape4}
 # Import the image of different circles
@@ -1483,12 +1551,8 @@ shapes[7, 2:12] <- seven
 data <- shapes[, c(1,8:12)]
 ```
 
-```{r shape7, eval=FALSE}
-data
-```
-
-```{r shape8, echo=FALSE}
-kable(
+```{r shape7, echo=FALSE}
+tab_AR <- kable(
   data,
   format = "markdown",
   booktabs = TRUE,
@@ -1504,11 +1568,14 @@ kable(
   caption = "Comparison of Aspect Ratios",
   escape = FALSE
 )
+
+footnote(tab_AR, general = "sd: standard deviation",
+         general_title = "Abbreviations: ")
 ```
 
-(ref:shape9) **Performance of the `shapeFeatures()` function in regards to the Aspect Ratio**: This plot compares the aspect ratio calculated by the `biopixR` package with ground truth data from a publication [@Takashimizu2016]. The ground truth data is shown in blue, and the obtained results are shown in green.
+(ref:shape8) **Performance of the `shapeFeatures()` function in regards to the Aspect Ratio**: This plot compares the aspect ratio calculated by the `biopixR` package with ground truth data from a publication [@Takashimizu2016]. The ground truth data is shown in blue, and the obtained results are shown in green.
 
-```{r shape9, echo=FALSE, fig.cap="(ref:shape9)"}
+```{r shape8, echo=FALSE, fig.cap="(ref:shape8)"}
 # Create a data frame for ground truth AR data
 truth <- data.frame(index = seq_len(nrow(shapes)),
                     AR = c(1, 10 / 9, 10 / 8, 10 / 7, 10 / 6, 2, 10 / 4, 10 /
@@ -1518,7 +1585,7 @@ truth <- data.frame(index = seq_len(nrow(shapes)),
 plot(
   truth$index,
   truth$AR,
-  main = "Comparison of Dataframes",
+  main = "Comparison of data frames",
   xlab = "Objectnumber",
   ylab = "Aspect Ratio",
   pch = 19,
@@ -1540,17 +1607,17 @@ legend(
 )
 ```
 
-In summary, the aspect ratio calculations performed by the `biopixR` package are
+In summary, the AR calculations performed by the `biopixR` package are
 found to be generally accurate in comparison to the ground truth data, with most
 calculations demonstrating close alignment with the reference data. Minor
-discrepancies were observed at aspect ratios of 10/6 and 2. The output obtained
-by the function is presented in Table \@ref(tab:shape8). In the initial example,
+discrepancies were observed at ARs of 10/6 and 2. The output obtained
+by the function is presented in Table \@ref(tab:shape7). In the initial example,
 the `shapeFeatures()` function was successful in clustering the microbeads
 according to their shape characteristics, thereby demonstrating its utility as a
 tool for pattern recognition based on these features.
 
 
-### `HaralickCluster()` - Image classification based on texture features
+### `haralickCluster()` - Image Classification Based on Texture Features
 
 One aspect of interest in bioimage informatics is texture-related information.
 To extract this information from images, several computational methods were
@@ -1559,8 +1626,7 @@ of these calculations, including contrast, angular second moment, correlation,
 variance, sum average, and entropy. As proposed by @Haralick1973, these texture
 features are employed for image classification in the `biopixR` package.
 Consequently, the `haralickCluster()` function incorporates a clustering
-algorithm based on the unsupervised learning algorithm Partitioning Around
-Medoids (PAM).
+algorithm, namely PAM.
 
 The `haralickCluster()` function accepts a directory path as input, ensuring
 file uniqueness through the use of MD5 sums, as detailed in Chapter \@ref(scan).
@@ -1572,8 +1638,8 @@ adjacent to each other. Subsequently, the matrix is normalized by dividing by
 the total number of co-occurrence pairs. Adjacency is considered in four
 directions: horizontal, vertical, left diagonal, and right diagonal
 [@Haralick1973; @BinoSebastian2012; @Loefstedt2019]. Subsequently, the
-features—contrast, angular second moment, correlation, variance, sum average,
-and entropy—are calculated. Some calculations were derived from the `radiomics`
+features - contrast, angular second moment, correlation, variance, sum average,
+and entropy - are calculated. Some calculations were derived from the `radiomics`
 package, which also focuses on texture analysis but is currently not
 maintained.^[https://CRAN.R-project.org/package=radiomics] Subsequently, the
 extracted features are clustered using the PAM algorithm.
@@ -1596,16 +1662,17 @@ with PAM clustering, enabling the classification of images in a directory based
 on these characteristics.
 
 The following example illustrates the application of the `haralickCluster()`
-function to four images of microbeads, provided by the `biopixR` package. The
-resulting output is presented in Table \@ref(tab:haralickCluster1). The results
-of the Haralick texture feature calculations for the different images, which
-served as input for the PAM algorithm, are presented in Figure
-\@ref(fig:haralickCluster3). The results presented in Table \@ref(tab:haralickCluster1)
-are represented in the plots, which illustrate the different texture features
-for the various images. Notably, *beads* and *beads_large1* are consistently
-quite similar, while *beads_large2* and *droplet_beads* also exhibit
-similarities with each other. However, these two groups differ between one
-another, as depicted in Figure \@ref(fig:haralickCluster3).
+function to four images of microbeads, provided by the `biopixR` package (see
+Figure \@ref(fig:example2)). The resulting output is presented in Table
+\@ref(tab:haralickCluster1). The results of the Haralick texture feature
+calculations for the different images, which served as input for the PAM
+algorithm, are presented in Figure \@ref(fig:haralickCluster5). The results
+presented in Table \@ref(tab:haralickCluster1) are represented in the plots,
+which illustrate the different texture features for the various images. Notably,
+*beads* and *beads_large1* are consistently quite similar, while
+*beads_large2* and *droplet_beads* also exhibit similarities with each other.
+However, these two groups differ between one another, as depicted in Figure
+\@ref(fig:haralickCluster5).
 
 ```{r haralickCluster0}
 # Get the path to the 'images' directory within the 'biopixR' package
@@ -1615,7 +1682,7 @@ path2dir <- system.file("images", package = "biopixR")
 img_clus <- haralickCluster(path2dir)
 ```
 
-```{r haralickCluster1}
+```{r haralickCluster1, echo=FALSE}
 kable(
   img_clus[, 2:3],
   format = "markdown",
@@ -1625,46 +1692,51 @@ kable(
     "md5sum",
     "cluster"
   ),
-  align = "llc",
+  align = "llr",
   caption = "Result of Grouping according to Texture Features",
   escape = FALSE
 )
 ```
 
-(ref:haralickCluster3) **Extracted Haralick Texture Features**: The scaled values of the calculated texture features for the four example images shown in Figure \@ref(fig:examples) are depicted. The results for the calculation of *Angular Second Moment*, *Correlation*, *Sum of Squares: Variance*, *Inverse Difference Moment*, *Sum Average*, *Sum Variance*, and *Entropy* are presented for each image. (These values were obtained during the function execution and are not included in the function's output.)
 
-```{r haralickCluster2, echo=FALSE, out.width="99%", fig.pos="H"}
-include_graphics(
-  c(
-    "figures/fig20.1_haralick.png",
-    "figures/fig20.2_haralick.png"
-  )
-)
+(ref:haralickCluster2) Part of Figure \@ref(fig:haralickCluster5).
+
+```{r haralickCluster2, echo=FALSE, out.width="99%", fig.cap="(ref:haralickCluster2)"}
+include_graphics("figures/fig20.1_haralick.png")
 ```
+
+(ref:haralickCluster3) Part of Figure \@ref(fig:haralickCluster5).
 
 ```{r haralickCluster3, echo=FALSE, out.width="99%", fig.cap="(ref:haralickCluster3)"}
-include_graphics(
-  c(
-    "figures/fig20.3_haralick.png",
-    "figures/fig20.4_haralick.png"
-  )
-)
+include_graphics("figures/fig20.2_haralick.png")
 ```
 
-To sum up, the `HaralickCluster()` function is capable of extracting texture
+(ref:haralickCluster4) Part of Figure \@ref(fig:haralickCluster5).
+
+```{r haralickCluster4, echo=FALSE, out.width="99%", fig.cap="(ref:haralickCluster4)"}
+include_graphics("figures/fig20.3_haralick.png")
+```
+
+(ref:haralickCluster5) **Extracted Haralick Texture Features**: The scaled values of the calculated texture features for the four example images shown in Figure \@ref(fig:examples2) are depicted. The results for the calculation of *Angular Second Moment*, *Correlation*, *Sum of Squares: Variance*, *Inverse Difference Moment*, *Sum Average*, *Sum Variance*, and *Entropy* are presented for each image. (These values were obtained during the function execution and are not included in the function's output.)
+
+```{r haralickCluster5, echo=FALSE, out.width="99%", fig.cap="(ref:haralickCluster5)"}
+include_graphics("figures/fig20.4_haralick.png")
+```
+
+To sum up, the `haralickCluster()` function is capable of extracting texture
 features and clustering images based on these features. To describe the texture
 characteristics of an image, the Haralick features were employed
 [@Haralick1973]. For the purpose of clustering, a derivative of the *k-means*
-algorithm, PAM, was employed to classify the images according to the extracted
-features. The `haralickCluster()` function employs eight of the fourteen texture
+algorithm, PAM, was applied to classify the images according to the extracted
+features. The `haralickCluster()` function utilizes eight of the fourteen texture
 features proposed by @Haralick1973, thereby enabling the analysis and clustering
 of entire directories within a single, user-friendly function.
 
 
 ## Helper Functions of the `biopixR` Package
 
-The function `adaptiveInterpolation()` scans an increasing radius around a
-provided coordinates and connects it with the nearest labeled region. This
+The function `adaptiveInterpolation()` scans an increasing radius around the
+provided coordinates and connects them with the nearest labeled region. This
 function is designed to be incorporated into the `fillLineGaps()` function,
 which performs the thresholding and line end detection preprocessing. The line
 ends serve as coordinates and origins for interpolation. The
@@ -1674,7 +1746,7 @@ background values (0), corresponding to a black image. Subsequently, the
 function searches for line ends and identifies the nearest labeled region within
 a specified radius of the line end, excluding the cluster of the line end itself
 as a nearest neighbor. In the event that another cluster is identified, the
-`interpolatePixels` function, which connects two points in a matrix, array, or
+`interpolatePixels()` function, which connects two points in a matrix, array, or
 image, is employed to connect the line end to this cluster. This results in the
 specified pixels in the matrix being transformed to a foreground value of 1.
 

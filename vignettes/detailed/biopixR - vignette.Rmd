@@ -45,6 +45,7 @@ options(digits = 3)
 library(knitr)
 library(foodwebr)
 library(biopixR)
+library(kableExtra)
 ```
 
 \tableofcontents
@@ -55,7 +56,7 @@ library(biopixR)
 include_graphics("figures/fig0_logo.png")
 ```
 
-# Introduction to Techniques in Bioimage Informatics for Feature detection
+# Introduction to Techniques in Bioimage Informatics for Feature Extraction
 
 ```{r, child="Introduction.Rmd"}
 
@@ -89,25 +90,25 @@ include_graphics("figures/fig0_logo.png")
 The present extended vignette demonstrates the efficacy and versatility of the
 `biopixR` package for a multitude of tasks involving the analysis of image data,
 including microbead-based and cell-based assays. Specifically, we have
-demonstrated that objects can be identified with greater speed, reliability, and
-efficiency, and that features can be extracted as quantitative data from images,
-in comparison to manual analysis. Given that the `biopixR` package is work in
-progress, there is scope for optimization and further improvements. Ongoing
-testing continues to reveal bugs, which will be addressed in a timely manner.
-Some of the issues identified during the writing process include a problem with
-the `scanDir()` function, where the log function is not able to locate the
-documentation file. Another area for improvement is the optimization of the
-`haralickCluster()` function by replacing loops with vectorized operations, as
-the current use of loops results in slower performance. Moreover, the
-enhancement of unit tests and the integration of the quality control package
-`covr` into the continuous integration workflow will also contribute to an
-improvement in code quality. Long-term objectives include the development of an
-interactive Shiny application to provide a graphical web interface for the
-functions available in `biopixR`, thereby enhancing the program's accessibility
-to a broader user base. Another objective is to enhance the package's
-applicability for analyzing double-strand breaks, building on initial
-experiments that have already demonstrated its potential in this area (see
-Figure \@ref(fig:DSB1)).
+demonstrated that software-based object detection is capable of identifying
+objects with greater speed and efficiency, while quantifying features from
+images in a more reliable manner compared to manual analysis. Given that the
+`biopixR` package is work in progress, there is scope for optimization and
+further improvements. Ongoing testing continues to reveal bugs, which will be
+addressed in a timely manner. Some of the issues identified during the writing
+process include a problem with the `scanDir()` function, where the log function
+is not able to locate the documentation file. Another area for improvement is
+the optimization of the `haralickCluster()` function by replacing loops with
+vectorized operations, as the current use of loops results in slower
+performance. Moreover, the enhancement of unit tests and the integration of the
+quality control package `covr` into the continuous integration workflow will
+also contribute to an improvement in code quality. Long-term objectives include
+the development of an interactive Shiny application to provide a graphical web
+interface for the functions available in `biopixR`, thereby enhancing the
+program's accessibility to a broader user base. Another objective is to enhance
+the package's applicability for analyzing double-strand breaks, building on
+initial experiments that have already demonstrated its potential in this area
+(see Figure \@ref(fig:DSB1)).
 
 
 # Acknowledgement
