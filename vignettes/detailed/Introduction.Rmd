@@ -30,7 +30,7 @@ processing, and analysis [@Swedlow2009; @Peng2012; @Chessel2017; @Moen2019;
 across experiments or studies conducted under similar conditions, is a primary
 objective in this field, with dedicated software playing a crucial role.
 Bioimage informatics employs computational methods to efficiently analyze large
-volumes of imagedata, encompassing key aspects such as image processing, machine
+volumes of image data, encompassing key aspects such as image processing, machine
 learning, data management, and quantitative analysis. 
 
 Fundamental operations in bioimage informatics include feature extraction,
@@ -100,7 +100,7 @@ The `biopixR` package was initially employed for the analysis of microbeads
 microbeads in a recent case study [@Geithe2024]. The `biopixR` package has
 also been utilized in a recent publication [@Dinter2023] for the precise
 quantification of signal intensities. This study aimed to develop novel
-hydrophobic microbeads for the precise quantification of amphiphile molecules,
+hydrophobic microbeads for the precise quantification of amphiphilic molecules,
 such as phospholipids, on surfaces. These molecules are crucial in the
 development of a multitude of pathological conditions, including
 atherosclerosis, cardiovascular disease, infections, inflammatory disorders,

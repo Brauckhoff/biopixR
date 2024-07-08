@@ -9,7 +9,6 @@ output:
     toc_depth: 3
     fontsize: 12pt
     latex_engine: xelatex
-csl: european-journal-of-taxonomy.csl
 link-citations: yes
 urlcolor: Blue
 linkcolor: Blue
@@ -52,9 +51,10 @@ library(kableExtra)
 
 \pagebreak
 
-```{r logo, echo=FALSE}
+```{r logo, echo=FALSE, out.width="60%"}
 include_graphics("figures/fig0_logo.png")
 ```
+
 
 # Introduction to Techniques in Bioimage Informatics for Feature Extraction
 
@@ -107,8 +107,7 @@ the development of an interactive Shiny application to provide a graphical web
 interface for the functions available in `biopixR`, thereby enhancing the
 program's accessibility to a broader user base. Another objective is to enhance
 the package's applicability for analyzing double-strand breaks, building on
-initial experiments that have already demonstrated its potential in this area
-(see Figure \@ref(fig:DSB1)).
+initial experiments that have already demonstrated its potential in this area.
 
 
 # Acknowledgement

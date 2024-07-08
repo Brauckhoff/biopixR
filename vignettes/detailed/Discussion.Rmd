@@ -11,7 +11,8 @@ incorporated to optimize the performance of pipelines for batch processing and
 medium-throughput analysis. In this chapter, we will assess the reliability of
 the `biopixR` package by comparing its performance with that of manual analysis
 data. Furthermore, we will evaluate its suitability for use in the field of cell
-biology, with a particular focus on the assessment of DNA damage.
+biology, with a particular focus on the quantification of DNA damage.
+
 
 ## Batch Processing and Big Data in `R`
 
@@ -19,11 +20,11 @@ Microbead technology represents a highly versatile tool for the implementation
 of highly parallelized quantitative multiparameter assays, which are capable of
 detecting nucleic acids and proteins. This technology offers several advantages,
 including low cost, minimal labor, high speed, and high-throughput automation,
-which make it particularly appealing for point-of-care testing applications
-[@Roediger2014; @Zhang2019]. Microbead assays are typically analyzed using
-fluorescence microscopy of a 96-well plate, with each well typically generating
-five images, resulting in up to 480 images for a single assay. Consequently,
-automation and batch processing are essential in this area of research.
+which make it particularly appealing for POCT applications [@Roediger2014;
+@Zhang2019]. Microbead assays are typically analyzed using fluorescence
+microscopy of a 96-well plate, with each well typically generating five images,
+resulting in up to 480 images for a single assay. Consequently, automation and
+batch processing are essential for analyzing data in this area of research.
 
 Although `R` is a programming language that naturally supports the customized
 development of batch processing, we observed while collaborating with peers in
@@ -86,7 +87,7 @@ packages for 'cimg-lists' has not been further evaluated and would also be
 considered a task for future projects.
 
 
-## Cyclomatic Complexity in `biopixR`
+## Cyclomatic Complexity of `biopixR`
 
 As previously stated, the `biopixR` package was designed with the intention of
 maintaining a minimalistic approach, with the objective of reducing dependencies
@@ -140,12 +141,12 @@ tab <- kable(
   format = "markdown",
   booktabs = TRUE,
   align = "cc",
-  caption = "Cyclomatic Complexity in the `biopixR` package",
+  caption = "Cyclomatic complexity in the `biopixR` package",
   escape = FALSE
 ) 
 ```
 
-```{r cyclocomp2}
+```{r cyclocomp2, echo=FALSE}
 row_spec(tab, c(1, 3:14, 16, 20), bold = TRUE)
 ```
 
@@ -199,16 +200,16 @@ paired observations derived from the same images but employing different methods
 analysis will be tested for normal distribution using the Shapiro-Wilk normality
 test [@Shapiro1965].
 
-The manual analysis was conducted using a Shiny app (accessible at:
+The manual analysis was conducted using a Shiny app, which is accessible at:
 
-\phantom{x}\hspace{0.75cm}<https://brauckhoff.shinyapps.io/umfrage/>; language: German)
+\phantom{x}\hspace{0.75cm}<https://brauckhoff.shinyapps.io/umfrage/>; language: German
 
 The survey was conducted by three colleagues in the same field of study
 (biotechnology), myself, and an independent individual from a completely
 different field of study. The initial objective of this survey was to enumerate
 each microbead, including those that are part of doublets or multiplets. The
 second task was to enumerate only the individual microbeads that are part of the
-aforementioned clotted structures. The aforementioned tasks were completed for
+aggregated structures. The aforementioned tasks were completed for
 three images, which are displayed in Figure \@ref(fig:irr0). The images were
 selected for analysis because they depict varying amounts of microbeads and the
 phenomena of aggregated microbeads.
@@ -221,28 +222,29 @@ include_graphics("figures/fig21.2_comparison.png")
 include_graphics("figures/fig21.3_comparison.png")
 ```
 
+
 ### Preprocessing the Manual Analysis and Performing Analysis with `biopixR`
 
 Initially, the data must be subjected to preprocessing in order to facilitate
 the display of the results. This process entails combining the results of the
 five individual analyses and running the `biopixR` package on the same images in
 order to obtain the comparative data frame. Subsequently, the two data frames,
-derived from the manual and software analyses, are merged for further
+derived from the manual and software analysis, are merged for further
 processing. The individual processing steps are illustrated in the code below,
-and the final data utilized for analysis is depicted in Tables \@ref(tab:irr2)
-and \@ref(tab:irr3).
+and the final data utilized for analysis is depicted in Tables \@ref(tab:irr3)
+and \@ref(tab:irr5).
 
 The design of the algorithm suggests that the software will yield lower count
 values for the first task. This discrepancy can be attributed to the algorithm's
 approach to doublets and multiplets, which are treated as single entities. In
 contrast, humans are able to visually distinguish individual microbeads even
 when they are part of doublets or multiplets. The results of task 1 are
-presented in Table \@ref(tab:irr2). It is evident that manual counting for the
+presented in Table \@ref(tab:irr3). It is evident that manual counting for the
 image1 with fewer microbeads was accurate, with a standard deviation of 3.27.
 However, for the two larger images (see Figure \@ref(fig:irr0) image2 & 3) with
 higher numbers of microbeads, the standard deviation of the manual analysis
 increased to approximately 30. As anticipated, the algorithmic analysis produced
-a smaller number of object counts than that obtained via manual counting for the
+a smaller object count than that obtained via manual counting for the
 first two images (see Figure \@ref(fig:irr0) image1 & 2). To interpret these
 findings, a statistical analysis was conducted and the results were visualized.
 
@@ -371,12 +373,13 @@ tab_comp1 <- kable(
   caption = "Comparison in object quantification for task 1",
   escape = FALSE,
 )
-
-footnote(tab_comp1, general = "sd: standard deviation",
-         general_title = "Abbreviations: ")
 ```
 
 ```{r irr3, echo=FALSE}
+footnote(tab_comp1, general = "", general_title = "Abbreviations: sd - standard deviation")
+```
+
+```{r irr4, echo=FALSE}
 tab_comp2 <- kable(
   df_comparison2,
   format = "markdown",
@@ -386,10 +389,12 @@ tab_comp2 <- kable(
   caption = "Comparison in object quantification for task 2",
   escape = FALSE,
 )
-
-footnote(tab_comp2, general = "sd: standard deviation",
-         general_title = "Abbreviations: ")
 ```
+
+```{r irr5, echo=FALSE}
+footnote(tab_comp2, general = "", general_title = "Abbreviations: sd - standard deviation")
+```
+
 
 ### Visualization of Comparison between Human and Software Analysis
 
@@ -406,13 +411,13 @@ In the first image, the software produced a significantly lower result compared
 to manual counting, which is an expected outcome. In contrast, for the other two
 images, the software results fall within the standard deviation of the manual
 analysis, with no statistically significant difference (see Figure
-\@ref(fig:irr4)). The ICC calculated for the first task was 0.998, indicating
+\@ref(fig:irr6)). The ICC calculated for the first task was 0.998, indicating
 excellent reliability between the results obtained by the software and those
 obtained through manual analysis.
 
-(ref:irr4) **Comparison of Software and Manual Object Quantification** (Task 1): All microbeads, including those in doublets or multiplets, are quantified manually by five different individuals (n = 5) and by the software `biopixR`. The resulting counts for each method are shown, with software results in darkcyan and manual analysis results in orange. The manual analysis is shown as mean $\pm$ standard deviation. *Note*: *Statistical significance was calculated using a paired Student's t-test, with* * *p < 0.05*.
+(ref:irr6) **Comparison of Software and Manual Object Quantification** (Task 1): All microbeads, including those in doublets or multiplets, are quantified manually by five different individuals (n = 5) and by the software `biopixR`. The resulting counts for each method are shown, with software results in darkcyan and manual analysis results in orange. The manual analysis is shown as mean $\pm$ standard deviation. *Note*: *Statistical significance was calculated using a paired Student's t-test, with* * *p < 0.05*.
 
-```{r irr4, fig.cap="(ref:irr4)"}
+```{r irr6, fig.cap="(ref:irr6)"}
 # Load the 'irr' library for calculating the ICC
 library(irr)
 
@@ -424,7 +429,11 @@ print(icc_result1)
 
 # Vectorized approach for running Shapiro-Wilk test and checking normality
 normality_p_values <- sapply(1:6, function(i) {
-  shapiro.test(c(n1$Clicks[i], n2$Clicks[i], n3$Clicks[i], n4$Clicks[i], n5$Clicks[i]))$p.value
+  shapiro.test(c(n1$Clicks[i], 
+                 n2$Clicks[i], 
+                 n3$Clicks[i], 
+                 n4$Clicks[i], 
+                 n5$Clicks[i]))$p.value
 })
 
 # Check normality and print results
@@ -537,28 +546,28 @@ legend(
 ```
 
 The second task is to estimate the number of microbeads present within doublets
-and multiplets. The data for this analysis is presented in Table \@ref(tab:irr3).
+and multiplets. The data for this analysis is presented in Table \@ref(tab:irr5).
 The results from both the software and manual analysis of images one and three
 are comparable, with a low standard deviation for the latter. The first image,
 with lower image dimensions, and the third, with a low number of doublets and
 multiplets, are comparatively straightforward to analyze. In contrast, the
 second image depicts a larger number of these structures, resulting in greater
 variability in the results obtained by manual analysis, with a standard
-deviation of nearly 30 (see Figure \@ref(fig:irr0) and Table \@ref(tab:irr3)). In
-order to create a comparable software results for this task, the `imgPipe()`
+deviation of nearly 30 (see Figure \@ref(fig:irr0) and Table \@ref(tab:irr5)). In
+order to create a comparable software result for this task, the `imgPipe()`
 function with an enabled `sizeFilter()` was employed. The algorithm estimates
 the number of rejected microbeads within these structures by dividing the number
 of discarded pixels by the mean size of the remaining objects (microbeads). The
-aforementioned results are illustrated in Figure \@ref(fig:irr5), which
+aforementioned results are illustrated in Figure \@ref(fig:irr7), which
 demonstrates that the software and manual analysis yield nearly identical
 outcomes for images one and three. However, the differing outcome for image two
 is illustrated, with a statistically significant difference between the methods.
 The calculated ICC for task 2 indicates a high degree of reliability between the
 methods, with a score of 0.86.
 
-(ref:irr5) **Comparison of Software and Manual Object Quantification** (Task 2): Only microbeads that are part of doublets or multiplets are counted. Manual analysis was conducted by five different individuals (n = 5) and compared to the software `biopixR`. The resulting counts for each method are shown, with software results in darkcyan and manual analysis results in orange. The manual analysis is depicted as mean $\pm$ standard deviation. *Note*: *Statistical significance was calculated using a paired Student's t-test, with* * *p < 0.05*.
+(ref:irr7) **Comparison of Software and Manual Object Quantification** (Task 2): Only microbeads that are part of doublets or multiplets are counted. Manual analysis was conducted by five different individuals (n = 5) and compared to the software `biopixR`. The resulting counts for each method are shown, with software results in darkcyan and manual analysis results in orange. The manual analysis is depicted as mean $\pm$ standard deviation. *Note*: *Statistical significance was calculated using a paired Student's t-test, with* * *p < 0.05*.
 
-```{r irr5, fig.cap="(ref:irr5)"}
+```{r irr7, fig.cap="(ref:irr7)"}
 # Same for task 2
 # Load the 'irr' library for calculating the ICC
 library(irr)
@@ -807,7 +816,7 @@ include_graphics("figures/fig1.1_DSB.png")
 ```
 
 In conclusion, this illustrative example of DNA damage assessment illustrates
-the capabilities of the `biopixR` package in cell biology. The utilisation of
+the capabilities of the `biopixR` package in cell biology. The utilization of
 edge detection for foci extraction in conjunction with thresholding for nuclei
 identification serves to demonstrate the suitability of `biopixR` for complex
 imaging tasks. The integration of multiple segmentation strategies within a
