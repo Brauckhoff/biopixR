@@ -18,7 +18,10 @@ include_graphics("figures/fig4_dependency.png")
 
 The `biopixR` package includes a series of microbead images to demonstrate its
 capabilities in the analysis and processing of biological images (see Figure
-\@ref(fig:examples2)). The sample images illustrate the package's functionalities,
+\@ref(fig:examples2)). For more details about microbead assays and their 
+application in biomedical research, please see this reference [@Roediger2014; @].
+
+The sample images illustrate the package's functionalities,
 allowing users to explore and experiment with image analysis and manipulation
 within the context of biotechnology and life sciences. Researchers and
 practitioners may utilize these illustrations to comprehend the applicability of
@@ -55,9 +58,15 @@ include_graphics("figures/fig24.2_example.png")
 A selection of these microbead images will be employed in the forthcoming
 demonstration of the `biopixR` functions. As previously mentioned, the primary
 development objective was to analyze data derived from microbead-based and
-cell-based assays. Therefore this vignette will primarily focus on the analysis
-of microbead particles made of polymethylmethacrylate (PMMA), which are
-approximately 12 µm in size [@Geithe2024].
+cell-based assays. 
+
+This vignette will focus on the analysis of microbead particles made of 
+polymethylmethacrylate (PMMA), which are
+approximately 12 µm in size [@Geithe2024]. __In the following sections and 
+illustrations, there is no further mention of the size of microbeads or 
+any specifications provided in the images. All algorithms are indifferent to 
+diameter.__ At the end of this vignette, you will find a brief example for 
+analyzing cell-based assays.
 
 
 ## `importImage()` - Importing Images into the `R` Environment
@@ -67,7 +76,7 @@ function supports the importation of digital images in various file formats,
 including Joint Photographic Experts Group (JPEG), Portable Network Graphics
 (PNG), Bitmap Image File (BMP), and Tagged Information Interchange Format
 (TIFF). This function acts as a wrapper, integrating the capabilities of the
-`magick` and `imager` packages. Since most image processing operations in
+`magick` and `imager` packages for import and class conversion. Since most image processing operations in
 `biopixR` rely on `imager`, the `importImage()` function converts all formats
 into the `imager` class 'cimg'. During the development process, it was
 frequently observed that images exhibited more than three dimensions within the
@@ -116,13 +125,18 @@ include_graphics("figures/fig22_import.png")
 
 ## `edgeDetection()` - A modified Canny Edge Detector {#edge}
 
+﻿Edge detection (e.g., contours, lines) is crucialt in various applications 
+such as computer vision and object recognition, particularly in 
+medical imaging analysis. It aids in identifying regions with significant 
+changes or transitions within an image, thereby extracting valuable information 
+by highlighting key elements like shapes, patterns, or specific areas of interest.
 Various edge detection algorithms are available in the `R` programming language,
 with the Canny edge detector, developed by @Canny1986, being the most widely
 implemented across multiple packages, including those by @Barthelme2015
 (`imager`); @Ooms2016 (`magick`); @Mouselimis2016 (`OpenImageR`); and @Beare2018
 (`SimpleITK`). Other noteworthy edge detection algorithms in the `R` package
 `OpenImageR` includes those by @Prewitt1970, @Sobel2014, @Roberts1980, and
-@Scharr2000. After evaluating the different results (exemplary see Figure
+@Scharr2000. After evaluating the different results (e.g., see Figure
 \@ref(fig:edge1)), the Canny edge detection algorithm from the `imager` package
 was selected for edge detection. The resulting binary image serves as a
 foundation for subsequent feature extraction. Furthermore, the `cannyEdges()`
@@ -514,6 +528,12 @@ plot(gaussian_result$marked_objects, axes = FALSE)
 
 ### Thresholding Method in `objectDetection()`
 
+Thresholding is a technique used in image processing to divide an image 
+into various regions based on their brightness or intensity values. By 
+setting a specific threshold, it is possible to distinguish between foreground 
+objects (above the threshold) and background areas (below the threshold). 
+This differs from edge detection, which focuses on identifying abrupt 
+changes in pixel intensities within images to locate boundaries of objects or shapes.
 The thresholding method is particularly well-suited for images with high and
 inhomogeneous backgrounds, as it incorporates background correction by solving
 the Screened Poisson Equation (SPE) before applying the threshold. This
@@ -754,7 +774,9 @@ number of objects, center coordinates, size, intensity, and the number of
 objects that did not pass the filtering process, if applied. It also provides
 coverage information, which indicates the percentage of the image that is
 considered part of the objects. The function takes the object coordinates and
-the image as input and calculates these properties. The results are presented in
+the image as input and calculates these properties. 
+
+The results are presented in
 the form of a list comprising two tables: one representing the average of all
 features, providing a comprehensive summary of the entire image in a single row
 (see Table \@ref(tab:result3)), and the second providing detailed information
@@ -781,7 +803,7 @@ summary <- kable(
   result$summary,
   format = "markdown",
   booktabs = TRUE,
-  caption = "Summary of extracted features in an image",
+  caption = "Summary of extracted features in an image.",
   col.names = c(
     "number of objects",
     "mean (size)",
@@ -821,7 +843,7 @@ detailed <- kable(
   result$detailed,
   format = "markdown",
   booktabs = TRUE,
-  caption = "Detailed results of the individual extracted features",
+  caption = "Detailed results of the individual extracted features.",
   col.names = c(
     "objectnumber",
     "size in px",
@@ -1126,8 +1148,8 @@ process. These include double file checks via Message Digest 5 (MD5) sum
 comparison, multi-core processing capabilities, and the option to generate a log
 file that documents the analysis process and results.
 
-\phantom{x}\hspace{0.5cm} *MD5 sum* - To guarantee the quality of the
-analysis, the function incorporates a verification process to ensure that the
+\phantom{x}\hspace{0.5cm} *MD5 sum* - To elevate the quality of the
+analysis, the function incorporates a verification process to check that the
 data is unique within the analysis directory. This is accomplished through the
 utilization of the MD5 algorithm, originally developed by @Rivest1992. The MD5
 algorithm is a standard practice in computer science for
@@ -1138,7 +1160,17 @@ algorithm results in the generation of a unique "fingerprint" for each file
 of the file contents, represented by 32 hexadecimal digits. Subsequently, the
 fingerprints are subjected to analysis to identify any duplicates. In the event
 that duplicate files are identified, the function is terminated and the user is
-prompted to remove the duplicated files.
+prompted to remove the duplicated files. However, due to its relatively short 
+length (128-bit, 32 character, hexadecimal string) and the nature of hashing 
+algorithms, it is possible for two different files to have the same MD5 value. 
+This is called MD5 collision. In theory, this can be problematic in scenarios 
+where hash values are used as a security measure or for data integrity checks 
+since it may lead to false positives or negatives. However, we use it in 
+combination with the file name, which leverages the problem. In theory, this 
+could pose issues in scenarios where hash values are employed for security 
+purposes or data integrity checks since it may result in false positives or 
+negatives. However, we can additionally employ the file name and meta data (e.g., 
+file creation date) alongside these hash values to counteract this issue.
 
 \phantom{x}\hspace{0.5cm} *Parallel Processing* - In `R`, each image and its
 respective analysis script is sequentially processed on a single core of the
@@ -1237,8 +1269,8 @@ comparability. Moreover, the detailed results (similar to Table \@ref(tab:result
 each individual image within a directory are accessible via the `R` Data
 Serialization (RDS) files, saved as part of the logging process.
 
-The following pages present the log file generated from the `RMarkdown` file
-representing the results for this analysis (see Figure \@ref(fig:scan4)). The
+The following page (Figure \@ref(fig:scan4)) present the log file generated from the `RMarkdown` file
+representing the results for this analysis. The
 directory of the analysis is first noted in the caption, followed by a series of
 logging steps that indicate the current status of the image being analyzed.
 Furthermore, the log file will indicate any instances of analysis failure resulting
@@ -1257,7 +1289,19 @@ include_graphics("figures/fig21_log_file.png")
 
 ## Functions for Droplet Analysis
 
-A common and challenging problem encountered in image analysis is the presence
+In attempts involving microbead emulsions, the focus lies on situations where 
+microbeads exist within a watery reaction environment that is surrounded by 
+hydrophobic matrix, particularly fluorinated oils. This results in the formation 
+of small (sherical or non-spherical) microbead-water compartments with nanoliter 
+to microliter volumes, which are often called partitions (Figures 
+\@ref(fig:fill1)A). The objective of this approach is to separate individual 
+microbeads from their surrounding reaction environments to avoid 
+cross-reactions. Applications include the clonal amplification, single molecule 
+detection and absolute quantification. Depending on the emulsification method 
+employed, partitions of homogeneous size or heterogeneous (dispersed) size may 
+be generated. [@Roediger2014]. 
+
+Here, a common and challenging problem encountered in image analysis is the presence
 of discontinuous contours. This phenomenon presents a significant challenge to
 image processing tasks, such as segmentation, labeling, and feature extraction.
 Consequently, ensuring edge connectivity is an essential aspect of an effective
