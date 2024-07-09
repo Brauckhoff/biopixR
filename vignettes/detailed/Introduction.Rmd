@@ -2,7 +2,7 @@
 output: pdf_document
 ---
 
-The volume of image data has increased significantly due to the advancement of
+The volume of image data has increased rapidly due to the advancement of
 imaging technologies, including microscopy, confocal microscopy, and
 super-resolution techniques [@Peng2008; @Swedlow2009; @Eliceiri2012;
 @Sydor2015], as well as improvements in cell and tissue staining
@@ -31,7 +31,7 @@ across experiments or studies conducted under similar conditions, is a primary
 objective in this field, with dedicated software playing a crucial role.
 Bioimage informatics employs computational methods to efficiently analyze large
 volumes of image data, encompassing key aspects such as image processing, machine
-learning, data management, and quantitative analysis. 
+learning, data management, and quantitative analysis [@Schneider2019]. 
 
 Fundamental operations in bioimage informatics include feature extraction,
 segmentation, registration, clustering, classification, annotation, and
@@ -42,7 +42,7 @@ the division of an image into distinct Regions of Interest (ROI) by the
 assignment of labels to each pixel. The primary objective is to identify ROIs
 pertinent to the specific task [@Peng2008; @Ghosh2019; @Niedballa2022].
 Thresholding is a straightforward segmentation method. This approach involves
-comparing pixel values against one or more intensity thresholds, which typically
+comparing pixel values against one or more intensity thresholds, which
 results in the image being partitioned into foreground and background regions
 [@Sonka2000; @Jaehne2002]. Another common approach is the use of edge
 detection algorithms to outline objects of interest within an image
@@ -52,8 +52,12 @@ manual analysis in a fast, reliable, and reproducible manner. The use of
 automated software ensures the consistency, reproducibility, and objectivity of
 the results obtained.
 
-Numerous packages are available for `R` to address various tasks in bioimage
-informatics, including image import, segmentation, and annotation. While some of
+As described in a previous study, there are numerous software to analyze image data 
+[@Schneider2019]. In addition to Python, the statistical programming language `R` 
+[@R_Core_Team] has istablisch as one of the central softwares for data science and 
+bioinformatics [@Roediger2015]. As described in later sections, numerous packages, developed for 
+specific statistical analysis tasks, are available for `R` to address various tasks in 
+bioimage informatics, including image import, segmentation, and annotation. While some of
 these techniques will be discussed in the following sections, it is important to
 note that the existing packages do not cover all aspects. The subsequent
 sections will elucidate how the `biopixR` package contributes to the open-source
@@ -62,7 +66,7 @@ automation. One significant application of the `biopixR` package is the analysis
 of round, spherical objects in images, such as microbeads, cells, seeds, or
 microplastics, which exhibit similar characteristics in their visual
 representations. Consequently, this vignette will predominantly feature examples
-from this domain.
+from this domain.FF
 
 
 # History, Philosophy, and Aims of the `biopixR` Package
@@ -72,11 +76,11 @@ language as part of our research in bioimage informatics. The primary objective
 was the analysis of data derived from microbead-based assays (for the
 quantification of nucleic acid and protein biomarkers) and cell-based assays
 (such as the analysis of DNA damage). During this period, we developed numerous
-scripts tailored to internal research projects and contributed to various
-repositories, including [Codeberg.org](https://codeberg.org/). It is noteworthy
+scripts tailored to internal research projects and contributed to
+private repositories, including [codeberg.org](https://codeberg.org/). It is noteworthy
 that our initial endeavors did not fully adhere to established software
 engineering practices, including unit testing, version tagging, and continuous
-integration (CI).
+integration (CI). For this reason they were never public.
 
 As the algorithms we developed proved to be inefficient and inadequate for
 meeting current scientific needs, we resolved in 2023 to undertake a complete
@@ -84,11 +88,13 @@ rewrite of the software. In October 2023, the initiative gained significant
 traction with a transition to open repositories on GitHub
 (<https://github.com>). The adoption of contemporary methodologies was intended
 to ensure enhanced software quality and facilitate greater collaboration with
-both the scientific and open-source communities.
+both the scientific and open-source communities. This had the immediate consequence 
+that we received bug reports, stars, watches and contributions from other authors 
+and users.
 
 Our primary objective was to publish the package on the **C**omprehensive
 **`R`** **A**rchive **N**etwork (CRAN), which mandates high-quality software.
-This objective has been successfully achieved. Since then, multiple versions of
+This objective has been successfully achieved in 2024. Since then, multiple versions of
 the package have been released, including the initial milestone release (0.2.4)
 on April 2, 2024, and the subsequent stable version (1.0) on June 3, 2024. Since
 our initial contributions to CRAN, we have received valuable feedback and
@@ -97,17 +103,18 @@ contributions from other package authors, including the author of the
 
 The `biopixR` package was initially employed for the analysis of microbeads
 [@Geithe2021], and was subsequently utilized to perform quality control on
-microbeads in a recent case study [@Geithe2024]. The `biopixR` package has
+microbeads in a 2024 study [@Geithe2024]. The `biopixR` package has
 also been utilized in a recent publication [@Dinter2023] for the precise
 quantification of signal intensities. This study aimed to develop novel
 hydrophobic microbeads for the precise quantification of amphiphilic molecules,
 such as phospholipids, on surfaces. These molecules are crucial in the
 development of a multitude of pathological conditions, including
 atherosclerosis, cardiovascular disease, infections, inflammatory disorders,
-cancer, and autoimmune diseases [@Dinter2023]. Furthermore, the applications
-of `biopixR` can be extended to any research problem involving feature
+cancer, and autoimmune diseases [@Dinter2023]. 
+
+The applications of `biopixR` can be extended to any research problem involving feature
 extraction from images and the quantification of related image data. Such
-applications include the assessment of wastewater for the detection of
+envisioned applications include the assessment of wastewater for the detection of
 microplastics [@Ding2020], the real-time localization of microbead-based drug
 delivery systems [@Bannerman2016], and other fields within the life sciences,
 such as cell biology [@Schneider2019].
