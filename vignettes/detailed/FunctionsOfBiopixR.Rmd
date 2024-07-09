@@ -1780,7 +1780,15 @@ tool for pattern recognition based on these features.
 
 ### `haralickCluster()` - Image Classification Based on Texture Features
 
-One aspect of interest in bioimage informatics is texture-related information.
+One aspect of interest in bioimage informatics is texture-related information. 
+In bioimage informatics, texture refers to the spatial arrangement or pattern of 
+structures within an image that can provide important information like intensity 
+variations, frequency content, and spatial relationships between pixels or 
+regions in an image. Texture is crucial for various applications such as 
+classification, segmentation, and diagnosis (e.g., to distinguish different 
+microbeads, types of tissues, cells, or pathological conditions within histology 
+images).
+
 To extract this information from images, several computational methods were
 proposed by @Haralick1973. The `haralickCluster()` function incorporates several
 of these calculations, including contrast, angular second moment, correlation,
