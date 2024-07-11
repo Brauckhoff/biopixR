@@ -43,7 +43,7 @@ traditionally perform such tasks manually.
 
 In the `R` programming language, the execution of for loops is a time-consuming,
 sequential process that iterates through each provided variable in a linear
-fashion. In order to enhance the efficiency of image data analysis,
+fashion. To enhance the efficiency of image data analysis,
 vectorization was employed. This approach permits the application of
 operations to entire vectors, which significantly accelerates the
 calculations. Additionally, the `foreach` package was utilized to further
@@ -114,7 +114,7 @@ The complexity of the `biopixR` package is quantified using the `cyclocomp`
 package, which measures the linearly independent paths through the code of a
 function, taking into account structures such as functions, loops, and control
 statements (e.g., if, break, next, and return)
-[@Csardi2016].^[https://github.com/MangoTheCat/cyclocomp] Higher cyclomatic
+[@Csardi2016].^[https://github.com/MangoTheCat/cyclocomp, accessed 07/03/2024] Higher cyclomatic
 complexity values indicate more complex functions. The resulting complexity
 values for the functions of the `biopixR` package are presented in Table
 \@ref(tab:cyclocomp2). The user-accessible functions are highlighted, while the
@@ -141,7 +141,7 @@ tab <- kable(
   format = "markdown",
   booktabs = TRUE,
   align = "cc",
-  caption = "Cyclomatic complexity in the `biopixR` package",
+  caption = "Cyclomatic complexity in the biopixR package. Cyclomatic complexity measures the number of linearly independent paths through the code, with higher scores indicating more complex code and lower scores indicating simpler, more maintainable code. The cyclomatic complexity was calculated using the cyclocomp package. Main functions accessible by the user are highlighted in bold, while other functions include helper functions and global variables that are part of the main functions.",
   escape = FALSE
 ) 
 ```
@@ -172,7 +172,7 @@ variability could be addressed by integrating a watershed algorithm, a
 specialized segmentation algorithm capable of distinguishing touching objects
 [@Beucher1992; @Pau2010]. To demonstrate the discrepancy and comprehend the
 capabilities, an experiment was conducted to compare the manual analysis of
-three microbead images (see Figure \@ref(fig:irr0)) (n=5) with the results
+three microbead images (Figure \@ref(fig:irr0)) (n=5) with the results
 obtained using the `biopixR` package.
 
 A statistical comparison of the data will be conducted using the `R` package
@@ -241,11 +241,11 @@ contrast, humans are able to visually distinguish individual microbeads even
 when they are part of doublets or multiplets. The results of task 1 are
 presented in Table \@ref(tab:irr3). It is evident that manual counting for the
 image1 with fewer microbeads was accurate, with a standard deviation of 3.27.
-However, for the two larger images (see Figure \@ref(fig:irr0) image2 & 3) with
+However, for the two larger images (Figure \@ref(fig:irr0) image2 & 3) with
 higher numbers of microbeads, the standard deviation of the manual analysis
 increased to approximately 30. As anticipated, the algorithmic analysis produced
 a smaller object count than that obtained via manual counting for the
-first two images (see Figure \@ref(fig:irr0) image1 & 2). To interpret these
+first two images (Figure \@ref(fig:irr0) image1 & 2). To interpret these
 findings, a statistical analysis was conducted and the results were visualized.
 
 ```{r irr1}
@@ -369,8 +369,8 @@ tab_comp1 <- kable(
   format = "markdown",
   booktabs = TRUE,
   align = "cccc",
-  col.names = c("factor", "software", "manual", "sd(manual)"),
-  caption = "Comparison in object quantification for task 1",
+  col.names = c("image", "software", "manual", "sd(manual)"),
+  caption = "Comparison in object quantification for task 1. The table summarizes the quantification of all microbeads, including singlets and individual microbeads within doublets or multiplets. The analysis was conducted on the three example images presented at the beginning of this chapter. The biopixR package was used for software-based quantification, while the manual analysis is presented as the average count (n = 5) with the standard deviation.",
   escape = FALSE,
 )
 ```
@@ -385,8 +385,8 @@ tab_comp2 <- kable(
   format = "markdown",
   booktabs = TRUE,
   align = "cccc",
-  col.names = c("factor", "software", "manual", "sd(manual)"),
-  caption = "Comparison in object quantification for task 2",
+  col.names = c("image", "software", "manual", "sd(manual)"),
+  caption = "Comparison in object quantification for task 2. The table presents the results of counting individual microbeads within aggregated clusters, such as doublets or multiplets. The analysis was performed on the three aforementioned images using the biopixR package and manual analysis (n = 5). For the manual analysis, the average count and standard deviation are reported.",
   escape = FALSE,
 )
 ```
@@ -398,7 +398,7 @@ footnote(tab_comp2, general = "", general_title = "Abbreviations: sd - standard 
 
 ### Visualization of Comparison between Human and Software Analysis
 
-In order to assess the reliability of the software in comparison to manual
+To assess the reliability of the software in comparison to manual
 analysis, the ICC was calculated. The count data for both tasks were subjected
 to a Shapiro-Wilk test to ascertain their normal distribution. The resulting
 p-values, all greater than 0.05, indicate that the data is normally
@@ -410,7 +410,7 @@ task, with statistically significant differences marked with an asterisk (*) (p
 In the first image, the software produced a significantly lower result compared
 to manual counting, which is an expected outcome. In contrast, for the other two
 images, the software results fall within the standard deviation of the manual
-analysis, with no statistically significant difference (see Figure
+analysis, with no statistically significant difference (Figure
 \@ref(fig:irr6)). The ICC calculated for the first task was 0.998, indicating
 excellent reliability between the results obtained by the software and those
 obtained through manual analysis.
@@ -553,7 +553,7 @@ with lower image dimensions, and the third, with a low number of doublets and
 multiplets, are comparatively straightforward to analyze. In contrast, the
 second image depicts a larger number of these structures, resulting in greater
 variability in the results obtained by manual analysis, with a standard
-deviation of nearly 30 (see Figure \@ref(fig:irr0) and Table \@ref(tab:irr5)). In
+deviation of nearly 30 (Figure \@ref(fig:irr0) and Table \@ref(tab:irr5)). In
 order to create a comparable software result for this task, the `imgPipe()`
 function with an enabled `sizeFilter()` was employed. The algorithm estimates
 the number of rejected microbeads within these structures by dividing the number
@@ -584,8 +584,11 @@ print(icc_result2)
 p_values <- sapply(1:nrow(df_comparison2), function(i) {
   t.test(
     rep(df_comparison2$software[i], 5),
-    c(n1$Clicks[i * 2], n2$Clicks[i * 2], n3$Clicks[i * 2], n4$Clicks[i *
-                                                                        2], n5$Clicks[i * 2]),
+    c(n1$Clicks[i * 2], 
+      n2$Clicks[i * 2], 
+      n3$Clicks[i * 2], 
+      n4$Clicks[i * 2], 
+      n5$Clicks[i * 2]),
     paired = TRUE
   )$p.value
 })
@@ -708,17 +711,17 @@ individual needs of patients [@Roediger2018; @Ruhe2019;
 
 In the following example, the `biopixR` package was employed to highlight
 extracted $\gamma$H2AX foci. To quantify the green fluorescent $\gamma$H2AX
-foci, the green color channel was initially extracted in order to enable the
+foci, the green color channel was initially extracted to enable the
 distinct identification of each individual foci using the `objectDetection()`
 function. The extracted foci were then visualized using the `changePixelColor()`
-function, with a unique color assigned to each distinct foci (see Figure
+function, with a unique color assigned to each distinct foci (Figure
 \@ref(fig:DSB1)B). Subsequently, the number of foci per cell was determined in
 order to assess the state of the culture or tissue. This entailed the
 segmentation of cells through the application of the `objectDetection()`
 function to the blue color channel, which represents the DAPI-stained nuclei. By
 comparing the coordinates, the number of foci per cell was extracted. As
 illustrated in Figure \@ref(fig:DSB3), the majority of cells exhibit no DNA
-damage, with 27% displaying a single foci and a small proportion demonstrating
+damage, with 27 % displaying a single foci and a small proportion demonstrating
 higher levels of damage with multiple foci. 
 
 ```{r DSB0, eval=FALSE}
@@ -800,7 +803,6 @@ event_counts <- table(to_analyze)
 # Create a barplot of the frequency distribution of yH2AX foci per cell
 barplot(
   event_counts,
-  main = "Distribution of the number of yH2AX foci per cell",
   xlab = "foci per cell",
   ylab = "frequency",
   cex.axis = 1.2,
@@ -809,10 +811,10 @@ barplot(
 )
 ```
 
-(ref:DSB3) **Quantification of $\gamma$H2AX foci per cell**
+(ref:DSB3) **Quantification of γH2AX Foci per Cell**: The bar plot displays the results of quantitative foci extraction from cellular images using the `biopixR` package. It shows the distribution of $\gamma$H2AX foci per cell, revealing that most cells exhibit few or no DNA double-strand breaks, indicated by the absence of $\gamma$H2AX foci. The frequency of events (number of foci per cell) is plotted to illustrate this distribution.
 
-```{r DSB3, fig.cap="(ref:DSB3)", echo=FALSE, out.width="60%"}
-include_graphics("figures/fig1.1_DSB.png")
+```{r DSB3, fig.cap="(ref:DSB3)", echo=FALSE, out.width="70%"}
+include_graphics("figures/fig1.2_DSB.png")
 ```
 
 In conclusion, this illustrative example of DNA damage assessment illustrates

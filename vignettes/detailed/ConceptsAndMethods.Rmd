@@ -35,11 +35,11 @@ RStudio 2023.09.0+463 "Desert Sunflower" Release 2023-09-25.
 
 `biopixR` is an open-source software package (licensed under the GNU Lesser
 General Public License (LGPL)
-$\ge$ 3)^[https://www.gnu.org/licenses/lgpl-3.0.de.html] for the statistical
+$\ge$ 3)^[https://www.gnu.org/licenses/lgpl-3.0.de.html, accessed 07/11/2024] for the statistical
 programming language `R`, which is widely used in statistics, bioinformatics,
-and data science. The core contributors are listed in the `DESCRIPTION` file of the
-`biopixR` package. `R`'s active community has developed numerous packages for a
-multitude of applications, which facilitate the development of customized
+and data science. The core contributors of the `biopixR` package are listed in
+the `DESCRIPTION` file. `R`'s active community has developed numerous packages
+for a multitude of applications, which facilitate the development of customized
 workflows, including data import, preprocessing, analysis, post-processing, and
 visualization, within a reproducible environment [@Roediger2015; @Giorgi2022].
 The growing significance of image acquisition, processing, segmentation, feature

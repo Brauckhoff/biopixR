@@ -17,9 +17,10 @@ include_graphics("figures/fig4_dependency.png")
 ```
 
 The `biopixR` package includes a series of microbead images to demonstrate its
-capabilities in the analysis and processing of biological images (see Figure
-\@ref(fig:examples2)). For more details about microbead assays and their 
-application in biomedical research, please see this reference [@Roediger2014; @].
+capabilities in the analysis and processing of biological images (Figure
+\@ref(fig:examples2)). For further information regarding microbead assays and
+their utilisation in biomedical research, please refer to the following
+reference [@Roediger2014].
 
 The sample images illustrate the package's functionalities,
 allowing users to explore and experiment with image analysis and manipulation
@@ -125,9 +126,9 @@ include_graphics("figures/fig22_import.png")
 
 ## `edgeDetection()` - A modified Canny Edge Detector {#edge}
 
-﻿Edge detection (e.g., contours, lines) is crucialt in various applications 
+Edge detection (e.g., contours, lines) is crucial in various applications 
 such as computer vision and object recognition, particularly in 
-biomedical imaging analysis. It aids in identifying regions with significant 
+medical image analysis. It aids in identifying regions with significant 
 changes or transitions within an image, thereby extracting valuable information 
 by highlighting key elements like shapes, patterns, or specific areas of interest.
 Various edge detection algorithms are available in `R`,
@@ -136,7 +137,7 @@ implemented across multiple packages, including those by @Barthelme2015
 (`imager`); @Ooms2016 (`magick`); @Mouselimis2016 (`OpenImageR`); and @Beare2018
 (`SimpleITK`). Other noteworthy edge detection algorithms in the `R` package
 `OpenImageR` includes those by @Prewitt1970, @Sobel2014, @Roberts1980, and
-@Scharr2000. After evaluating the different results (e.g., see Figure
+@Scharr2000. After evaluating the different results (e.g., Figure
 \@ref(fig:edge1)), the Canny edge detection algorithm from the `imager` package
 was selected for edge detection. The resulting binary image serves as a
 foundation for subsequent feature extraction. Furthermore, the `cannyEdges()`
@@ -156,7 +157,7 @@ through *k-means* clustering. The calculated threshold can be adjusted using the
 `alpha` parameter. These thresholds are employed to classify edges as either
 weak or strong. Finally, hysteresis is employed to combine these edges, with
 weak edges being discarded if they are not in proximity to strong edges
-[@Barthelme2015; @Barthelme2019].^[http://dahtah.github.io/imager/canny.html]
+[@Barthelme2015; @Barthelme2019].^[http://dahtah.github.io/imager/canny.html, accessed 06/26/2024]
 
 ```{r edge0, eval=FALSE}
 # Set up a 1x2 plotting area
@@ -188,12 +189,12 @@ include_graphics("figures/fig5.4_edgeDetection.png")
 ```
 
 In the context of microbead images, the contours that were identified frequently
-exhibited gaps, rendering them inaccessible for subsequent labeling (see Figure
+exhibited gaps, rendering them inaccessible for subsequent labeling (Figure
 \@ref(fig:edge3)A). The figure depicts filled circles representing successfully
 labeled microbeads, while the contours indicate unsuccessful labeling.
 Consequently, segmentation with fragmented contours is incomplete, rendering the
 objects inaccessible for further analysis. To address this issue, the `magick`
-package was employed to identify line ends (see Figure \@ref(fig:edge3)B). Line
+package was employed to identify line ends (Figure \@ref(fig:edge3)B). Line
 ends can then be reconnected to a neighboring line, provided that the line end
 does not share the same label. This process of reconnection is constrained by a
 specific radius to prevent line ends from connecting across the entire image.
@@ -311,7 +312,7 @@ As illustrated in Figure \@ref(fig:edge5)A, the modified Canny edge detector,
 enabling the detection of previously unlabeled microbeads, as shown in Figure
 \@ref(fig:edge3)A. For further visualization, the `objectDetection()` function
 was employed. This function employs the `edgeDetection()` function and provides
-visual feedback as an output (see Figure \@ref(fig:edge5)B).
+visual feedback as an output (Figure \@ref(fig:edge5)B).
 
 ```{r edge4, eval = FALSE}
 # Set up a 1x2 plotting area
@@ -444,7 +445,7 @@ arrows(50, 170, 49, 171, col = "red", lwd = 2)
 automation must strike a balance between detecting only objects with perfect
 shapes (losing information about the phenomena discussed above) and detecting
 noise or unwanted areas around the objects, which can lead to the merging of
-nearby objects as seen in thresholding (see Figure \@ref(fig:object7)). In
+nearby objects as seen in thresholding (Figure \@ref(fig:object7)). In
 grid search, combining both quality (shape features) and quantity (number of
 objects detected) measures into a single value while maintaining this balance is
 a significant challenge. These measures are controlled by the input parameters
@@ -471,7 +472,7 @@ circular shape characteristics and avoiding the merging of nearby objects
 The `GPareto` package aims to identify the set of optimal compromises, known as
 the Pareto set, consisting of non-dominated points (points where no other point
 has better objectives). The visualization of the Pareto set in the objective
-space is called the Pareto front [@Binois2019] (see Figure \@ref(fig:object4)).
+space is called the Pareto front [@Binois2019] (Figure \@ref(fig:object4)).
 
 The default criterion selected is SMS-(EGO) - S-metric Selection Efficient
 Global Optimization, an extension of the EGO algorithm tailored for
@@ -542,7 +543,7 @@ correction is achieved through the use of the `SPE()` function from the
 @Morel2014. This approach addresses image artifacts such as inhomogeneous
 illumination and low contrast while preserving image details [@Morel2014].
 Consequently, the method allows for the detection of low-contrast objects
-against inconsistent backgrounds, such as transparent microbeads (see Figure
+against inconsistent backgrounds, such as transparent microbeads (Figure
 \@ref(fig:object7)). The thresholding method does not require any additional
 input, is highly robust and also performs well on fluorescent microbead images.
 However, this approach has one disadvantage: the threshold is less strict than
@@ -589,7 +590,7 @@ include_graphics("figures/fig7.1_transparent_beads.png")
 To facilitate parameter selection, an interactive object detection function was
 developed using the `R` package `tcltk`, which provides access to Tcl/Tk in `R`.
 The Graphical User Interface (GUI) is invoked via the
-`interactive_objectDetection()` function (see Figure \@ref(fig:object9)). The
+`interactive_objectDetection()` function (Figure \@ref(fig:object9)). The
 `alpha` and `sigma` parameters of the `edgeDetection()` function, discussed in
 Chapter \@ref(edge), represent the threshold adjustment factor and the smoothing
 factor, respectively. The corresponding sliders in the Tcl/Tk interface enable
@@ -624,15 +625,15 @@ function provides a variety of methods for extracting objects within an image,
 thereby ensuring its adaptability for a broad range of applications.
 
 
-## Dealing with induced Fluorescence and Aggregation with `sizeFilter()` and `proximityFilter()`
+## Dealing with Fluorescence Reflection and Aggregation with `sizeFilter()` and `proximityFilter()`
 
 In microbead-based assays, two phenomena must be avoided to prevent the
 generation of low-quality or incorrect results. These issues are exemplified in
-one of the images provided by the package (see Figure \@ref(fig:filter0)). The
-first issue arises when microbeads are in proximity to one another, which
-has the potential to induce fluorescence in adjacent microbeads and result in the
-generation of false positive signals. To address this issue, we developed the
-`proximityFilter()` function.
+one of the images provided by the package (Figure \@ref(fig:filter0)). The first
+issue arises when microbeads are in proximity to one another. As
+laterally-emitted light [@Goeroecs2015] has the potential to cause reflection
+from adjacent microbeads, potentially generating false positive signals. To
+address this issue, we developed the `proximityFilter()` function.
 
 (ref:filter0) **Unwanted Microbead Phenomena**: The image is part of the `biopixR` package and illustrates the various occurrences within a microbead sample. It is evident that some microbeads are situated in proximity to one another, as indicated by the green arrow. Moreover, the microbeads have the potential to aggregate, forming clusters such as doublets (highlighted by the red arrow) and multiplets (marked by the cyan arrow).
 
@@ -666,7 +667,7 @@ arrows(
 ```
 
 The `proximityFilter()` function is used to filter objects based on a specified
-radius (see Figure \@ref(fig:filter1)). For each object, a square region is
+radius (Figure \@ref(fig:filter1)). For each object, a square region is
 defined around its center, representing an area in which no other object is
 permitted. In the event that another object is detected within this region, both
 objects are discarded. The user has the option to specify the radius in pixels,
@@ -711,7 +712,7 @@ plot(visual, axes = FALSE)
 The second phenomenon is the aggregation of microbeads, which results in the
 formation of doublets and multiplets. These aggregated microbeads must be
 discarded to achieve consistent and reproducible results consisting of single
-microbeads. To address this issue, the `sizeFilter()` function was developed (see
+microbeads. To address this issue, the `sizeFilter()` function was developed (
 Figure \@ref(fig:filter2)). This function filters objects based on their individual
 size, using specified lower and upper limits. These limits can be set manually,
 interactively, or automatically. In the interactive approach, the size
@@ -724,7 +725,7 @@ described in several publications, the IQR rule is more suitable and reliable
 for outlier estimation when dealing with large data sets. Consequently, the
 conventional statistical threshold of n = 50 was selected [@Miller1991;
 @Iglewicz1993; @pittir7948]. This implies that at least 25 objects must be
-included in the IQR in order to produce a representative range.
+included in the IQR to produce a representative range.
 
 (ref:filter2) **Size Filtering Process**: The same input utilized for the previously demonstrated proximity filtering, obtained via the `objectDetection()` function, is employed in this instance. Due to an insufficient number of objects for automated calculation, the size limits are provided manually based on the size distribution shown on the left (in pixel - px). The provided limit is visualized through a red horizontal line. On the right, the `changePixelColor()` visualization tool is employed to highlight the objects that meet the size criteria in different colors.
 
@@ -779,8 +780,8 @@ the image as input and calculates these properties.
 The results are presented in
 the form of a list comprising two tables: one representing the average of all
 features, providing a comprehensive summary of the entire image in a single row
-(see Table \@ref(tab:result3)), and the second providing detailed information
-about each detected object (see Table \@ref(tab:result6)), which is useful but
+(Table \@ref(tab:result3)), and the second providing detailed information
+about each detected object (Table \@ref(tab:result6)), which is useful but
 can be overwhelming when there are hundreds of objects in the image. Users can
 also provide the unfiltered coordinates if filtering was used; in this case, the
 function estimates the number of rejected objects based on the average size of
@@ -899,7 +900,7 @@ C). It can be observed in Figure \@ref(fig:imgPipe2)A that overlapping microbead
 are present. To exclude these from the subsequent analysis, the
 `proximityFilter()` is enabled within the `imgPipe()` function. The output is in
 similar format as presented in Chapter \@ref(result), with the addition of a data
-frame comparing the differently encoded microbeads (see Table \@ref(tab:imgPipe6)
+frame comparing the differently encoded microbeads (Table \@ref(tab:imgPipe6)
 and \@ref(tab:imgPipe8)).
 
 ```{r imgPipe0}
@@ -1113,7 +1114,7 @@ image, which depicts both populations of microbeads, is presented. Each detected
 microbead is indicated by a colored circle: microbeads with green emission are
 highlighted with a blue circle, and those with red emission are marked with an
 orange circle. Overlapping microbeads are not marked, as they are excluded from
-the analysis (see Figure \@ref(fig:imgPipe9)).
+the analysis (Figure \@ref(fig:imgPipe9)).
 
 (ref:imgPipe9) **Result of the Analysis of dual colored Microbeads**: The original image showing both microbead populations is presented. Detected microbeads with green emission are circled in blue, and those with red emission are circled in orange. Overlapping microbeads are not circled, due to their proximity and the resulting exclusion from the analysis.
 
@@ -1148,7 +1149,7 @@ process. These include double file checks via Message Digest 5 (MD5) sum
 comparison, multi-core processing capabilities, and the option to generate a log
 file that documents the analysis process and results.
 
-\phantom{x}\hspace{0.5cm} *MD5 sum* - To elevate the quality of the
+\phantom{x}\hspace{0.5cm} *MD5 sum* - To increase the quality of the
 analysis, the function incorporates a verification process to check that the
 data is unique within the analysis directory. This is accomplished through the
 utilization of the MD5 algorithm, originally developed by @Rivest1992. The MD5
@@ -1165,12 +1166,9 @@ length (128-bit, 32 character, hexadecimal string) and the nature of hashing
 algorithms, it is possible for two different files to have the same MD5 value. 
 This is called MD5 collision. In theory, this can be problematic in scenarios 
 where hash values are used as a security measure or for data integrity checks 
-since it may lead to false positives or negatives. However, we use it in 
-combination with the file name, which leverages the problem. In theory, this 
-could pose issues in scenarios where hash values are employed for security 
-purposes or data integrity checks since it may result in false positives or 
-negatives. However, we can additionally employ the file name and meta data (e.g., 
-file creation date) alongside these hash values to counteract this issue.
+since it may lead to false positives or negatives. However, we can additionally
+employ the file name and meta data (e.g., file creation date) alongside these
+hash values to counteract this issue.
 
 \phantom{x}\hspace{0.5cm} *Parallel Processing* - In `R`, each image and its
 respective analysis script is sequentially processed on a single core of the
@@ -1183,7 +1181,7 @@ distributed across multiple cores, within `R`. This is particularly advantageous
 for complex data analysis tasks and data-intensive applications, where parallel
 programming can significantly reduce computation time [@Weston2009;
 @Schmidberger2009; @Corporation2011;
-@Peng2022].^[https://nceas.github.io/oss-lessons/parallel-computing-in-r/parallel-computing-in-r.html]
+@Peng2022].^[https://nceas.github.io/oss-lessons/parallel-computing-in-r/parallel-computing-in-r.html, accessed 06/27/2024]
 
 The `foreach` package provides a straightforward and efficient approach to
 implementing parallel processing. Consequently, this package was employed to
@@ -1196,7 +1194,7 @@ be utilized; alternatively, 75% of all cores are used for computation.
 
 The following section illustrates the functionality of the `scanDir()` function
 through an analysis of a directory containing the example images provided by the
-`biopixR` package (see Figure \@ref(fig:examples2)). The 'threshold' method is
+`biopixR` package (Figure \@ref(fig:examples2)). The 'threshold' method is
 employed without enabling any additional filtering processes. The resulting
 Table \@ref(tab:scan3) will be saved in the working directory path in
 comma-separated value (CSV) format, if the `Rlog` parameter is set to `TRUE`.
@@ -1226,7 +1224,7 @@ tab_scan <- kable(
   res_scanDir[, 3:9],
   format = "markdown",
   booktabs = TRUE,
-  caption = "Results obtained by the whole directory analysis",
+  caption = "Results obtained by the whole directory analysis.",
   col.names = c(
     "number of objects",
     "mean (size)",
@@ -1269,16 +1267,16 @@ comparability. Moreover, the detailed results (similar to Table \@ref(tab:result
 each individual image within a directory are accessible via the `R` Data
 Serialization (RDS) files, saved as part of the logging process.
 
-The following page (Figure \@ref(fig:scan4)) present the log file generated from the `RMarkdown` file
-representing the results for this analysis. The
-directory of the analysis is first noted in the caption, followed by a series of
-logging steps that indicate the current status of the image being analyzed.
-Furthermore, the log file will indicate any instances of analysis failure resulting
-from errors in image processing. Subsequently, all images within the specified
+The following page (Figure \@ref(fig:scan4)) presents the log file generated from
+the `RMarkdown` file representing the results for this analysis. The directory
+of the analysis is first noted in the caption, followed by a series of logging
+steps that indicate the current status of the image being analyzed. Furthermore,
+the log file will indicate any instances of analysis failure resulting from
+errors in image processing. Subsequently, all images within the specified
 directory are plotted with the file name serving as the title. The detection of
 objects is indicated by green circles around their centers, providing an
-overview for verification of the analysis's compliance with
-expectations and the option of reanalyzing specific files if necessary.
+overview for verification of the analysis's compliance with expectations and the
+option of reanalyzing specific files if necessary.
 
 (ref:scan4) **Log file created by the `scanDir()` function.** (first page)
 
@@ -1289,17 +1287,17 @@ include_graphics("figures/fig21_log_file.png")
 
 ## Functions for Droplet Analysis
 
-In attempts involving microbead emulsions, the focus lies on situations where 
-microbeads exist within a watery reaction environment that is surrounded by 
-hydrophobic matrix, particularly fluorinated oils. This results in the formation 
-of small (sherical or non-spherical) microbead-water compartments with nanoliter 
-to microliter volumes, which are often called partitions (Figures 
-\@ref(fig:fill1)A). The objective of this approach is to separate individual 
-microbeads from their surrounding reaction environments to avoid 
-cross-reactions. Applications include the clonal amplification, single molecule 
-detection and absolute quantification. Depending on the emulsification method 
-employed, partitions of homogeneous size or heterogeneous (dispersed) size may 
-be generated. [@Roediger2014]. 
+In attempts involving microbead emulsions, the focus lies on situations where
+microbeads exist within a watery reaction environment that is surrounded by a
+hydrophobic matrix, particularly fluorinated oils. This results in the formation
+of small (sherical or non-spherical) microbead-water compartments with nanoliter
+to microliter volumes, which are often called partitions (Figures
+\@ref(fig:fill1)A). The objective of this approach is to separate individual
+microbeads from their surrounding reaction environments to avoid
+cross-reactions. Applications include the clonal amplification, single molecule
+detection and absolute quantification. Depending on the emulsification method
+employed, partitions of homogeneous size or heterogeneous (dispersed) size may
+be generated. [@Roediger2014].
 
 Here, a common and challenging problem encountered in image analysis is the presence
 of discontinuous contours. This phenomenon presents a significant challenge to
@@ -1327,7 +1325,7 @@ present within one droplet.
 The images utilized in this section comprise a brightfield view and a
 fluorescent channel image. The brightfield view displays droplets with
 fragmented edges, some of which contain microbeads. In contrast, the fluorescent
-channel image exclusively reveals the microbeads (see Figures \@ref(fig:fill1)A
+channel image exclusively reveals the microbeads (Figures \@ref(fig:fill1)A
 and B).
 
 ```{r fill0, eval=FALSE}
@@ -1368,7 +1366,7 @@ closest contour using the `adaptiveInterpolation()` function. Following the
 reconnection phase, the contours undergo a thinning process, which is carried
 out by the `image_morphology()` function. These steps are repeated until the
 predefined number of iterations has been reached. The function includes an
-internal visualization that highlights the added pixels in purple (see Figure
+internal visualization that highlights the added pixels in purple (Figure
 \@ref(fig:fill2)). The method creates discrete partitions by closing the gaps in
 their contours, thus facilitating the correct labeling of the droplet
 partitions.
@@ -1550,7 +1548,7 @@ such as microbeads. The functionality of this classification is illustrated in
 Figure \@ref(fig:shape2)A, where non-circular objects (doublets and multiplets)
 are classified as a distinct group in comparison to single microbeads. The
 individual shape features of each microbead in the image are displayed as
-boxplots (see Figure \@ref(fig:shape2)B). The characteristics of the microbeads
+boxplots (Figure \@ref(fig:shape2)B). The characteristics of the microbeads
 marked with a red point in Figure \@ref(fig:shape2)A are also highlighted with a
 red point within the boxplot. The distinction between doublets and multiplets is
 readily apparent. Doublets and multiplets are characterized by their larger
@@ -1651,7 +1649,7 @@ include_graphics("figures/fig23.5_shape.png")
 
 To validate the AR calculations performed using the `biopixR` package, a
 reference figure containing circles with known ground truth ARs was employed for
-comparison (see Figure \@ref(fig:shape3)). The AR represents the ratio of an
+comparison (Figure \@ref(fig:shape3)). The AR represents the ratio of an
 object's dimensions and can be described as follows [@Takashimizu2016]:
 
 \begin{equation}
@@ -1667,7 +1665,7 @@ object is symmetrical. The major and minor axes are then obtained by multiplying
 the respective radii by a factor of two. The validity of this simplification for
 symmetrical objects is illustrated in the following comparison.
 
-(ref:shape3) **Circles with different Aspect Ratios** (ARs): This is a modified image, originally derived from the publication of @Takashimizu2016. The enumeration of objects is read from left to right, beginning with the object in the top left (see Table \@ref(tab:shape8)).
+(ref:shape3) **Circles with different Aspect Ratios** (ARs): This is a modified image, originally derived from the publication of @Takashimizu2016. The enumeration of objects is read from left to right, beginning with the object in the top left (Table \@ref(tab:shape8)).
 
 ```{r shape3, echo=FALSE, fig.cap="(ref:shape3)"}
 include_graphics("figures/fig2_circularity.png")
@@ -1682,7 +1680,7 @@ reaches 0.8 for the final circle. The radius represents the mean of the largest
 and smallest distances from a perimeter pixel to the microbeads' center. As the
 circle becomes more oval, the standard deviation increases, which can be
 explained by the aforementioned calculation. The AR is compared with the ground
-truth data (see Figure \@ref(fig:shape9)). Notably, the calculations for the
+truth data (Figure \@ref(fig:shape9)). Notably, the calculations for the
 individual circles are accurate, with the exception of objects 5 and 6, where
 the AR deviates by 0.3 and 0.5, respectively.
 
@@ -1725,7 +1723,7 @@ tab_AR <- kable(
     "aspect ratio"
   ),
   align = "cccccc",
-  caption = "Comparison of aspect ratios",
+  caption = "Comparison of aspect ratios.",
   escape = FALSE
 )
 ```
@@ -1782,7 +1780,7 @@ tool for pattern recognition based on these features.
 
 One aspect of interest in bioimage informatics is texture-related information. 
 In bioimage informatics, texture refers to the spatial arrangement or pattern of 
-structures within an image that can provide important information like intensity 
+structures within an image. It can provide important information like intensity 
 variations, frequency content, and spatial relationships between pixels or 
 regions in an image. Texture is crucial for various applications such as 
 classification, segmentation, and diagnosis (e.g., to distinguish different 
@@ -1799,7 +1797,7 @@ algorithm, namely PAM.
 
 The `haralickCluster()` function accepts a directory path as input, ensuring
 file uniqueness through the use of MD5 sums, as detailed in Chapter \@ref(scan).
-In order to calculate the Haralick features, the image is first transformed into
+To calculate the Haralick features, the image is first transformed into
 a Gray Level Co-occurrence Matrix (GLCM). Therefore an empty square matrix is
 generated with dimensions corresponding to the total number of gray levels in
 the image. This matrix records the frequency of specific pixel intensities being
@@ -1810,8 +1808,8 @@ directions: horizontal, vertical, left diagonal, and right diagonal
 features - contrast, angular second moment, correlation, variance, sum average,
 and entropy - are calculated. Some calculations were derived from the `radiomics`
 package, which also focuses on texture analysis but is currently not
-maintained.^[https://CRAN.R-project.org/package=radiomics] Subsequently, the
-extracted features are clustered using the PAM algorithm.
+maintained.^[https://CRAN.R-project.org/package=radiomics, accessed 06/30/2024] 
+Subsequently, the extracted features are clustered using the PAM algorithm.
 
 The PAM algorithm consists of two parts: BUILD, which selects a specified number
 of objects as initial medoids, and SWAP, which improves the clustering process
@@ -1821,7 +1819,7 @@ starts this process by using a dissimilarity matrix as input which is then
 organized into defined clusters, with the medoids serving as robust
 representatives of cluster centers. The number of medoids is typically set with
 a predetermined number of groups (*k*) [@Maechler1999; @Reynolds2006;
-@Schubert2019]. In order to utilize the PAM algorithm and to determine the
+@Schubert2019]. To utilize the PAM algorithm and to determine the
 number of *k* the `cluster` package was used [@Maechler1999]. The silhouette
 method, proposed by @Rousseeuw1987, provides a relative quality measure of the
 clustering, thereby providing a useful tool for approximating the optimal number
@@ -1831,7 +1829,7 @@ with PAM clustering, enabling the classification of images in a directory based
 on these characteristics.
 
 The following example illustrates the application of the `haralickCluster()`
-function to four images of microbeads, provided by the `biopixR` package (see
+function to four images of microbeads, provided by the `biopixR` package (
 Figure \@ref(fig:examples2)). The resulting output is presented in Table
 \@ref(tab:haralickCluster1). The results of the Haralick texture feature
 calculations for the different images, which served as input for the PAM
@@ -1862,7 +1860,7 @@ kable(
     "cluster"
   ),
   align = "llc",
-  caption = "Result of Grouping according to Texture Features",
+  caption = "Result of grouping according to texture features.",
   escape = FALSE
 )
 ```
@@ -1920,5 +1918,5 @@ transformation of specific pixels within the matrix into foreground pixels with
 a value of 1.
 
 The function `changePixelColor()` is a visualization tool that enables users to
-modify the color of a specified set of pixels within an image. In order to
+modify the color of a specified set of pixels within an image. To
 perform this operation, the coordinates of the targeted pixels must be provided.

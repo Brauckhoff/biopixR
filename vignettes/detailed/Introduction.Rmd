@@ -52,21 +52,23 @@ manual analysis in a fast, reliable, and reproducible manner. The use of
 automated software ensures the consistency, reproducibility, and objectivity of
 the results obtained.
 
-As described in a previous study, there are numerous software to analyze image data 
-[@Schneider2019]. In addition to Python, the statistical programming language `R` 
-[@R_Core_Team] has istablisch as one of the central softwares for data science and 
-bioinformatics [@Roediger2015]. As described in later sections, numerous packages, developed for 
-specific statistical analysis tasks, are available for `R` to address various tasks in 
-bioimage informatics, including image import, segmentation, and annotation. While some of
-these techniques will be discussed in the following sections, it is important to
-note that the existing packages do not cover all aspects. The subsequent
-sections will elucidate how the `biopixR` package contributes to the open-source
-image processing community by offering tools for feature extraction and
-automation. One significant application of the `biopixR` package is the analysis
-of round, spherical objects in images, such as microbeads, cells, seeds, or
-microplastics, which exhibit similar characteristics in their visual
-representations. Consequently, this vignette will predominantly feature examples
-from this domain.FF
+As described in a previous study, a multitude of software applications exist for
+the analysis of image data. [@Schneider2019]. In addition to Python, the
+statistical programming language `R` [@R_Core_Team] has become a central
+tool for data science and bioinformatics [@Roediger2015]. As described in
+subsequent sections, a multitude of `R` packages have been developed with the
+specific purpose of performing image processing tasks. These packages address a
+range of requirements pertinent to bioimage informatics, including the
+importation, segmentation, and annotation of images. While some of these
+techniques will be discussed in the following sections, it is important to note
+that the existing packages do not cover all aspects. The subsequent sections
+will elucidate how the `biopixR` package contributes to the open-source image
+processing community by offering tools for feature extraction and automation.
+One significant application of the `biopixR` package is the analysis of round,
+spherical objects in images, such as microbeads, cells, seeds, or microplastics,
+which exhibit similar characteristics in their visual representations.
+Consequently, this vignette will predominantly feature examples from this
+domain.
 
 
 # History, Philosophy, and Aims of the `biopixR` Package
