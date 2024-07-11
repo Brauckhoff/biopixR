@@ -127,10 +127,10 @@ include_graphics("figures/fig22_import.png")
 
 ﻿Edge detection (e.g., contours, lines) is crucialt in various applications 
 such as computer vision and object recognition, particularly in 
-medical imaging analysis. It aids in identifying regions with significant 
+biomedical imaging analysis. It aids in identifying regions with significant 
 changes or transitions within an image, thereby extracting valuable information 
 by highlighting key elements like shapes, patterns, or specific areas of interest.
-Various edge detection algorithms are available in the `R` programming language,
+Various edge detection algorithms are available in `R`,
 with the Canny edge detector, developed by @Canny1986, being the most widely
 implemented across multiple packages, including those by @Barthelme2015
 (`imager`); @Ooms2016 (`magick`); @Mouselimis2016 (`OpenImageR`); and @Beare2018
