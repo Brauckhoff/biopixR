@@ -811,7 +811,7 @@ barplot(
 )
 ```
 
-(ref:DSB3) **Quantification of γH2AX Foci per Cell**: The bar plot displays the results of quantitative foci extraction from cellular images using the `biopixR` package. It shows the distribution of $\gamma$H2AX foci per cell, revealing that most cells exhibit few or no DNA double-strand breaks, indicated by the absence of $\gamma$H2AX foci. The frequency of events (number of foci per cell) is plotted to illustrate this distribution.
+(ref:DSB3) **Quantification of $\gamma$H2AX Foci per Cell**: The bar plot displays the results of quantitative foci extraction from cellular images using the `biopixR` package. It shows the distribution of $\gamma$H2AX foci per cell, revealing that most cells exhibit few or no DNA double-strand breaks, indicated by the absence of $\gamma$H2AX foci. The frequency of events (number of foci per cell) is plotted to illustrate this distribution.
 
 ```{r DSB3, fig.cap="(ref:DSB3)", echo=FALSE, out.width="70%"}
 include_graphics("figures/fig1.2_DSB.png")
