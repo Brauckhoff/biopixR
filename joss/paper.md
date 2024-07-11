@@ -41,12 +41,12 @@ including image import, segmentation, feature extraction, quantification,
 clustering, parameter optimization, and a distinctive algorithm for line gap
 mitigation. Among these is an optimized edge detection algorithm based on the
 Canny edge detection algorithm. Together with a noise-resilient threshold
-method, these two algorithm form the foundation of feature extraction within the
+method, these two algorithms form the foundation of feature extraction within the
 `biopixR` package. Both edge detection and thresholding can be parameterized via
 an interactive Tcl/Tk user interface. For circular objects, the threshold
 adjustment factor and the smoothing factor for edge detection can be
 automatically calculated using Gaussian process regression models (Kriging
-models). Thereby making an automated features extraction, which includes
+models). Thereby making an automated feature extraction, which includes
 segmentation and labeling, available in `R`. Furthermore, all available methods
 for feature extraction and filtering can be accessed within a single pipeline
 function, not found in other packages. The package also includes a function for
@@ -56,14 +56,14 @@ Self-Organizing Maps (SOM).
 Designed for medium-throughput analysis, the package is able to analyze whole
 directories, utilize multiple cores for parallel processing, and generate
 detailed log files to track the analytical process. Furthermore, the `biopixR`
-package offers distinctive datasets of microbead images and microbeads in
+package offers distinctive data sets of microbead images and microbeads in
 water-oil emulsions. The fundamental functionality of `biopixR` was recently
 employed in the study by @geithe_multiplex_2024 to perform quality control on
 microbeads. As the `biopixR` package provides access to a range of fundamental
 data, including object size, quantity, shape, and intensity, it is a valuable
 tool for researchers in the field. The `biopixR` package leverages capabilities 
-from the `imager` [@imager] and `magick` [@magick] packagesto perform its own 
-tasks related to biological image processing or analysis.
+from the `imager` [@imager] and `magick` [@magick] packages to perform its own 
+tasks related to biological image processing and analysis.
 
 # Statement of need
 
@@ -147,7 +147,7 @@ install.packages("biopixR")
 This command will download and install the latest stable release of the package,
 ensuring compatibility and reliability.
 
-For users interested in the latest features and ongoing development, the
+For users interested in the latest features and ongoing developments, the
 developmental version of `biopixR` is available on GitHub. To install this
 version, it is first necessary to install the `devtools` package if it is not
 already present in your R environment:
@@ -189,7 +189,7 @@ with other functions is illustrated in \autoref{fig:Dependency}. This function
 serves as a comprehensive pipeline for image analysis, offering a variety of
 selectable functions:
 
-* `importImage()`, joins import functions of the `imager` [@imager] and `magick` [@magick] packages.
+* `importImage()`, joins import functions of the `imager` [@imager] and `magick` [@magick] packages,
 * `edgeDetection()`, a combination of a Canny edge detector and gap filling [@imager],
 * `objectDetection()`, detects objects in an image by edge detection or thresholding,
 * `sizeFilter()`, eliminates objects that exceed or fall below a certain size threshold,
@@ -200,7 +200,7 @@ The `biopixR` package includes functions for analyzing entire directories,
 allowing for medium-throughput analysis. Making feature extraction and image
 clustering easily accessible:
 
-* `haralickCluster()`, extracts Haralick features and clusters information using PAM (Partitioning Around Medoids) [@Haralick_1973; @radiomics; @cluster],
+* `haralickCluster()`, extracts Haralick features and clusters information using Partitioning Around Medoids (PAM) [@Haralick_1973; @radiomics; @cluster],
 * `scanDir()`, utilizing the pipeline for whole directory analysis.
 
 The `fillLineGaps()` algorithm, along with helper functions:
@@ -247,7 +247,7 @@ and maintainability over time, making it an attractive choice for researchers
 seeking reproducible software. A comparative analysis between human and
 software-based object quantification from images underscores the importance of
 the `biopixR` package in terms of accuracy and reproducibility (see extended
-vignette).
+vignette: <https://github.com/Brauckhoff/biopixR/tree/main/vignettes/detailed>).
 
 # Acknowledgments
 
