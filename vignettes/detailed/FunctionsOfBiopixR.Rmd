@@ -1829,9 +1829,9 @@ with PAM clustering, enabling the classification of images in a directory based
 on these characteristics.
 
 The following example illustrates the application of the `haralickCluster()`
-function to four images of microbeads, provided by the `biopixR` package (
-Figure \@ref(fig:examples2)). The resulting output is presented in Table
-\@ref(tab:haralickCluster1). The results of the Haralick texture feature
+function to four images of microbeads, provided by the `biopixR` package (Figure \@ref(fig:examples2)). 
+The resulting output is presented in Table \@ref(tab:haralickCluster1). 
+The results of the Haralick texture feature
 calculations for the different images, which served as input for the PAM
 algorithm, are presented in Figure \@ref(fig:haralickCluster5). The results
 presented in Table \@ref(tab:haralickCluster1) are represented in the plots,

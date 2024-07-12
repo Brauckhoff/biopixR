@@ -141,7 +141,7 @@ tab <- kable(
   format = "markdown",
   booktabs = TRUE,
   align = "cc",
-  caption = "Cyclomatic complexity in the biopixR package. Cyclomatic complexity measures the number of linearly independent paths through the code, with higher scores indicating more complex code and lower scores indicating simpler, more maintainable code. The cyclomatic complexity was calculated using the cyclocomp package. Main functions accessible by the user are highlighted in bold, while other functions include helper functions and global variables that are part of the main functions.",
+  caption = "Cyclomatic complexity in the `biopixR` package. Cyclomatic complexity measures the number of linearly independent paths through the code, with higher scores indicating more complex code and lower scores indicating simpler, more maintainable code. The cyclomatic complexity was calculated using the cyclocomp package. Main functions accessible by the user are highlighted in bold, while other functions include helper functions and global variables that are part of the main functions.",
   escape = FALSE
 ) 
 ```

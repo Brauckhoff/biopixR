@@ -215,7 +215,7 @@ for dealing with discontinuous contours are not found in other `R` packages.
 Examples demonstrating the use of `biopixR` for image analysis tasks can be found
 in the package's vignette [@biopixR].
 
-## Graphical User Interface:
+## Graphical User Interface
 
 The `biopixR` package has broader applicability beyond microbead detection. The `biopixR`
 package is adaptable and can be utilized in any research field where the
