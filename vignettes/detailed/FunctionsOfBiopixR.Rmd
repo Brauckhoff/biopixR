@@ -1521,17 +1521,18 @@ the Partitioning Around Medoids (PAM) algorithm.
 
 The `shapeFeatures()` function employs the `objectDetection()` function to
 extract objects from an image. Subsequently, these objects are analyzed with
-respect to their individual shape characteristics, including features such as
-area, perimeter, radius, eccentricity, circularity, and aspect ratio (AR).
-Subsequently, the extracted features are summarized by incorporating these
-characteristics into the `resultAnalytics()` output.
+respect to their individual shape and intensity characteristics, including
+features such as pixel-intensity, area, perimeter, radius, eccentricity,
+circularity, and aspect ratio (AR). Subsequently, the extracted features are
+summarized by incorporating these characteristics into the `resultAnalytics()`
+output.
 
 The `shapeFeatures()` function is capable of utilizing unsupervised machine
 learning techniques, specifically SOM. When SOMs are enabled, the function can
-classify detected objects based on their shape features, with the final output
-table including a row with classes that indicate the corresponding group for
-each object as determined by the SOM. This entails that the features are
-projected onto a two-dimensional plane, with similar features situated in
+classify detected objects based on their shape and intensity features, with the
+final output table including a row with classes that indicate the corresponding
+group for each object as determined by the SOM. This entails that the features
+are projected onto a two-dimensional plane, with similar features situated in
 proximity and dissimilar features positioned at a greater distance. The features
 are mapped to specific positions, designated as units, with each unit being
 associated with a codebook vector, representing the average of all features
@@ -1541,20 +1542,20 @@ through the `somegrid()` function of the `kohonen` package [@Kohonen1990;
 the `xdim` and `ydim` parameters, providing the dimensions for the codebook
 vector gird. To utilize SOMs in `R`, the `kohonen` package is employed
 [@Wehrens2006]. The `biopixR` package, enables the usage of SOMs to access
-patterns in shape-related characteristics of image objects.
+patterns in shape-related and pixel-intensity characteristics of image objects.
 
 The aforementioned characteristics can be employed to distinguish image objects
 such as microbeads. The functionality of this classification is illustrated in
 Figure \@ref(fig:shape2)A, where non-circular objects (doublets and multiplets)
 are classified as a distinct group in comparison to single microbeads. The
-individual shape features of each microbead in the image are displayed as
-boxplots (Figure \@ref(fig:shape2)B). The characteristics of the microbeads
-marked with a red point in Figure \@ref(fig:shape2)A are also highlighted with a
-red point within the boxplot. The distinction between doublets and multiplets is
-readily apparent. Doublets and multiplets are characterized by their larger
-size, perimeter, and radius, as well as lower circularity and higher
-eccentricity. This reflects their oval appearance, which differentiates them
-from single microbeads.
+individual shape and intensity features of each microbead in the image are
+displayed as boxplots (Figure \@ref(fig:shape2)B). The characteristics of the
+microbeads marked with a red point in Figure \@ref(fig:shape2)A are also
+highlighted with a red point within the boxplot. The distinction between
+doublets and multiplets is readily apparent. Doublets and multiplets are
+characterized by their larger size, perimeter, and radius, as well as lower
+circularity and higher eccentricity. This reflects their oval appearance, which
+differentiates them from single microbeads.
 
 ```{r shape0}
 # Extract shape related features and group them using SOM
