@@ -1,6 +1,7 @@
   <!-- badges: start -->
   [![CRAN Version](https://www.r-pkg.org/badges/version/biopixR)](https://cran.r-project.org/package=biopixR)
   [![R-CMD-check](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yml)
+  [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12744223.svg)](https://doi.org/10.5281/zenodo.12744223)
   <!-- badges: end -->
 
 ![logo2 (another copy)](https://github.com/Brauckhoff/biopixR/assets/121032772/4a057464-1212-47d8-9af3-391f10179c4b)
