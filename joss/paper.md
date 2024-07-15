@@ -213,7 +213,7 @@ within the image and reconnecting them to adjacent contours. Other approaches
 for dealing with discontinuous contours are not found in other `R` packages.
 
 Examples demonstrating the use of `biopixR` for image analysis tasks can be found
-in the package's vignette [@biopixR].
+in the package's vignette [@Brauckhoff2024].
 
 ## Graphical User Interface
 
@@ -246,8 +246,7 @@ tasks. Moreover, the package's minimal dependencies ensure long-term stability
 and maintainability over time, making it an attractive choice for researchers
 seeking reproducible software. A comparative analysis between human and
 software-based object quantification from images underscores the importance of
-the `biopixR` package in terms of accuracy and reproducibility (see extended
-vignette: <https://github.com/Brauckhoff/biopixR/tree/main/vignettes/detailed>).
+the `biopixR` package in terms of accuracy and reproducibility [@Brauckhoff2024].
 
 # Acknowledgments
 

@@ -1190,7 +1190,7 @@ designed with the objective of achieving high parallelizability, thereby
 enabling each image to be analyzed on a separate core. For instance, if six
 cores are available, six images can be analyzed concurrently, thereby markedly
 accelerating the analysis process. The user may specify the number of cores to
-be utilized; alternatively, 75% of all cores are used for computation.
+be utilized; alternatively, 75 % of all cores are used for computation.
 
 The following section illustrates the functionality of the `scanDir()` function
 through an analysis of a directory containing the example images provided by the

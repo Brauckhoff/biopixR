@@ -370,7 +370,7 @@ tab_comp1 <- kable(
   booktabs = TRUE,
   align = "cccc",
   col.names = c("image", "software", "manual", "sd(manual)"),
-  caption = "Comparison in object quantification for task 1. The table summarizes the quantification of all microbeads, including singlets and individual microbeads within doublets or multiplets. The analysis was conducted on the three example images presented at the beginning of this chapter. The biopixR package was used for software-based quantification, while the manual analysis is presented as the average count (n = 5) with the standard deviation.",
+  caption = "Comparison in object quantification for task 1. The table summarizes the quantification of all microbeads, including singlets and individual microbeads within doublets or multiplets. The analysis was conducted on the three example images presented at the beginning of this chapter. The `biopixR` package was used for software-based quantification, while the manual analysis is presented as the average count (n = 5) with the standard deviation.",
   escape = FALSE,
 )
 ```
@@ -386,7 +386,7 @@ tab_comp2 <- kable(
   booktabs = TRUE,
   align = "cccc",
   col.names = c("image", "software", "manual", "sd(manual)"),
-  caption = "Comparison in object quantification for task 2. The table presents the results of counting individual microbeads within aggregated clusters, such as doublets or multiplets. The analysis was performed on the three aforementioned images using the biopixR package and manual analysis (n = 5). For the manual analysis, the average count and standard deviation are reported.",
+  caption = "Comparison in object quantification for task 2. The table presents the results of counting individual microbeads within aggregated clusters, such as doublets or multiplets. The analysis was performed on the three aforementioned images using the `biopixR` package and manual analysis (n = 5). For the manual analysis, the average count and standard deviation are reported.",
   escape = FALSE,
 )
 ```
