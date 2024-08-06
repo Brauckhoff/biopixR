@@ -200,7 +200,7 @@ The `biopixR` package includes functions for analyzing entire directories,
 allowing for medium-throughput analysis. Making feature extraction and image
 clustering easily accessible:
 
-* `haralickCluster()`, extracts Haralick features and clusters information using Partitioning Around Medoids (PAM) [@Haralick_1973; @radiomics; @cluster],
+* `haralickCluster()`, extracts Haralick features and clusters information using Partitioning Around Medoids (PAM) [@Haralick_1973; @cluster],
 * `scanDir()`, utilizing the pipeline for whole directory analysis.
 
 The `fillLineGaps()` algorithm, along with helper functions:
