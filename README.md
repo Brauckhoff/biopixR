@@ -39,7 +39,7 @@ install.packages("devtools")
 devtools::install_github("Brauckhoff/biopixR")
 ```
 
-The `biopixR` package has been tested across multiple platforms and is expected to work on all operating systems. However, we've received reports of users encountering issues when loading the package. For macOS users, please ensure that X11 is installed on your system, as its absence can prevent the `imager` dependency from loading, which in turn affects the package. If X11 is not installed, you can resolve this by downloading it from the official [XQuartz](https://www.xquartz.org/) website or by running the following command with the **Homebrew Cask** extension: `brew cask install xquartz`.
+The `biopixR` package has been tested across multiple platforms and is expected to work on all operating systems. However, we've received reports of users encountering issues when loading the package. For macOS users, please ensure that X11 is installed on your system, as its absence can prevent the `imager` dependency from loading, which in turn affects the package. If X11 is not installed, you can resolve this by downloading it from the official [XQuartz](https://www.xquartz.org/) website or by running the following command with the **Homebrew Cask** extension: `brew install --cask xquartz`.
 
 All other dependencies listed in the `DESCRIPTION` file, including `imager`, `magick`, `tcltk`, `data.table`, and `cluster`, will be installed automatically with the command mentioned above. The package works with `R` version 4.2.0 or higher.
 
