@@ -13,15 +13,15 @@
 ## Introduction
 In the rapidly evolving landscape of scientific research and technology, the field of image analysis and processing has become indispensable, providing unprecedented insight into complex phenomena. This project aims to utilize image processing techniques, using the [`R` statistical programming language](https://www.r-project.org/), to analyze and characterize bead microparticles. Microparticles find extensive utility in various scientific domains, including medical diagnostics, environmental monitoring, and materials science.
 
-The rise of high-resolution imaging technologies has led to an exponential increase in the volume and complexity of image data, requiring sophisticated computational methods for efficient analysis. In this context, `R` is a standout programming language that excels in statistical computing and graphics. Leveraging the rich ecosystem of R packages, this project aims to develop an automated image analysis pipeline for bead microparticles. 
+The rise of high-resolution imaging technologies has led to an exponential increase in the volume and complexity of image data, requiring sophisticated computational methods for efficient analysis. In this context, `R` is a standout programming language that excels in statistical computing and graphics. Leveraging the rich ecosystem of `R` packages, this project aims to develop an automated image analysis pipeline for bead microparticles. 
 
 **The primary objectives of this project include**:
  - *Image Preprocessing*: Implementing techniques to fill and reconnect discontinuous lines and edges. Discard coagulated duplets, multiplets, and beads that are too close together as they may excite each other and produce a false positive signal.
  - *Segmentation and Feature Extraction*: Applying algorithms to accurately identify and segment sperical objects (e.g, microparticles). Extracting relevant features such as quantity, size, and intensity for comprehensive characterization. 
- - *Visualization*: Implementing interactive tools with [Tcl/Tk](https://www.tcl-lang.org/) via the tcltk package for the selection of thresholds and smoothing factors. Generating images to control the appropriate functioning of algorithms, for example the reconnection of lines.
+ - *Visualization*: Implementing interactive tools with [Tcl/Tk](https://www.tcl-lang.org/) via the `tcltk` package for the selection of thresholds and smoothing factors. Generating images to control the appropriate functioning of algorithms, for example the reconnection of lines.
  - *Automatization*: Combining algorithms for medium-throughput analysis of image data.
 
-This project aims to meet the immediate need for effective bead microparticle analysis and contribute to the broader field of image processing methodologies in the R programming environment. By providing a comprehensive and adaptable framework, the work empowers researchers and practitioners to extract meaningful insights from image data, thus enhancing our understanding of bead microparticles and their diverse applications.
+This project aims to meet the immediate need for effective bead microparticle analysis and contribute to the broader field of image processing methodologies in the `R` programming environment. By providing a comprehensive and adaptable framework, the work empowers researchers and practitioners to extract meaningful insights from image data, thus enhancing our understanding of bead microparticles and their diverse applications.
 
 
 ## Installation
@@ -32,7 +32,7 @@ Now available on CRAN so try:
 install.packages("biopixR")
 ```
 
-or try the latest version of biopixR:
+or try the latest version of `biopixR`:
 
 ```{r}
 install.packages("devtools")
@@ -41,7 +41,7 @@ devtools::install_github("Brauckhoff/biopixR")
 
 The `biopixR` package has been tested across multiple platforms and is expected to work on all operating systems. However, we've received reports of users encountering issues when loading the package. For macOS users, please ensure that X11 is installed on your system, as its absence can prevent the `imager` dependency from loading, which in turn affects the package. If X11 is not installed, you can resolve this by downloading it from the official [XQuartz](https://www.xquartz.org/) website or by running the following command with the **Homebrew Cask** extension: `brew cask install xquartz`.
 
-All other dependencies listed in the `DESCRIPTION` file, including `imager`, `magick`, `tcltk`, `data.table`, and `cluster`, will be installed automatically with the command mentioned above. The package works with R version 4.2.0 or higher.
+All other dependencies listed in the `DESCRIPTION` file, including `imager`, `magick`, `tcltk`, `data.table`, and `cluster`, will be installed automatically with the command mentioned above. The package works with `R` version 4.2.0 or higher.
 
 
 ## Example I
@@ -127,7 +127,7 @@ text(
 ![4](https://github.com/Brauckhoff/biopixR/assets/121032772/9ff1a69e-acf2-4e27-88de-8004aa2ef6fa)
 
 
-In conclusion, obtaining meaningful information from the filtered dataset is essential. The main findings encompass the number of objects that remained and were discarded, object size, signal intensity, and area density. The `resultAnalytics` function of biopixR extracts and calculates the described parameters. The function requires input parameters in the form of coordinates, object size, and the original image. The coordinates can be obtained through any of the three previously mentioned functions, allowing for flexibility in selectively applying or omitting specific filters.
+In conclusion, obtaining meaningful information from the filtered dataset is essential. The main findings encompass the number of objects that remained and were discarded, object size, signal intensity, and area density. The `resultAnalytics` function of `biopixR` extracts and calculates the described parameters. The function requires input parameters in the form of coordinates, object size, and the original image. The coordinates can be obtained through any of the three previously mentioned functions, allowing for flexibility in selectively applying or omitting specific filters.
 
 ```{r}
 result <-
@@ -201,7 +201,7 @@ changePixelColor(neg_thresh_m,
 ![6 2](https://github.com/Brauckhoff/biopixR/assets/121032772/7e8be967-7ada-4f1e-a59d-6139623bc16b)
 
 
-The fillLineGaps function from the package is utilized to address the challenge of discontinuous edges. After applying a threshold, the function identifies line endpoints and connects them to the nearest neighboring edge, ensuring more continuous partition boundaries. Additionally, the objectDetection function is incorporated to exclude specific objects, such as microbeads, to prevent unwanted connections. The resulting output displays the line ends reconnected and microbeads removed.
+The `fillLineGaps` function from the package is utilized to address the challenge of discontinuous edges. After applying a threshold, the function identifies line endpoints and connects them to the nearest neighboring edge, ensuring more continuous partition boundaries. Additionally, the `objectDetection` function is incorporated to exclude specific objects, such as microbeads, to prevent unwanted connections. The resulting output displays the line ends reconnected and microbeads removed.
 
 ```{r}
 closed_gaps <- fillLineGaps(droplets,
