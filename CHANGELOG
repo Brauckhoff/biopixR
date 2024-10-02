@@ -1,5 +1,9 @@
 # Next version
 
+# 1.2.0
+- meeting JOSS requirements
+- changes in documentation and handling of tcltk in headless environments
+
 # 1.1.0
 - bugfix in proximityFilter
 - interactive sizeFilter

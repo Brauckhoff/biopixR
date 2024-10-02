@@ -1,6 +1,6 @@
 Package: biopixR
 Title: Extracting Insights from Biological Images
-Version: 1.1.0
+Version: 1.2.0
 Authors@R: 
     c(person("Tim", "Brauckhoff", 
     email = "brauctile@disroot.org", 
@@ -22,12 +22,12 @@ BuildVignettes: true
 Depends:
     R (>= 4.2.0),
     imager,
-    magick,
-    tcltk
+    magick
 Imports:
     data.table,
     cluster
 Suggests:
+    tcltk,
     knitr,
     rmarkdown,
     doParallel,

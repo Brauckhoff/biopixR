@@ -155,7 +155,7 @@ number_of_beads | mean_size | mean_intensity | bead_density | estimated_rejected
 5 | 82 | 0.63 | 0.08 | 10 | 65.8
 
 
-For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://github.com/Brauckhoff/biopixR/blob/main/vignettes/biopixR.Rmd).
+For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://cran.r-project.org/web/packages/biopixR/vignettes/biopixR.html).
 
 
 ## Example II
@@ -223,14 +223,14 @@ closed_gaps |> plot()
 ![8 3](https://github.com/Brauckhoff/biopixR/assets/121032772/4714dcfa-0d69-48d9-8267-771d55c24c08)
 
 
-After closing the gaps in the lines, important information is extracted and displayed as shown below. The process of feature extraction is described in detail in our [vignettes](https://github.com/Brauckhoff/biopixR/blob/main/vignettes/biopixR.Rmd).
+After closing the gaps in the lines, important information is extracted and displayed as shown below. The process of feature extraction is described in detail in our [vignettes](https://cran.r-project.org/web/packages/biopixR/vignettes/biopixR.html).
 
 partitions | empty_partitions | bead_partitions | single_bead | multiple_beads  
 --- | --- | --- | --- | --- 
 125 | 121 | 4 | 3 | 1 
 
 
-For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://github.com/Brauckhoff/biopixR/blob/main/vignettes/biopixR.Rmd).
+For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://cran.r-project.org/web/packages/biopixR/vignettes/biopixR.html).
 
 
 ## Code citation
