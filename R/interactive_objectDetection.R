@@ -35,7 +35,6 @@ print_with_timestamp <- function(msg) {
 #' @import magick
 #' @import imager
 #' @import data.table
-#' @import tcltk
 #' @references https://CRAN.R-project.org/package=magickGUI
 #' @examples
 #' \donttest{
@@ -48,6 +47,12 @@ interactive_objectDetection <-
   function(img,
            resolution = 0.1,
            return_param = FALSE) {
+
+    # Check for required namespace
+    if (!requireNamespace("tcltk", quietly = TRUE)) {
+      stop("The 'tcltk' package is required but not installed. Please install it using install.packages('tcltk').")
+    }
+
     # Convert the image to the desired format
     image_original <- cimg2magick(img)
     object_img <- img
@@ -83,7 +88,7 @@ interactive_objectDetection <-
     temp <- tempfile(fileext = ".jpg")
     on.exit(unlink(temp), add = TRUE)
     image_write(initial, temp)
-    image_tcl <- tkimage.create("photo", "image_tcl", file = temp)
+    image_tcl <- tcltk::tkimage.create("photo", "image_tcl", file = temp)
 
     # Format label digits based on resolution
     label_digits <- -as.integer(log(resolution, 10))
@@ -91,30 +96,30 @@ interactive_objectDetection <-
     label_template <- sprintf("%%.%df", label_digits)
 
     # Create GUI window and frames
-    win1 <- tktoplevel()
-    on.exit(tkdestroy(win1), add = TRUE)
-    win1.frame1 <- tkframe(win1)
-    win1.frame2 <- tkframe(win1)
-    win1.frame3 <- tkframe(win1)
-    win1.frame4 <- tkframe(win1)
-    win1.im <- tklabel(win1, image = image_tcl)
+    win1 <- tcltk::tktoplevel()
+    on.exit(tcltk::tkdestroy(win1), add = TRUE)
+    win1.frame1 <- tcltk::tkframe(win1)
+    win1.frame2 <- tcltk::tkframe(win1)
+    win1.frame3 <- tcltk::tkframe(win1)
+    win1.frame4 <- tcltk::tkframe(win1)
+    win1.im <- tcltk::tklabel(win1, image = image_tcl)
 
     # Create and configure labels
     win1.frame1.label <-
-      tklabel(win1.frame1, text = sprintf("%s%s", text_label_alpha, sprintf(label_template, alpha)))
+      tcltk::tklabel(win1.frame1, text = sprintf("%s%s", text_label_alpha, sprintf(label_template, alpha)))
     win1.frame2.label <-
-      tklabel(win1.frame2, text = sprintf("%s%s", text_label_sigma, sprintf(label_template, sigma)))
+      tcltk::tklabel(win1.frame2, text = sprintf("%s%s", text_label_sigma, sprintf(label_template, sigma)))
     win1.frame3.label <-
-      tklabel(win1.frame3, text = sprintf("%s%s", text_label_scale, sprintf(label_template, scale)))
+      tcltk::tklabel(win1.frame3, text = sprintf("%s%s", text_label_scale, sprintf(label_template, scale)))
     win1.frame4.label <-
-      tklabel(win1.frame4, text = paste("Method: ", method))
+      tcltk::tklabel(win1.frame4, text = paste("Method: ", method))
     win1.method_status <-
-      tklabel(win1, text = paste("Current method in use: ", method))
+      tcltk::tklabel(win1, text = paste("Current method in use: ", method))
 
     # Initialize slider values
-    slider_value_alpha <- tclVar(alpha)
-    slider_value_sigma <- tclVar(sigma)
-    slider_value_scale <- tclVar(scale)
+    slider_value_alpha <- tcltk::tclVar(alpha)
+    slider_value_sigma <- tcltk::tclVar(sigma)
+    slider_value_scale <- tcltk::tclVar(scale)
 
     # Functions to update slider values
     command_slider_alpha <- function(...) {
@@ -129,7 +134,7 @@ interactive_objectDetection <-
 
     # Create sliders for parameters
     win1.frame1.slider <-
-      tkscale(
+      tcltk::tkscale(
         win1.frame1,
         from = range_alpha[1],
         to = range_alpha[2],
@@ -141,7 +146,7 @@ interactive_objectDetection <-
         showvalue = 0
       )
     win1.frame2.slider <-
-      tkscale(
+      tcltk::tkscale(
         win1.frame2,
         from = range_sigma[1],
         to = range_sigma[2],
@@ -153,7 +158,7 @@ interactive_objectDetection <-
         showvalue = 0
       )
     win1.frame3.slider <-
-      tkscale(
+      tcltk::tkscale(
         win1.frame3,
         from = range_scale[1],
         to = range_scale[2],
@@ -177,8 +182,8 @@ interactive_objectDetection <-
       temp_image <- imresize(temp_image, temp_val[3])
       temp_image <- cimg2magick(temp_image)
       image_write(temp_image, temp)
-      image_tcl <- tkimage.create("photo", "image_tcl", file = temp)
-      tkconfigure(win1.im, image = image_tcl)
+      image_tcl <- tcltk::tkimage.create("photo", "image_tcl", file = temp)
+      tcltk::tkconfigure(win1.im, image = image_tcl)
     }
 
     # Function to handle OK button click
@@ -189,47 +194,47 @@ interactive_objectDetection <-
     # Function to handle method switch button click
     command_switch_method <- function(...) {
       method <<- ifelse(method == "edge", "threshold", "edge")
-      tkconfigure(win1.frame4.label, text = paste("Method: ", method))
-      tkconfigure(win1.method_status, text = paste("Current method in use: ", method))
+      tcltk::tkconfigure(win1.frame4.label, text = paste("Method: ", method))
+      tcltk::tkconfigure(win1.method_status, text = paste("Current method in use: ", method))
       update_image()
     }
 
     # Add GUI elements to the window
     win1.button <-
-      tkbutton(win1, text = "OK", command = command_button)
+      tcltk::tkbutton(win1, text = "OK", command = command_button)
     win1.switch_button <-
-      tkbutton(win1, text = "Switch Method", command = command_switch_method)
-    tkpack(win1.im, side = "left")
-    tkpack(win1.frame1.label, side = "left", anchor = "c")
-    tkpack(win1.frame1.slider, side = "left", anchor = "c")
-    tkpack(win1.frame1, side = "top", anchor = "c")
-    tkpack(win1.frame2.label, side = "left", anchor = "c")
-    tkpack(win1.frame2.slider, side = "left", anchor = "c")
-    tkpack(win1.frame2, side = "top", anchor = "c")
-    tkpack(win1.frame3.label, side = "left", anchor = "c")
-    tkpack(win1.frame3.slider, side = "left", anchor = "c")
-    tkpack(win1.frame3, side = "top", anchor = "c")
-    tkpack(win1.frame4.label, side = "left", anchor = "c")
-    tkpack(
+      tcltk::tkbutton(win1, text = "Switch Method", command = command_switch_method)
+    tcltk::tkpack(win1.im, side = "left")
+    tcltk::tkpack(win1.frame1.label, side = "left", anchor = "c")
+    tcltk::tkpack(win1.frame1.slider, side = "left", anchor = "c")
+    tcltk::tkpack(win1.frame1, side = "top", anchor = "c")
+    tcltk::tkpack(win1.frame2.label, side = "left", anchor = "c")
+    tcltk::tkpack(win1.frame2.slider, side = "left", anchor = "c")
+    tcltk::tkpack(win1.frame2, side = "top", anchor = "c")
+    tcltk::tkpack(win1.frame3.label, side = "left", anchor = "c")
+    tcltk::tkpack(win1.frame3.slider, side = "left", anchor = "c")
+    tcltk::tkpack(win1.frame3, side = "top", anchor = "c")
+    tcltk::tkpack(win1.frame4.label, side = "left", anchor = "c")
+    tcltk::tkpack(
       win1.switch_button,
       side = "top",
       anchor = "c",
       pady = 10
     )
-    tkpack(
+    tcltk::tkpack(
       win1.method_status,
       side = "top",
       anchor = "c",
       pady = 5
     )
-    tkpack(win1.button,
+    tcltk::tkpack(win1.button,
            side = "top",
            anchor = "c",
            pady = 20)
 
-    pre_slider_values <- c(as.numeric(tclvalue(slider_value_alpha)),
-                           as.numeric(tclvalue(slider_value_sigma)),
-                           as.numeric(tclvalue(slider_value_scale)))
+    pre_slider_values <- c(as.numeric(tcltk::tclvalue(slider_value_alpha)),
+                           as.numeric(tcltk::tclvalue(slider_value_sigma)),
+                           as.numeric(tcltk::tclvalue(slider_value_scale)))
 
     # Handle GUI state and update logic
     if (quit_waiting) {
@@ -237,20 +242,20 @@ interactive_objectDetection <-
       while (wait_test) {
         wait_test <- FALSE
         tryCatch({
-          tkwm.state(win1)
+          tcltk::tkwm.state(win1)
         }, error = function(e) {
           assign("wait_test", TRUE, inherits = TRUE)
         })
       }
       wait_time_long()
-      tkdestroy(win1.button)
+      tcltk::tkdestroy(win1.button)
     }
-    tkwm.state(win1, "normal")
+    tcltk::tkwm.state(win1, "normal")
 
     # If values change - update image
     while (TRUE) {
       tryCatch({
-        tkwm.state(win1)
+        tcltk::tkwm.state(win1)
       }, error = function(e) {
         assign("quit_waiting", TRUE, inherits = TRUE)
       })
@@ -258,9 +263,9 @@ interactive_objectDetection <-
         break
       }
 
-      temp_val <- c(as.numeric(tclvalue(slider_value_alpha)),
-                    as.numeric(tclvalue(slider_value_sigma)),
-                    as.numeric(tclvalue(slider_value_scale)))
+      temp_val <- c(as.numeric(tcltk::tclvalue(slider_value_alpha)),
+                    as.numeric(tcltk::tclvalue(slider_value_sigma)),
+                    as.numeric(tcltk::tclvalue(slider_value_scale)))
 
       # Validate the new parameter values
       if (class(try(edgeDetection(object_img, alpha = temp_val[1], sigma = temp_val[2])))[1] == 'try-error') {
@@ -268,8 +273,8 @@ interactive_objectDetection <-
           c(pre_slider_values[1],
             pre_slider_values[2],
             pre_slider_values[3])
-        tkset(win1.frame1.slider, temp_val[1])
-        tkset(win1.frame2.slider, temp_val[2])
+        tcltk::tkset(win1.frame1.slider, temp_val[1])
+        tcltk::tkset(win1.frame2.slider, temp_val[2])
       }
 
       # Update image if parameter values have changed
@@ -287,9 +292,9 @@ interactive_objectDetection <-
                   text_label_scale,
                   sprintf(label_template, temp_val[3]))
 
-        tkconfigure(win1.frame1.label, text = temp_label_alpha)
-        tkconfigure(win1.frame2.label, text = temp_label_sigma)
-        tkconfigure(win1.frame3.label, text = temp_label_scale)
+        tcltk::tkconfigure(win1.frame1.label, text = temp_label_alpha)
+        tcltk::tkconfigure(win1.frame2.label, text = temp_label_sigma)
+        tcltk::tkconfigure(win1.frame3.label, text = temp_label_scale)
 
         print_with_timestamp("Creating new image...")
         update_image()
