@@ -2,7 +2,9 @@
 
 # 1.2.0
 - meeting JOSS requirements
-- changes in documentation and handling of tcltk in headless environments
+- changes in documentation 
+- handling the loading of the tcltk package in headless environments
+- tcltk moved from depends to suggests
 
 # 1.1.0
 - bugfix in proximityFilter
