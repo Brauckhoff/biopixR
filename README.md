@@ -2,7 +2,7 @@
   [![CRAN Version](https://www.r-pkg.org/badges/version/biopixR)](https://cran.r-project.org/package=biopixR)
   [![R-CMD-check](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/Brauckhoff/biopixR/actions/workflows/R-CMD-check.yml)
   [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12744223.svg)](https://doi.org/10.5281/zenodo.12744223)
-  [![status](https://joss.theoj.org/papers/80bda20fb774fd758a14b5ff02aaed68/status.svg)](https://joss.theoj.org/papers/80bda20fb774fd758a14b5ff02aaed68)
+  [![status](https://joss.theoj.org/papers/80bda20fb774fd758a14b5ff02aaed68/status.svg)](https://joss.theoj.org/papers/10.21105/joss.07074)
   <!-- badges: end -->
 
 ![logo2 (another copy)](https://github.com/Brauckhoff/biopixR/assets/121032772/4a057464-1212-47d8-9af3-391f10179c4b)
@@ -155,7 +155,7 @@ number_of_beads | mean_size | mean_intensity | bead_density | estimated_rejected
 5 | 82 | 0.63 | 0.08 | 10 | 65.8
 
 
-For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://cran.r-project.org/web/packages/biopixR/vignettes/biopixR.html).
+For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://CRAN.R-project.org/package=biopixR).
 
 
 ## Example II
@@ -223,14 +223,14 @@ closed_gaps |> plot()
 ![8 3](https://github.com/Brauckhoff/biopixR/assets/121032772/4714dcfa-0d69-48d9-8267-771d55c24c08)
 
 
-After closing the gaps in the lines, important information is extracted and displayed as shown below. The process of feature extraction is described in detail in our [vignettes](https://cran.r-project.org/web/packages/biopixR/vignettes/biopixR.html).
+After closing the gaps in the lines, important information is extracted and displayed as shown below. The process of feature extraction is described in detail in our [vignettes](https://CRAN.R-project.org/package=biopixR).
 
 partitions | empty_partitions | bead_partitions | single_bead | multiple_beads  
 --- | --- | --- | --- | --- 
 125 | 121 | 4 | 3 | 1 
 
 
-For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://cran.r-project.org/web/packages/biopixR/vignettes/biopixR.html).
+For more detailed information about the features and capabilities of the package feel free to consult our [vignettes](https://CRAN.R-project.org/package=biopixR).
 
 
 ## Code citation
