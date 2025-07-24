@@ -184,7 +184,7 @@ shapeFeatures <-
         }
         return(res_resultAnalytics$detailed)
       } else {
-        cat("Please install the Package 'kohonen' for SOM \n (install.package('kohonen')")
+        cat("Please install the Package 'kohonen' for SOM \n install.packages('kohonen')")
       }
     }
   }
