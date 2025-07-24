@@ -81,11 +81,11 @@ scanDir <- function(path,                    # Path to the directory to scan
     } else {
       # Handle missing rmarkdown package
       logIt(
-        "Error: Please install the Package 'rmarkdown' for log file creation \n (install.package('rmarkdown')  "
+        "Error: Please install the Package 'rmarkdown' for log file creation \n install.packages('rmarkdown')"
       )
       stop(
         format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-        " Please install the Package 'rmarkdown' for log file creation \n (install.package('rmarkdown')"
+        "Please install the Package 'rmarkdown' for log file creation \n install.packages('rmarkdown')"
       )
     }
     # Create path of log_file
@@ -330,12 +330,12 @@ path,
       # Handle missing doParallel package
       if (Rlog == TRUE) {
         logIt(
-          "Error: Please install the Package 'doParallel' & 'foreach' for parallel processing \n (install.package(c('doparallel', 'foreach'))  "
+          "Error: Please install the Package 'doParallel' & 'foreach' for parallel processing \n install.packages(c('doparallel', 'foreach'))  "
         )
       }
       stop(
         format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-        " Please install the Package 'doParallel' & 'foreach' for parallel processing \n (install.package(c('doparallel', 'foreach'))"
+        " Please install the Package 'doParallel' & 'foreach' for parallel processing \n install.packages(c('doparallel', 'foreach'))"
       )
     }
   }
