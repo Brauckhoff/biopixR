@@ -294,7 +294,7 @@ objectDetection <- function(img,
       } else {
         stop(
           format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
-          " Please install the Package 'GPareto' for multi-objective optimization. \n (install.package('GPareto')"
+          " Please install the Package 'GPareto' for multi-objective optimization. \n install.packages('GPareto')"
         )
       }
     }
